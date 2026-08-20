@@ -1,0 +1,14 @@
+# Cloudflare Pages 响应头（构建时自动复制到 docs/ 并生效）
+# 哈希静态资源：长缓存、不可变
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 站点文档类资源
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# 全局安全头
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY

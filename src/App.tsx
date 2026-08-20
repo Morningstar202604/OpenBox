@@ -1,0 +1,140 @@
+import { useEffect, useLayoutEffect, useState, useRef, lazy, Suspense } from 'react';
+import { useHashRoute } from '@/hooks/useHashRoute';
+import { useT } from '@/i18n/useI18n';
+import { NavBar } from '@/components/NavBar';
+import { MobileTabBar } from '@/components/MobileTabBar';
+import { PageLoader } from '@/components/PageLoader';
+import { Footer } from '@/components/Footer';
+import { ToastContainer } from '@/components/ToastContainer';
+import { AuthModal } from '@/components/AuthModal';
+import { OnboardingModal } from '@/components/OnboardingModal';
+import { BackgroundFX } from '@/components/BackgroundFX';
+import { ScrollProgress } from '@/components/ScrollProgress';
+import { LandingPage } from '@/pages/LandingPage';
+import { HomePage } from '@/pages/HomePage';
+
+const CategoryPage = lazy(() => import('@/pages/CategoryPage').then(m => ({ default: m.CategoryPage })));
+const ScenarioPage = lazy(() => import('@/pages/ScenarioPage').then(m => ({ default: m.ScenarioPage })));
+const SearchPage = lazy(() => import('@/pages/SearchPage').then(m => ({ default: m.SearchPage })));
+const ResourcePage = lazy(() => import('@/pages/ResourcePage').then(m => ({ default: m.ResourcePage })));
+const SubmitPage = lazy(() => import('@/pages/SubmitPage').then(m => ({ default: m.SubmitPage })));
+const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })));
+const FavoritesPage = lazy(() => import('@/pages/FavoritesPage').then(m => ({ default: m.FavoritesPage })));
+const MyPage = lazy(() => import('@/pages/MyPage').then(m => ({ default: m.MyPage })));
+const RankingPage = lazy(() => import('@/pages/RankingPage').then(m => ({ default: m.RankingPage })));
+const HelpPage = lazy(() => import('@/pages/HelpPage').then(m => ({ default: m.HelpPage })));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+
+function Router() {
+  const route = useHashRoute();
+  const fallback = <div className="route-fade" style={{ minHeight: '60dvh' }} />;
+  return (
+    <Suspense fallback={fallback}>
+      {(() => {
+        switch (route.name) {
+          case 'landing': return <LandingPage />;
+          case 'category': return <CategoryPage />;
+          case 'scenario': return <ScenarioPage />;
+          case 'resource': return <ResourcePage />;
+          case 'search': return <SearchPage />;
+          case 'submit': return <SubmitPage />;
+          case 'about': return <AboutPage />;
+          case 'favorites': return <FavoritesPage />;
+          case 'my': return <MyPage />;
+          case 'ranking': return <RankingPage />;
+          case 'help': return <HelpPage />;
+          case 'notfound': return <NotFoundPage />;
+          default: return <HomePage />;
+        }
+      })()}
+    </Suspense>
+  );
+}
+
+export default function App() {
+  const route = useHashRoute();
+  const t = useT();
+  const isLanding = route.name === 'landing';
+  const [showOverlay, setShowOverlay] = useState(false);
+  const prevKey = useRef('');
+  const overlayMs = useRef(1500);
+
+  // SEO：路由变化时同步 document.title（利于搜索引擎收录与分享预览）
+  useEffect(() => {
+    const nameMap: Record<string, string> = {
+      home: t('nav.home'),
+      search: t('nav.search'),
+      submit: t('nav.submit'),
+      favorites: t('nav.favorites'),
+      my: t('nav.my'),
+      about: t('nav.about'),
+      help: t('nav.help'),
+      category: t('nav.categories'),
+      scenario: t('nav.categories'),
+      resource: '资源详情',
+    };
+    if (!isLanding) {
+      document.title = `${nameMap[route.name] ?? 'OpenBox'} · OpenBox 开源 AI 资源导航`;
+    }
+  }, [route.name, route.slug, route.q, route.id, t, isLanding]);
+
+  // 路由切换时：仅从引导页跳转到主站时触发品牌露出 overlay，页面间切换不再显示
+  useEffect(() => {
+    const key = `${route.name}-${route.slug ?? ''}-${route.id ?? ''}`;
+    if (prevKey.current && prevKey.current !== key) {
+      const fromLanding = prevKey.current.startsWith('landing') && route.name !== 'landing';
+      if (fromLanding) {
+        overlayMs.current = 1500;
+        setShowOverlay(true);
+        const t = setTimeout(() => setShowOverlay(false), 1500);
+        return () => clearTimeout(t);
+      }
+    }
+    prevKey.current = key;
+  }, [route.name, route.slug, route.id]);
+
+  // 路由切换时强制回到顶部（在绘制前同步执行，避免新页面停在旧滚动位置的一帧闪烁）
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+    const el = document.documentElement ?? document.body;
+    if (el) el.scrollTop = 0;
+  }, [route.name, route.slug, route.id, route.q]);
+
+  return (
+    <div className="flex min-h-[100dvh] flex-col">
+      {/* 全局动态背景（光晕漂移 + 坐标纸网格）与顶部阅读进度条 */}
+      <BackgroundFX />
+      <ScrollProgress />
+
+      {/* 路由切换过渡加载层：圆形光环 + Logo + 语录（品牌露出） */}
+      {showOverlay && <PageLoader />}
+
+      {/* 导航栏：非引导页显示；首次进入时由上滑入 */}
+      {!isLanding && (
+        <div className="anim-slide-up">
+          <NavBar />
+        </div>
+      )}
+
+      {/* 内容区：引导页全屏无边距，内页标准容器；底部为移动端 Tab 预留空间 */}
+      <main className={`flex-1 ${isLanding ? '' : 'container py-6 pb-24 sm:pb-6'}`}>
+        <div key={`${route.name}-${route.slug ?? ''}-${route.id ?? ''}`} className="anim-fade-in">
+          <Router />
+        </div>
+      </main>
+
+      {!isLanding && (
+        <footer className="anim-fade-in" style={{ animationDelay: '0.15s' }}>
+          <Footer />
+        </footer>
+      )}
+
+      {/* 移动端底部导航（仅 sm 以下显示） */}
+      {!isLanding && <MobileTabBar />}
+
+      <ToastContainer />
+      <AuthModal />
+      <OnboardingModal />
+    </div>
+  );
+}

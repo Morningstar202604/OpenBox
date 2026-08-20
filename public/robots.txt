@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://openbox-13o.pages.dev/sitemap.xml

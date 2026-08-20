@@ -1,0 +1,599 @@
+@import "tailwindcss";
+
+/* 暗色模式：通过 <html class="dark"> 切换（由 useThemeStore 控制） */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 自定义容器宽度 */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  max-width: 1200px;
+}
+
+/* 移动端：更小内边距 + 安全区适配（解决刘海屏内容被遮挡导致的视觉偏移） */
+@media (max-width: 639px) {
+  .container {
+    padding-left: max(0.875rem, env(safe-area-inset-left));
+    padding-right: max(0.875rem, env(safe-area-inset-right));
+  }
+}
+
+@theme {
+  /* ---- 语义化设计令牌（浅色为默认，.dark 下覆写） ----
+     设计方向「纸墨终端」：暖纸墨底色 + 深青绿墨色 + 衬线大标题 + 终端细节。
+     弃用通用靛蓝 / 冷灰 AI 渐变套路，走内容型工具站的克制、务实观感。 */
+  --color-bg: #f4f2ec;
+  --color-surface: #fbfaf6;
+  --color-elevated: #ffffff;
+  --color-border: #e3dfd4;
+  --color-fg: #1c1a17;
+  --color-muted: #6b6559;
+  --color-primary: #0f766e;
+  --color-primary-fg: #ffffff;
+  --color-primary-soft: rgba(15, 118, 110, 0.09);
+  --color-ink: #1c1a17;
+
+  /* 圆角与阴影：更紧的圆角 + 更硬的轻阴影（GitHub 卡片式），去掉大模糊浮空感 */
+  --radius-card: 10px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(28, 26, 23, 0.06);
+  --shadow-card-hover: 0 1px 2px rgba(28, 26, 23, 0.06), 0 6px 16px rgba(28, 26, 23, 0.1);
+
+  /* 字体：标题用衬线（杂志感），正文用系统无衬线，等宽用于终端细节。零外部依赖，国内秒开 */
+  --font-sans: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Noto Sans CJK SC", "Helvetica Neue", sans-serif;
+  --font-display: "Noto Serif SC", "Songti SC", "SimSun", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace;
+
+  /* 动画 */
+  --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-slide-up: slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-card-in: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-sheet-up: sheet-up 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 1.2s ease-in-out infinite;
+  --animate-blink: blink 1.1s steps(2, start) infinite;
+}
+
+/* 暗色覆写 */
+.dark {
+  --color-bg: #0e0d0b;
+  --color-surface: #161412;
+  --color-elevated: #1d1a17;
+  --color-border: #2c2823;
+  --color-fg: #e8e4dc;
+  --color-muted: #9a9284;
+  --color-primary: #2dd4bf;
+  --color-primary-fg: #0e0d0b;
+  --color-primary-soft: rgba(45, 212, 191, 0.12);
+  --color-ink: #e8e4dc;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 1px 2px rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  html {
+    overflow-x: clip;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: clip;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  ::selection {
+    background: var(--color-primary-soft);
+    color: var(--color-fg);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 8px;
+    border: 2px solid var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* 移动端输入框字号 ≥16px，避免 iOS 聚焦缩放 */
+  @media (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@layer components {
+  /* 通用按钮 */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.06);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-fg);
+    border-color: var(--color-border);
+  }
+  .btn-ghost:hover {
+    background: var(--color-primary-soft);
+  }
+  .btn-sm {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+
+  /* 卡片 */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+  .card-hover:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));
+  }
+
+  /* 输入框 */
+  .input {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-fg);
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+  }
+
+  /* 标签 / 徽章 */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    color: var(--color-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .chip:hover {
+    color: var(--color-fg);
+    border-color: var(--color-primary);
+  }
+  .chip[data-active="true"] {
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+    border-color: transparent;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: var(--radius-pill);
+    line-height: 1.4;
+  }
+
+  /* 状态点 */
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  /* ---- 「纸墨终端」特色组件 ---- */
+
+  /* 终端提示符：搜索框 / 状态区前缀，如 $ openbox */
+  .term-prompt {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--color-primary);
+    user-select: none;
+  }
+  .term-prompt::before {
+    content: "$";
+    margin-right: 0.4em;
+    font-weight: 700;
+  }
+
+  /* 终端光标闪烁 */
+  .term-cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    background: var(--color-primary);
+    animation: blink 1.1s steps(2, start) infinite;
+  }
+
+  /* 信号灯状态标签：ok=绿 / unstable=琥珀 / dead=红 / unknown=灰 */
+  .signal {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.12rem 0.5rem;
+    border-radius: var(--radius-pill);
+    line-height: 1.5;
+  }
+  .signal::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  .signal[data-status="ok"] { color: #0f9d58; background: rgba(15, 157, 88, 0.1); }
+  .signal[data-status="unstable"] { color: #b45309; background: rgba(180, 83, 9, 0.1); }
+  .signal[data-status="dead"] { color: #dc2626; background: rgba(220, 38, 38, 0.1); }
+  .signal[data-status="unknown"] { color: var(--color-muted); background: var(--color-primary-soft); }
+
+  /* 编辑式分区标题：编号 + 衬线大标题（杂志目录感） */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .section-head .no {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--color-fg);
+  }
+  .section-head::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+    margin-left: 0.5rem;
+  }
+
+  /* 墨迹 hover：卡片悬停时左侧出现墨色竖条（编辑标注感） */
+  .ink-hover {
+    position: relative;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .ink-hover::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12%;
+    bottom: 12%;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--color-primary);
+    opacity: 0;
+    transform: scaleY(0.4);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .ink-hover:hover::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+
+  /* 纸墨纹理：极淡网格背景（终端坐标纸感） */
+  .paper-grid {
+    background-image:
+      linear-gradient(var(--color-border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+  }
+
+  /* 入场动画（用 --i 传延迟，卡片依次入场，间隔放大到 40ms） */
+  .card-in {
+    animation: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+
+  /* 骨架屏 */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-border) 25%,
+      color-mix(in srgb, var(--color-border) 50%, var(--color-surface)) 50%,
+      var(--color-border) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 8px;
+  }
+
+  /* 路由内容淡入（较长，配合过渡图案） */
+  .route-fade {
+    animation: fade-in 0.6s ease-out both;
+  }
+
+  /* 路由切换过渡图案：极简快速淡入淡出（去 AI 脉冲炫技） */
+  .transition-overlay {
+    animation: fade-in 0.1s ease-out both, fade-out 0.22s ease-in 0.22s forwards;
+    pointer-events: none;
+  }
+
+  /* 底部抽屉（移动端筛选/详情） */
+  .sheet {
+    animation: sheet-up 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* FilterBar：仅移动端右侧渐变遮罩（提示可滑动），桌面端无遮罩 */
+  .filter-bar {
+    -webkit-mask-image: linear-gradient(to right, black, black calc(100% - 20px), transparent);
+    mask-image: linear-gradient(to right, black, black calc(100% - 20px), transparent);
+  }
+  @media (min-width: 640px) {
+    .filter-bar {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+}
+
+/* 隐藏滚动条工具类（顶层 @utility，不可嵌套于 @layer 内） */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 关键帧 */
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes slide-up {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes card-in {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes sheet-down {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes sheet-up {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+@keyframes fade-out {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.85; }
+}
+@keyframes slogan-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================================
+   视觉增强层：动态背景 / 毛玻璃 / 滚动进度 / 资源网络
+   说明：置于文件末尾的未分层规则，优先级高于 @layer components 内同名规则。
+   ============================================================================ */
+
+/* 毛玻璃（导航栏吸顶、浮层） */
+.glass {
+  background: color-mix(in srgb, var(--color-bg) 78%, transparent);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+}
+
+/* 全局动态背景层（固定全屏、内容之下） */
+.bg-fx {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bg-fx-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.045;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000, transparent 75%);
+  mask-image: radial-gradient(120% 90% at 50% 0%, #000, transparent 75%);
+}
+.bg-fx-blob {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(70px);
+  opacity: 0.42;
+  will-change: transform;
+}
+.bg-fx-blob-1 {
+  width: 46rem; height: 46rem;
+  background: radial-gradient(circle at 30% 30%, var(--color-primary), transparent 70%);
+  top: -16rem; left: -10rem;
+  animation: drift1 24s ease-in-out infinite;
+}
+.bg-fx-blob-2 {
+  width: 38rem; height: 38rem;
+  background: radial-gradient(circle at 70% 30%, var(--color-primary), transparent 70%);
+  top: -8rem; right: -12rem;
+  animation: drift2 30s ease-in-out infinite;
+}
+.bg-fx-blob-3 {
+  width: 40rem; height: 40rem;
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-primary) 65%, var(--color-ink)), transparent 70%);
+  bottom: -18rem; left: 18%;
+  opacity: 0.28;
+  animation: drift3 36s ease-in-out infinite;
+}
+.dark .bg-fx-blob {
+  opacity: 0.4;
+  filter: blur(90px);
+}
+.dark .bg-fx-grid { opacity: 0.06; }
+
+/* 顶部滚动进度条 */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  z-index: 50;
+  background: linear-gradient(90deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 55%, var(--color-ink)));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 60%, transparent);
+  transition: width 0.12s ease-out;
+  pointer-events: none;
+}
+
+/* 卡片悬停微光：保留原 border-color，叠加克制青绿外发光（电影感，不抢内容） */
+.card-hover:hover {
+  border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));
+  box-shadow:
+    var(--shadow-card-hover),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 28%, transparent),
+    0 12px 34px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+/* 首页 Hero 光晕呼吸 */
+.hero-glow {
+  animation: breathe 7s ease-in-out infinite;
+}
+
+/* 资源网络动效（Landing 主视觉） */
+.net-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: node-pulse 3.4s ease-in-out infinite;
+}
+.net-line {
+  stroke-dasharray: 5 12;
+  animation: line-flow 5s linear infinite;
+}
+
+/* 关键帧：背景光晕漂移 */
+@keyframes drift1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(4rem, 3rem, 0) scale(1.08); }
+}
+@keyframes drift2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-3rem, 4rem, 0) scale(1.12); }
+}
+@keyframes drift3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2rem, -3rem, 0) scale(1.06); }
+}
+@keyframes node-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+@keyframes line-flow {
+  to { stroke-dashoffset: -204; }
+}

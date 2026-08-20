@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://openbox-13o.pages.dev/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://openbox-13o.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://openbox-13o.pages.dev/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://openbox-13o.pages.dev/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2026-08-19</lastmod>
+  </url>
+</urlset>

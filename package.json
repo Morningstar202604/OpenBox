@@ -1,0 +1,63 @@
+{
+  "name": "openbox",
+  "private": true,
+  "version": "0.0.1",
+  "description": "OpenBox · 开源 AI 资源导航 — 聚合免费 API、中转站、代理节点、AI 应用、工具与学习资料。14 大分类 270+ 精选资源，社区投稿 + 集体验证，三语界面，登录云同步。主站：openbox-13o.pages.dev",
+  "license": "Apache-2.0",
+  "type": "module",
+  "author": "weed33834",
+  "keywords": [
+    "AI资源",
+    "免费API",
+    "中转站",
+    "AI应用",
+    "开源导航",
+    "OpenBox",
+    "free-api",
+    "ai-tools",
+    "resource-directory",
+    "白嫖"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weed33834/OpenBox.git"
+  },
+  "homepage": "https://openbox-13o.pages.dev",
+  "bugs": {
+    "url": "https://github.com/weed33834/OpenBox/issues"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "check": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.8",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.27.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwind-merge": "^3.6.0",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "babel-plugin-react-dev-locator": "^1.0.6",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "postcss": "^8.5.23",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~7.0.2",
+    "typescript-eslint": "^8.65.0",
+    "vite": "^8.1.5"
+  }
+}

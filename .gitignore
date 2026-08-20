@@ -1,0 +1,90 @@
+# ===== 前端 (OpenBox) =====
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build output
+dist
+dist-ssr
+*.local
+docs/
+
+# pnpm 本地配置
+.npmrc
+
+# TypeScript 增量缓存
+*.tsbuildinfo
+
+# 测试覆盖率
+coverage
+*.lcov
+.coverage
+htmlcov/
+
+# ===== 环境变量与密钥（切勿提交）=====
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+*.env
+.env.*
+!/.env.example
+*.pem
+*.key
+secrets/
+.secrets
+
+# ===== IDE / 编辑器 =====
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
+
+# ===== 操作系统 =====
+.DS_Store
+Thumbs.db
+
+# ===== TRAE IDE / AI 助手规则文件（本地开发辅助，不入公开仓库）=====
+.trae/
+AGENTS.md
+provenance/
+
+# ===== Jekyll 本地构建产物 =====
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+docs/.sass-cache/
+.vercel
+final_*.json
+final_*.html
+
+# ===== 审计/临时脚本（本地产物，不入库）=====
+/_*.py
+/_*.mjs
+/_*.ts
+/_*.json
+/_*.tsv
+/_*.txt
+/_*.html
+__pycache__/
+*.pyc
+
+/_*.cjs
