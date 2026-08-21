@@ -47,6 +47,9 @@ jobs:
 
       # 构建验证产物完整性；生产部署由 Cloudflare Pages 的 Git 集成独立完成，
       # CI 不再承担部署职责（避免双线路互相覆盖）。
+      - name: Regenerate sitemap
+        run: npm run gen:sitemap
+
       - name: Build (Vite)
         run: npm run build
 

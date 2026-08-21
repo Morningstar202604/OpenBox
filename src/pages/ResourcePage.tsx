@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
 import { getResource, getRelatedResources } from '@/lib/data';
+import { setSEO } from '@/lib/seo';
 import { useHashRoute, navigate } from '@/hooks/useHashRoute';
 import { useRecentStore } from '@/store/useRecentStore';
 import { ResourceDetail } from '@/components/DetailView';
@@ -26,8 +27,11 @@ export function ResourcePage() {
     getResource(id).then(async (r) => {
       if (!m) return;
       setData({ id, res: r, related: [] });
-      // 记录最近浏览
-      if (r) pushRecent(r.id);
+      // 资源级 SEO：标题/描述/OG 用资源自身信息（覆盖 App 层的通用值）
+      if (r) {
+        setSEO({ title: r.name, description: r.summary || r.description.slice(0, 150), path: `/resource/${r.id}` });
+        pushRecent(r.id);
+      }
       // 加载相关推荐
       const related = r ? await getRelatedResources(r.id, 4) : [];
       if (!m) return;

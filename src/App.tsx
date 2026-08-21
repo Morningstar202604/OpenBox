@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useState, useRef, lazy, Suspense } from 'react';
 import { useHashRoute } from '@/hooks/useHashRoute';
+import { setSEO } from '@/lib/seo';
 import { useT } from '@/i18n/useI18n';
 import { NavBar } from '@/components/NavBar';
 import { MobileTabBar } from '@/components/MobileTabBar';
@@ -59,22 +60,27 @@ export default function App() {
   const prevKey = useRef('');
   const overlayMs = useRef(1500);
 
-  // SEO：路由变化时同步 document.title（利于搜索引擎收录与分享预览）
+  // SEO：路由变化时同步 title / meta description / OG / canonical（利于收录与分享卡片）
   useEffect(() => {
-    const nameMap: Record<string, string> = {
-      home: t('nav.home'),
-      search: t('nav.search'),
-      submit: t('nav.submit'),
-      favorites: t('nav.favorites'),
-      my: t('nav.my'),
-      about: t('nav.about'),
-      help: t('nav.help'),
-      category: t('nav.categories'),
-      scenario: t('nav.categories'),
-      resource: '资源详情',
+    const nameMap: Record<string, { t: string; d?: string }> = {
+      home: { t: t('nav.home') },
+      search: { t: `${t('nav.search')}${route.q ? `: ${route.q}` : ''}` },
+      submit: { t: t('nav.submit') },
+      favorites: { t: t('nav.favorites') },
+      my: { t: t('nav.my') },
+      about: { t: t('nav.about') },
+      help: { t: t('nav.help') },
+      category: { t: t('nav.categories') },
+      scenario: { t: t('nav.categories') },
+      resource: { t: '资源详情' },
     };
     if (!isLanding) {
-      document.title = `${nameMap[route.name] ?? 'OpenBox'} · OpenBox 开源 AI 资源导航`;
+      const info = nameMap[route.name] ?? {};
+      setSEO({
+        title: info.t,
+        description: info.d,
+        path: route.slug ? `/${route.name}/${route.slug}` : route.id ? `/${route.name}/${route.id}` : `/${route.name}`,
+      });
     }
   }, [route.name, route.slug, route.q, route.id, t, isLanding]);
 
