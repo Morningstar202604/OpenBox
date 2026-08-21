@@ -150,10 +150,10 @@ const curated: Resource[] = [
     description: 'SiliconFlow 聚合 Qwen、DeepSeek、GLM 等开源模型，提供国内直连 API 与免费额度，兼容 OpenAI 接口。',
     tags: ['国产', 'OpenAI兼容'], models: ['Qwen', 'DeepSeek', 'GLM'], pros: ['国内直连', '免费额度'],
   }),
-  mk('free-api', 'Together AI', 'https://www.together.ai', {
+  mk('relays', 'Together AI', 'https://www.together.ai', {
     type: 'freemium', status: 'ok', official: true,
-    summary: 'Together AI｜海外开放模型免费档',
-    description: 'Together AI是免费模型API，提供 Llama、Qwen 等开放模型托管推理含免费档。适合开发者，OpenAI 兼容。',
+    summary: 'Together AI｜海外开放模型推理平台',
+    description: 'Together AI 是商业开放模型推理平台（serverless/微调），2025-07 起取消免费试用，最低充值 $5 可用。适合需要批量推理的开发者，OpenAI 兼容。',
     tags: ['海外', 'OpenAI兼容'], models: ['Llama', 'Qwen', 'DeepSeek'], pros: ['模型多'],
   }),
   mk('free-api', 'NVIDIA NIM', 'https://build.nvidia.com', {
@@ -227,7 +227,7 @@ const curated: Resource[] = [
     description: 'mihomo（原 Clash Meta）是当前最活跃的 Clash 开源核心，支持真规则、TUN 全局代理与多协议。适合进阶用户，跨平台、规则分流强。',
     tags: ['核心', '开源', '跨平台'], protocols: ['vmess', 'vless', 'trojan', 'ss', 'ssr'],
     pros: ['规则引擎强', '跨平台'], cons: ['需自行配置前端'],
-    tips: '可配合 Clash Verge Rev 等 GUI 使用。',
+    tips: '可配合 Clash Verge Rev 等 GUI 使用。注意：GitHub 主页现为其他项目（崩铁数据解析库），Clash 内核安装包见 Releases 或使用 Clash Verge Rev 内置版本。',
   }),
   mk('proxy-nodes', 'Clash Verge Rev', 'https://github.com/clash-verge-rev/clash-verge-rev', {
     type: 'free', status: 'ok',
@@ -342,16 +342,16 @@ const curated: Resource[] = [
     description: '豆包是国产 AI 助手，提供对话、写作与图像等能力，网页与 App 均可用。适合日常创作，免费档可用。',
     tags: ['对话', '国产'], pros: ['免费额度大'], cons: ['高级能力需付'],
   }),
-  mk('ai-apps', '通义千问', 'https://tongyi.aliyun.com', {
+  mk('ai-apps', '通义千问', 'https://chat.qwen.ai', {
     type: 'freemium', status: 'ok', official: true,
     summary: '通义千问｜国产对话大模型',
-    description: '通义千问是国产对话大模型，覆盖对话、编码与文档场景。适合企业与开发者，免费档可用。',
+    description: '通义千问是阿里 AI 对话产品，网页端入口现为 chat.qwen.ai（原 tongyi.aliyun.com 已转为通义实验室模型/API 展示页）。国产对话大模型，覆盖对话、编码与文档场景。适合企业与开发者，免费档可用。',
     tags: ['对话', '国产'], pros: ['生态全', '有API'], cons: ['限额'],
   }),
-  mk('ai-apps', '文心一言', 'https://wenxin.baidu.com', {
+  mk('ai-apps', '文心助手（原文心一言）', 'https://wenxin.baidu.com', {
     type: 'freemium', status: 'unstable', official: true,
     summary: '文心一言｜国产对话大模型',
-    description: '文心一言是国产对话大模型，中文理解扎实，覆盖对话与创作。适合中文用户，当前服务不稳定、可能间歇不可用。',
+    description: '文心助手（原文心一言）是百度 AI 对话产品，产品已更名，定位办公/学习/查资料。国产对话大模型，中文理解扎实，覆盖对话与创作。适合中文用户，当前服务不稳定、可能间歇不可用。',
     tags: ['对话', '国产'], pros: ['中文强'], cons: ['限额', '服务迁移中'],
   }),
   mk('ai-apps', '智谱清言', 'https://chatglm.cn', {
@@ -399,7 +399,7 @@ const curated: Resource[] = [
   mk('ai-apps', 'Genspark', 'https://genspark.com', {
     type: 'free', status: 'ok',
     summary: 'Genspark｜AI 一站式工作站',
-    description: 'Genspark 是 AI 一站式工作站，提供聊天、生图、PPT 与开发等多功能。适合多任务处理，完全免费。',
+    description: 'Genspark 是一站式 AI 工作空间：AI 搜索为基础，含 AI Employee/Email Agent/Phone Call 等 Agent 能力与 100+ 创作工具。 AI 一站式工作站，提供聊天、生图、PPT 与开发等多功能。适合多任务处理，完全免费。',
     tags: ['工作站', '海外', '免费'], pros: ['多模型', '全功能', '全年免费'], cons: ['新平台'],
   }),
 
@@ -432,7 +432,7 @@ const curated: Resource[] = [
   mk('tools', 'ComfyUI', 'https://github.com/Comfy-Org/ComfyUI', {
     type: 'free', status: 'ok',
     summary: 'ComfyUI｜节点式 Stable Diffusion 引擎',
-    description: 'ComfyUI 是节点式 Stable Diffusion 工作流引擎，用可视化节点编排图像生成。适合进阶生图与视频，开源可控。',
+    description: 'ComfyUI 是节点式生成工作流引擎（图像/视频/3D/音频多模态），支持可视化搭建与 API 调用。节点式 Stable Diffusion 工作流引擎，用可视化节点编排图像生成。适合进阶生图与视频，开源可控。',
     tags: ['绘画', '开源'], pros: ['流程可控'], cons: ['学习曲线陡'],
   }),
   mk('tools', 'Flowise', 'https://github.com/FlowiseAI/Flowise', {
@@ -440,6 +440,7 @@ const curated: Resource[] = [
     summary: 'Flowise｜拖拽式 LLM 应用搭建平台',
     description: 'Flowise 是拖拽式 LLM 应用搭建平台，低代码构建 Agent 与 RAG 流程。适合快速验证想法，开源易上手。',
     tags: ['低代码', '开源'], pros: ['上手快'], cons: ['复杂场景受限'],
+    tips: '项目已归档（Sunset notice），官方停止维护；替代品可看 Dify、LangFlow。',
   }),
   mk('tools', 'n8n', 'https://n8n.io', {
     type: 'freemium', status: 'ok',
@@ -477,10 +478,10 @@ const curated: Resource[] = [
     description: 'Codeium (已并入 Devin) 是原免费代码补全工具，团队并入 Devin 后产品形态可能变化。稳定性差，域名已迁至 devin.ai。',
     tags: ['编程'], pros: ['曾是免费标杆'], cons: ['已合并', '服务变更中'],
   }),
-  mk('tools', 'Windsurf', 'https://windsurf.com', {
+  mk('tools', 'Devin Desktop（原 Windsurf）', 'https://devin.ai/desktop', {
     type: 'freemium', status: 'ok',
     summary: 'Windsurf｜AI 原生编辑器（已并入 Devin）',
-    description: 'Windsurf 是 AI 原生编辑器（原 Codeium 出品），以 Cascade Agent 实现多文件编辑与命令执行。2026 年已并入 Devin，官网现展示 Devin Desktop。',
+    description: 'Devin Desktop（原 Windsurf）是 Cognition 出品的 AI 编程 IDE，Windsurf 独立产品已并入 Devin 生态。 AI 原生编辑器（原 Codeium 出品），以 Cascade Agent 实现多文件编辑与命令执行。2026 年已并入 Devin，官网现展示 Devin Desktop。',
     tags: ['编程', '海外'], pros: ['Agent 强'], cons: ['已并入 Devin'],
   }),
   mk('tools', 'Bolt.new', 'https://bolt.new', {
@@ -519,7 +520,7 @@ const curated: Resource[] = [
     description: 'Aider 是终端 AI 编程助手，在命令行中与仓库协作，支持多文件编辑与 Git 集成。适合开发者本地使用。',
     tags: ['编程', '开源'], pros: ['轻量', '强控制'], cons: ['需命令行'],
   }),
-  mk('tools', 'Roo Code (已迁至 roomote)', 'https://roomote.dev', {
+  mk('ai-agent', 'Roo Code (已迁至 roomote)', 'https://roomote.dev', {
     type: 'free', status: 'dead',
     summary: 'Roo Code (已迁至 roomote)｜已正式关停',
     description: 'Roo Code (已迁至 roomote) 是原 VS Code AI Agent 扩展，官方于 2026 年 5 月 15 日起停止服务。已关停，域名迁至 roomote.dev。',
@@ -581,10 +582,10 @@ const curated: Resource[] = [
     description: 'DeepLearning.AI 是吴恩达团队出品的 AI 学习平台，提供与 OpenAI/Anthropic 合作的免费短课。适合各阶段，官方、免费。',
     tags: ['课程', '官方', '海外'], pros: ['权威', '免费'],
   }),
-  mk('learn', 'Google Cloud 生成式 AI', 'https://cloud.google.com/learn/generative-ai', {
+  mk('learn', 'Google Cloud 生成式 AI', 'https://www.cloud.google.com/training', {
     type: 'free', status: 'ok', official: true,
     summary: 'Google Cloud 生成式 AI｜Google 官方学习路径',
-    description: 'Google Cloud 生成式 AI 是 Google 官方的免费学习路径，含 Gemini 提示设计与实验。适合学习者，官方权威、免费。',
+    description: 'Google Cloud 生成式 AI 培训（原 cloud.google.com/learn/generative-ai 已 404）：涵盖生成式 AI 课程、文档与 Cloud Skills Boost 免费实验室。 是 Google 官方的免费学习路径，含 Gemini 提示设计与实验。适合学习者，官方权威、免费。',
     tags: ['课程', '官方', '海外'], pros: ['权威'],
   }),
   mk('learn', 'Microsoft 生成式 AI 入门', 'https://github.com/microsoft/generative-ai-for-beginners', {

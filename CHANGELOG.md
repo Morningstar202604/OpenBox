@@ -7,6 +7,29 @@
 > **版本约定**：项目从 `0.0.1` 起算，每次更新为一个「小版本」（修订号 +1，如 `0.0.1 → 0.0.2 → 0.0.3`），
 > 并在 GitHub / GitCode / Gitee 三端同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
 
+## [0.0.5] - 2026-08-21
+
+### 全量实开质检：247 条资源逐一点开核实（分类/排版/介绍）
+
+本轮对全站 247 条资源**逐个真实打开链接**核对，分 8 批完成，修正 70+ 处：
+
+#### 分类修正（20 条）
+- **「公益站」实为商业中转 → relays（13 条）**：hlool、ggboom、v-api、cavoti、年华 API、tokeness、bmapi（斑马 API）、橘子 AI、moyuu、modeloc（商业算力池）、helpcoder、rua chat、7倍算力
+- **「免费 API」实为商业网关 → relays（5 条）**：unlimited.surf、zenmux、七牛云 AI Token、Aion Labs、Together AI（免费档 2025-07 已取消）
+- **claude.now → freechat**（实为网页聊天镜像，非 API；同步启用 freechat 场景映射）
+- **chatanywhere → free-api**（GitHub 授权免费 Key 入口 + 商业付费并存）
+- **Roomote（Roo Code）→ ai-agent**（可自托管云编码 Agent）
+
+#### 链接/存活性修正（16 条）
+- **已失效 → 标 dead + 说明**：冰佬公益站(502)、100xlabs(502)、小米 MiMo(502)、星见雅(403)、0dai、猫羽雫、52模型(525)、九幺(超时)、chy(隧道失效)、huainova(域名失效)、域名鸡(链接停用)、freefq(仓库 404)、undying(无法访问)
+- **换链/迁移**：小欢公益站→free-llm.cups.moe、初叶→ai.chuye.us.kg、Papers with Code→huggingface.co/papers（2025-08 已关闭）、Google Cloud 生成式 AI→cloud.google.com/training（原链 404）、通义千问→chat.qwen.ai、Railway→railway.com、Windsurf→Devin Desktop(devin.ai/desktop)
+
+#### 描述纠错/更新（30+ 条）
+- **事实纠错**：bytecat（非"官渠转型"实为逆向）、cubence（缓存率 94.7% 非 96.4%）、timicc（"性价比"存疑）、78code（删除无佐证的"oneman/学生套餐"）、Fireworks（$1 一次性 credit）、Pollinations（Pollen 付费转型）
+- **状态更新**：Flowise（已归档停运）、Continue（被 Cursor 收购）、AutoGen（维护模式）、文心一言→文心助手、Genspark（AI 搜索+Agent 工作空间）、Civitai（图像模型社区）、AgentGPT（转向 Web Scraping）、Stability AI（企业平台）、ComfyUI（多模态）、adkynet（免费档售罄）、ClouDNS（免费 DNS 托管）
+
+- 冒烟验证：分类/详情/搜索等 10 路由无运行时错误；freechat 分类从空置到有 5 条内容。
+
 ## [0.0.4] - 2026-08-21
 
 ### 修复：全面 debug（静默 bug 逐一揪出 + 整理）
@@ -81,6 +104,7 @@
 ### 发布
 - 新增 **WB 国内访问通道**：`https://a50a62f0345c835a5.app.workbuddy.link`（已写入 README 访问入口，作为国内访问通道，暂代尚未更新的协作者镜像）。
 
+[0.0.5]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.5
 [0.0.4]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.4
 [0.0.3]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.3
 [0.0.2]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.2

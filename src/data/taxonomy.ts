@@ -300,6 +300,7 @@ export const SUBTYPE_SCENARIOS: Record<string, string[]> = {
   'invite-platform': ['invite-codes'],
   'ai-agent': ['developer', 'creator', 'researcher'],
   'open-models': ['developer', 'researcher'],
+  freechat: ['newbie', 'developer'],
 };
 
 // ---- 快捷映射 ----
