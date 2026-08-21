@@ -41,18 +41,18 @@ export function HomePage() {
 
   // 最近浏览
   const recentIds = useRecentStore((s) => s.ids);
-  const [recentResources, setRecentResources] = useState<Resource[]>([]);
+  // 派生空态：无浏览记录直接给空数组，不进 effect 分支
+  const [loadedRecent, setLoadedRecent] = useState<{ ids: string[]; list: Resource[] } | null>(null);
   useEffect(() => {
+    if (recentIds.length === 0) return;
     let m = true;
-    if (recentIds.length === 0) {
-      setRecentResources([]);
-      return;
-    }
     getResourcesByIds(recentIds.slice(0, 4)).then((list) => {
-      if (m) setRecentResources(list);
+      if (m) setLoadedRecent({ ids: recentIds, list });
     });
     return () => { m = false; };
   }, [recentIds]);
+  const recentResources: Resource[] =
+    recentIds.length === 0 ? [] : (loadedRecent?.ids === recentIds ? loadedRecent.list : []);
 
   // 状态聚合（「现在还能不能薅」的全局一眼观感）
   const statusCounts = useMemo(() => {

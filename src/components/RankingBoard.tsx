@@ -35,19 +35,17 @@ export function RankingBoard({ resources, expanded = false }: { resources: Resou
       .map((st) => ({ subType: st, items: bySub[st.slug] }));
   }, [resources]);
 
-  const [active, setActive] = useState(groups[0]?.subType.slug ?? '');
+  const [active, setActive] = useState<string | null>(null);
   const [stats, setStats] = useState<Record<string, { ok: number; dead: number }>>({});
   const [isExpanded, setExpanded] = useState(expanded);
 
-  // groups 变化（资源加载完）后，若当前 active 不存在则回退到第一个
-  useEffect(() => {
-    if (groups.length && !groups.find((g) => g.subType.slug === active)) {
-      setActive(groups[0].subType.slug);
-    }
-  }, [groups, active]);
+  // 派生生效 tab：用户未选或所选子类型在 groups 中不存在时回退到第一个，
+  // 无需 effect 同步 setState（消除级联渲染警告）
+  const activeSlug =
+    active && groups.some((g) => g.subType.slug === active) ? active : (groups[0]?.subType.slug ?? '');
 
   // 取当前榜单资源的社区验证统计（真实信号，用于混合评分 + 展示）
-  const current = groups.find((g) => g.subType.slug === active);
+  const current = groups.find((g) => g.subType.slug === activeSlug);
   useEffect(() => {
     if (!current) return;
     let m = true;
@@ -95,7 +93,7 @@ export function RankingBoard({ resources, expanded = false }: { resources: Resou
       <div className="mb-4 flex gap-2 overflow-x-auto pb-1.5 [scrollbar-width:thin]">
         {groups.map((g) => {
           const st = g.subType;
-          const on = g.subType.slug === active;
+          const on = g.subType.slug === activeSlug;
           return (
             <button
               key={st.slug}

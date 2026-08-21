@@ -27,17 +27,24 @@ export function MyPage() {
   const ids = useFavoritesStore((s) => s.ids);
 
   const { resources: all } = useResources({ sort: 'default' });
-  const [myRatings, setMyRatings] = useState<MyRating[]>([]);
-  const [myComments, setMyComments] = useState<CommentItem[]>([]);
-
-  // 登录态变化时拉取「我的评分 / 我的评论」
+  // 派生登出态：未登录直接空数组，登录后由 effect 异步拉取「我的评分 / 我的评论」
+  const [mine, setMine] = useState<{ uid: string; ratings: MyRating[]; comments: CommentItem[] } | null>(null);
   useEffect(() => {
-    if (!user) { setMyRatings([]); setMyComments([]); return; }
+    if (!user) return;
     let m = true;
-    getMyRatings(user.id).then((r) => { if (m) setMyRatings(r); });
-    getMyComments(user.id).then((c) => { if (m) setMyComments(c); });
+    Promise.all([getMyRatings(user.id), getMyComments(user.id)]).then(([r, c]) => {
+      if (m) setMine({ uid: user.id, ratings: r, comments: c });
+    });
     return () => { m = false; };
   }, [user]);
+  const myRatings: MyRating[] = useMemo(
+    () => (user && mine?.uid === user.id ? mine.ratings : []),
+    [user, mine],
+  );
+  const myComments: CommentItem[] = useMemo(
+    () => (user && mine?.uid === user.id ? mine.comments : []),
+    [user, mine],
+  );
 
   const favs = useMemo(() => all.filter((r) => ids.includes(r.id)), [all, ids]);
   const byId = useMemo(() => new Map(all.map((r) => [r.id, r])), [all]);

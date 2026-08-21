@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { User } from '@supabase/supabase-js';
-import { supabase, hasSupabase, AUTH_ENABLED } from '@/lib/supabase';
+import { getSupabase, hasSupabase, AUTH_ENABLED } from '@/lib/supabase';
 import { useToastStore } from './useToastStore';
 import { useI18nStore } from '@/i18n/useI18n';
 import { dict } from '@/i18n/translations';
@@ -39,9 +39,10 @@ export const useAuthStore = create<AuthState>()((set) => ({
   setMode: (m) => set({ mode: m, error: null }),
 
   signIn: async (email, password) => {
-    if (!supabase) return;
+    const sb = await getSupabase();
+    if (!sb) return;
     set({ error: null, loading: true });
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await sb.auth.signInWithPassword({ email, password });
     set({ loading: false });
     if (error) { set({ error: error.message }); return; }
     set({ showAuth: false, error: null });
@@ -49,9 +50,10 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 
   signUp: async (email, password) => {
-    if (!supabase) return;
+    const sb = await getSupabase();
+    if (!sb) return;
     set({ error: null, loading: true });
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await sb.auth.signUp({ email, password });
     set({ loading: false });
     if (error) { set({ error: error.message }); return; }
     // Supabase 开启「邮箱确认」时，注册成功但无会话：提示去查收邮件；
@@ -66,8 +68,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 
   signOut: async () => {
-    if (!supabase) return;
-    await supabase.auth.signOut();
+    const sb = await getSupabase();
+    if (!sb) return;
+    await sb.auth.signOut();
     set({ user: null });
     useToastStore.getState().push(authT('auth.logoutSuccess'), 'success');
   },
@@ -77,9 +80,12 @@ export const useAuthStore = create<AuthState>()((set) => ({
 function applyUser(u: User | null) {
   useAuthStore.setState({ user: u, loading: false });
 }
-if (authOn && supabase) {
+if (authOn) {
   // init → onAuthStateChange 的初始回调会触发两次 applyUser（getSession + onAuthStateChange），
   // 这不会导致 bug：applyUser 是幂等 setState，且 useFavoritesStore 的 subscribe 用 state.user && !prev.user 去重。
-  supabase.auth.getSession().then(({ data }) => applyUser(data.session?.user ?? null));
-  supabase.auth.onAuthStateChange((_event, session) => applyUser(session?.user ?? null));
+  void getSupabase().then((sb) => {
+    if (!sb) return;
+    void sb.auth.getSession().then(({ data }) => applyUser(data.session?.user ?? null));
+    void sb.auth.onAuthStateChange((_event, session) => applyUser(session?.user ?? null));
+  });
 }

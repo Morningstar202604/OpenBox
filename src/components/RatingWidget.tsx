@@ -53,15 +53,16 @@ export function RatingWidget({ resourceId, subType }: { resourceId: string; subT
   const push = useToastStore((s) => s.push);
 
   const dims = useMemo(() => getRatingDimensions(subType), [subType]);
-  const [data, setData] = useState<ResourceRatings | null>(null);
+  // 派生 loading：state 携带所属资源 id，id 变化即视为加载中
+  const [loaded, setLoaded] = useState<{ id: string; data: ResourceRatings } | null>(null);
   const [draft, setDraft] = useState<Record<string, number>>({});
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const loading = loaded?.id !== resourceId;
+  const data = loading ? null : loaded!.data;
 
   useEffect(() => {
     let m = true;
-    setLoading(true);
-    getRatings(resourceId).then((d) => { if (m) { setData(d); setLoading(false); } });
+    getRatings(resourceId).then((d) => { if (m) setLoaded({ id: resourceId, data: d }); });
     return () => { m = false; };
   }, [resourceId]);
 
@@ -79,7 +80,7 @@ export function RatingWidget({ resourceId, subType }: { resourceId: string; subT
     if (okAll) {
       setDraft({});
       const fresh = await getRatings(resourceId);
-      setData(fresh);
+      setLoaded({ id: resourceId, data: fresh });
       push(t('rating.saved'), 'success');
     }
   };
