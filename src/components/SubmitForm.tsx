@@ -36,9 +36,17 @@ export function SubmitForm() {
   const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  // 蜜罐字段：对人类不可见（视觉隐藏 + 不进 Tab 序）。正常用户永远留空；
+  // 脚本无脑填满所有 input 时会踩中 —— 静默丢弃且假装成功，不写入数据库。
+  const [honeypot, setHoneypot] = useState('');
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // 蜜罐命中：机器人。静默吞掉，返回假成功（不让脚本探测到防线存在）
+    if (honeypot.trim()) {
+      push(t('submit.success'), 'success');
+      return;
+    }
     const nameV = name.trim();
     const urlV = url.trim();
     const summaryV = summary.trim();
@@ -81,6 +89,21 @@ export function SubmitForm() {
 
   return (
     <form onSubmit={submit} className="card mx-auto max-w-2xl space-y-4 p-6">
+      {/* 蜜罐：视觉隐藏，人类不可见不可达 */}
+      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+        <label>
+          <span>Website</span>
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </label>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
           <span className="text-sm font-medium text-[var(--color-fg)]">{t('submit.name')} *</span>

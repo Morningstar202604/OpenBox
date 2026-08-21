@@ -293,6 +293,27 @@ export interface VerificationStats {
 
 const VKEY = 'ob_verifications';
 
+/**
+ * 稳定匿名设备指纹：首次生成随机 UUID 存 localStorage，之后复用。
+ * 用途：服务端投票去重（verifications.voter_fp 唯一索引）。
+ * 随机生成、不含任何个人身份信息；localStorage 不可用时返回空串（退化为不去重）。
+ */
+function voterFingerprint(): string {
+  try {
+    let fp = localStorage.getItem('ob_voter_fp');
+    if (!fp) {
+      fp =
+        typeof crypto !== 'undefined' && 'randomUUID' in crypto
+          ? crypto.randomUUID()
+          : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+      localStorage.setItem('ob_voter_fp', fp);
+    }
+    return fp.slice(0, 64);
+  } catch {
+    return '';
+  }
+}
+
 /** 读取本设备的投票记录（未投返回 null） */
 function localVote(resourceId: string): { result: 'ok' | 'dead'; at: string; synced?: boolean } | null {
   try {
@@ -325,8 +346,16 @@ export async function submitVerification(
     try {
       const { error } = await supabase
         .from('verifications')
-        .insert({ resource_id: resourceId, result, created_at: new Date().toISOString() });
-      if (error) return { ok: false, message: error.message };
+        .insert({ resource_id: resourceId, result, voter_fp: voterFingerprint(), created_at: new Date().toISOString() });
+      if (error) {
+        // 23505 = 唯一索引冲突：该设备指纹对此资源已有服务端选票。
+        // 标记本地票已同步，统计以云端为准，避免同一设备被计两次。
+        if (error.code === '23505') {
+          saveLocalVote(resourceId, result, true);
+          return { ok: true, message: '本设备已投过票' };
+        }
+        return { ok: false, message: error.message };
+      }
       // 云端写入成功：标记本地票已上云，统计时以云端为准，避免同票被计两次
       saveLocalVote(resourceId, result, true);
       invalidateCache();
