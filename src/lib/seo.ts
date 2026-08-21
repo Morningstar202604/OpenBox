@@ -45,3 +45,18 @@ export function setSEO(info: SEOInfo) {
   }
   canonical.href = url;
 }
+
+/**
+ * 页面级 JSON-LD 结构化数据（如资源详情的 SoftwareApplication）。
+ * 传入 null 清除——路由切换时由 App 层调用，避免上一页的数据残留误导爬虫。
+ */
+export function setJsonLd(data: Record<string, unknown> | null) {
+  const ID = 'ob-jsonld-page';
+  document.getElementById(ID)?.remove();
+  if (!data) return;
+  const el = document.createElement('script');
+  el.type = 'application/ld+json';
+  el.id = ID;
+  el.textContent = JSON.stringify(data);
+  document.head.appendChild(el);
+}

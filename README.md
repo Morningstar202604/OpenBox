@@ -89,7 +89,7 @@ OpenBox 是一个**社区化的内容型资源导航平台**——把 AI 时代*
 | 层 | 选型 |
 |---|---|
 | 框架 | React 19 + TypeScript（严格模式） |
-| 构建 | Vite 8（base: `/OpenBox/`，产物提交 `docs/` 由 Pages 从分支部署） |
+| 构建 | Vite 8（base: `/OpenBox/`，Cloudflare Pages 连 Git 自动构建部署） |
 | 样式 | Tailwind CSS v4（`@theme` 语义令牌 + `.dark` 覆写） |
 | 状态 | Zustand + `persist`（主题 / 收藏 / 提示 / 语言 / 会话） |
 | 路由 | 原生 Hash 路由（无需服务端） |
@@ -103,7 +103,7 @@ git clone https://github.com/weed33834/OpenBox
 cd OpenBox
 npm install --legacy-peer-deps
 npm run dev        # 开发服务器 http://localhost:5173/OpenBox/
-npm run build      # tsc -b && vite build（输出 docs/）
+npm run build      # tsc -b && vite build（输出 docs/，由 Cloudflare Pages 部署）
 npm run preview    # 本地预览
 ```
 

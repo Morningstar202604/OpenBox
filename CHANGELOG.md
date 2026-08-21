@@ -7,6 +7,38 @@
 > **版本约定**：项目从 `0.0.1` 起算，每次更新为一个「小版本」（修订号 +1，如 `0.0.1 → 0.0.2 → 0.0.3`），
 > 并在 GitHub / GitCode / Gitee 三端同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
 
+## [0.0.7] - 2026-08-22
+
+### 四周质量冲刺：安全 / 测试 / 性能 / SEO + 全量数据审计
+
+#### 安全（PR #6）
+- `0005` 迁移：submissions/reports 字段约束；verifications 设备指纹唯一索引，服务端投票去重
+- 投稿表单蜜罐字段静默拦截脚本；投票上报匿名设备指纹，23505 冲突友好提示
+- CI 移除与 Cloudflare Pages 冲突的 GitHub Pages 部署线路；`npm install --legacy-peer-deps` → `npm ci`
+
+#### 测试与巡检（PR #7）
+- vitest 29 例：URL 白名单 / 评分边界 / 数据完整性（id 唯一、subType 注册、黑名单泄漏）
+- 修复 ranking.ts 日期解析 NaN 污染评分链的 bug
+- `scripts/check-links.mjs` + 每周定时巡检，问题链接自动建 issue
+
+#### 性能（PR #13）
+- supabase-js 懒加载：首屏 JS 减少 53.8KB gzip，纯静态模式永不加载
+- 8 条 react-hooks/set-state-in-effect 警告清零（派生状态模式）
+
+#### SEO（PR #14）
+- per-route title / meta description / OG / canonical 动态注入
+- 资源页 SoftwareApplication JSON-LD
+- sitemap.xml 全量生成（293 URL，CI 构建前自动再生）
+
+#### 数据审计（PR #16）
+- 278 条 URL 三层求证（本机探测 → 外网交叉验证 → 第三方监测佐证）
+- 54 条不可验证资源 ok→unknown；yunwu.ai ok→unstable；API 域名根 404 不再误判死链
+
+#### 工程细节（本版本收尾）
+- RankingBoard 社区验证统计批量查询（N+1 → 单次 in()）
+- HomePage 精选评分记忆化（消除排序比较器中的重复全量计算）
+- 安全响应头加固：Permissions-Policy + COOP
+
 ## [0.0.6] - 2026-08-22
 
 ### 安全收敛 + 质量门生效

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
 import { getResource, getRelatedResources } from '@/lib/data';
-import { setSEO } from '@/lib/seo';
+import { setSEO, setJsonLd } from '@/lib/seo';
 import { useHashRoute, navigate } from '@/hooks/useHashRoute';
 import { useRecentStore } from '@/store/useRecentStore';
 import { ResourceDetail } from '@/components/DetailView';
@@ -30,6 +30,15 @@ export function ResourcePage() {
       // 资源级 SEO：标题/描述/OG 用资源自身信息（覆盖 App 层的通用值）
       if (r) {
         setSEO({ title: r.name, description: r.summary || r.description.slice(0, 150), path: `/resource/${r.id}` });
+        setJsonLd({
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: r.name,
+          url: r.url,
+          description: r.summary || r.description.slice(0, 300),
+          applicationCategory: 'AI Resource Directory Entry',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'CNY' },
+        });
         pushRecent(r.id);
       }
       // 加载相关推荐

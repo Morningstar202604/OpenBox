@@ -451,6 +451,39 @@ function saveLocalComment(resourceId: string, item: CommentItem) {
   }
 }
 
+/** 批量读取多个资源的验证统计：单次 in() 查询替代逐资源 N 次请求（榜单/列表页性能关键） */
+export async function getVerificationStatsBatch(
+  resourceIds: string[],
+): Promise<Record<string, { ok: number; dead: number }>> {
+  const out: Record<string, { ok: number; dead: number }> = {};
+  // 本设备「未成功上云」的票先兜底计入
+  for (const id of resourceIds) {
+    const local = localVote(id);
+    if (local && local.synced !== true) {
+      out[id] = { ok: local.result === 'ok' ? 1 : 0, dead: local.result === 'dead' ? 1 : 0 };
+    }
+  }
+  if (!hasSupabase || !resourceIds.length) return out;
+  const sb = await getSupabase();
+  if (!sb) return out;
+  try {
+    const { data, error } = await sb
+      .from('verifications')
+      .select('resource_id, result')
+      .in('resource_id', resourceIds);
+    if (!error && data) {
+      for (const r of data as { resource_id: string; result: string }[]) {
+        (out[r.resource_id] ??= { ok: 0, dead: 0 });
+        if (r.result === 'ok') out[r.resource_id].ok += 1;
+        else if (r.result === 'dead') out[r.resource_id].dead += 1;
+      }
+    }
+  } catch {
+    /* 云端失败：保留本地兜底结果 */
+  }
+  return out;
+}
+
 /** 读取某资源的留言列表（云端在前，本地兜底并集去重） */
 export async function getComments(resourceId: string): Promise<CommentItem[]> {
   const local = localComments(resourceId);

@@ -29,10 +29,12 @@ export function HomePage() {
   const featured = useMemo(() => {
     const flagged = resources.filter((r) => r.featured && !r.official);
     const pool = resources
-      .filter((r) => !r.official && FEATURED_SUBTYPES.includes(r.subType))
-      .sort((a, b) => scoreResource(b).total - scoreResource(a).total);
+      .filter((r) => !r.official && FEATURED_SUBTYPES.includes(r.subType));
+    // 评分只算一次存 Map；此前在 sort 比较器里重复计算，O(n log n) 次全量评分浪费明显
+    const scoreById = new Map(pool.map((r) => [r.id, scoreResource(r).total]));
+    const pool2 = [...pool].sort((a, b) => (scoreById.get(b.id) ?? 0) - (scoreById.get(a.id) ?? 0));
     const merged: Resource[] = [];
-    for (const r of [...flagged, ...pool]) {
+    for (const r of [...flagged, ...pool2]) {
       if (!merged.find((x) => x.id === r.id)) merged.push(r);
       if (merged.length >= 6) break;
     }

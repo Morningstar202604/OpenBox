@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState, useRef, lazy, Suspense } from 'react';
 import { useHashRoute } from '@/hooks/useHashRoute';
-import { setSEO } from '@/lib/seo';
+import { setSEO, setJsonLd } from '@/lib/seo';
 import { useT } from '@/i18n/useI18n';
 import { NavBar } from '@/components/NavBar';
 import { MobileTabBar } from '@/components/MobileTabBar';
@@ -81,6 +81,8 @@ export default function App() {
         description: info.d,
         path: route.slug ? `/${route.name}/${route.slug}` : route.id ? `/${route.name}/${route.id}` : `/${route.name}`,
       });
+      // 清除上一路由的页面级 JSON-LD（ResourcePage 加载后会重新注入自己的）
+      setJsonLd(null);
     }
   }, [route.name, route.slug, route.q, route.id, t, isLanding]);
 

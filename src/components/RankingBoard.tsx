@@ -5,7 +5,7 @@ import { navigate } from '@/hooks/useHashRoute';
 import { getAllSubTypes, getSubType } from '@/data/taxonomy';
 import { Icon } from './Icon';
 import { scoreResource } from '@/lib/ranking';
-import { getVerificationStats } from '@/lib/data';
+import { getVerificationStatsBatch } from '@/lib/data';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -49,15 +49,12 @@ export function RankingBoard({ resources, expanded = false }: { resources: Resou
   useEffect(() => {
     if (!current) return;
     let m = true;
-    Promise.all(
-      current.items.map((r) =>
-        getVerificationStats(r.id)
-          .then((s) => [r.id, { ok: s.ok, dead: s.dead }] as const)
-          .catch(() => [r.id, { ok: 0, dead: 0 }] as const),
-      ),
-    ).then((entries) => {
-      if (m) setStats(Object.fromEntries(entries));
-    });
+    // 批量接口：单次 in() 查询替代逐资源 N 次请求（此前每个 tab 切换触发 N 条 SELECT）
+    getVerificationStatsBatch(current.items.map((r) => r.id))
+      .then((map) => {
+        if (m) setStats(map);
+      })
+      .catch(() => {});
     return () => { m = false; };
   }, [current]);
 
