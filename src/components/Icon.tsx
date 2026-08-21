@@ -48,6 +48,16 @@ import {
   Smartphone,
   Gamepad2,
   Key,
+  BarChart3,
+  Compass,
+  LifeBuoy,
+  Lock,
+  LogIn,
+  LogOut,
+  User,
+  Wand2,
+  Rocket,
+  HelpCircle,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -100,6 +110,16 @@ const MAP: Record<string, LucideIcon> = {
   Smartphone,
   Gamepad2,
   Key,
+  BarChart3,
+  Compass,
+  LifeBuoy,
+  Lock,
+  LogIn,
+  LogOut,
+  User,
+  Wand2,
+  Rocket,
+  HelpCircle,
 };
 
 export function Icon({ name, size, ...props }: { name: string; size?: number } & SVGProps<SVGSVGElement>) {

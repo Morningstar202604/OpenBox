@@ -218,7 +218,7 @@ export function DetailView({ resource, onClose }: { resource: Resource; onClose:
       onClick={handleClose}
     >
       <div
-        className={`sheet w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] sm:max-h-[85vh] sm:rounded-2xl ${closing ? 'animate-sheet-down' : ''}`}
+        className={`sheet w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] sm:max-h-[85vh] sm:rounded-2xl `}
         onClick={(e) => e.stopPropagation()}
         style={{ animation: closing ? 'sheet-down 0.28s ease-in both' : 'sheet-up 0.3s ease-out both' }}
       >

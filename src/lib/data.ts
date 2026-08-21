@@ -226,7 +226,10 @@ export async function submitResource(
       .insert({ ...payload, status: 'pending', created_at: new Date().toISOString() })
       .select()
       .single();
-    if (!error && data) return { ok: true, mode: 'supabase', id: (data as SubmissionRow).id, message: '投稿已提交，等待审核通过后展示。' };
+    if (!error && data) {
+      invalidateCache();
+      return { ok: true, mode: 'supabase', id: (data as SubmissionRow).id, message: '投稿已提交，等待审核通过后展示。' };
+    }
     return { ok: false, mode: 'supabase', message: error?.message ?? '提交失败' };
   }
   // 本地兜底：存入 localStorage（仅本机可见，不进入审核库）
@@ -263,6 +266,7 @@ export async function submitReport(
       created_at: new Date().toISOString(),
     });
     if (error) return { ok: false, message: error.message };
+    invalidateCache();
     return { ok: true, message: '感谢反馈！' };
   } catch {
     return { ok: false, message: '提交失败，请稍后再试。' };
@@ -325,6 +329,7 @@ export async function submitVerification(
       if (error) return { ok: false, message: error.message };
       // 云端写入成功：标记本地票已上云，统计时以云端为准，避免同票被计两次
       saveLocalVote(resourceId, result, true);
+      invalidateCache();
     } catch {
       /* 云端失败不阻塞：本地已记录（未上云），统计时作兜底计入 */
     }
@@ -456,6 +461,7 @@ export async function addComment(
         saveLocalComment(resourceId, item);
         return { ok: false, message: error.message };
       }
+      invalidateCache();
       return { ok: true };
     } catch {
       saveLocalComment(resourceId, item);

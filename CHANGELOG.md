@@ -7,6 +7,22 @@
 > **版本约定**：项目从 `0.0.1` 起算，每次更新为一个「小版本」（修订号 +1，如 `0.0.1 → 0.0.2 → 0.0.3`），
 > 并在 GitHub / GitCode / Gitee 三端同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
 
+## [0.0.4] - 2026-08-21
+
+### 修复：全面 debug（静默 bug 逐一揪出 + 整理）
+逐文件审查 + 真实浏览器冒烟（12 个路由全绿）后修复以下问题：
+
+- **图标白名单缺失 10 个 → 全部补齐**（`Icon.tsx` MAP）：BarChart3 / Compass / LifeBuoy / Lock / LogIn / LogOut / User / Wand2 / Rocket / HelpCircle。
+  此前这些图标引用会静默 fallback 成 Globe（排行榜图标、帮助目录、登录按钮、引导弹窗等显示错误图标）。
+- **动画类名错误**：`anim-fade-in` / `anim-slide-up` → `animate-fade-in` / `animate-slide-up`（tailwind v4 正确写法）。
+  此前导航栏滑入、页面淡入、Footer 淡入动画全部静默失效；顺手清理 DetailView 无效的 `animate-sheet-down` class。
+- **翻译缺失**：`common.loadMore` 三语补齐（此前「加载更多」按钮显示 key 原文）。
+- **导航方式统一**：Footer 两处 `window.location.hash` 直赋改为 `navigate()`；NotFoundPage `navigate('home')` → `navigate('/home')`。
+- **缓存失效接入**：`invalidateCache` 此前是死代码（零调用）——举报 / 投票 / 评论 / 投稿成功后均会清缓存，避免 30s TTL 内读到旧数据。
+- **`fmtDate` 时区边缘修复**：纯日期（YYYY-MM-DD）直接截取，不再经 `new Date` 解析，避免极端时区下跨天偏移。
+- **清理死翻译 key**：`lb.title` / `lb.desc` / `lb.method` / `lb.votes`（RankingList 移除后遗留）。
+- **浏览器冒烟验证**：`#/home`、分类、搜索、榜单、我的、帮助、关于、详情、场景、404 共 12 路由无运行时错误（唯一 404 为沙箱网络拦截 supabase.co，代码已降级，生产正常）。
+
 ## [0.0.3] - 2026-08-21
 
 ### 重构：全面去重优化（最小代码实现完整功能）
@@ -65,6 +81,7 @@
 ### 发布
 - 新增 **WB 国内访问通道**：`https://a50a62f0345c835a5.app.workbuddy.link`（已写入 README 访问入口，作为国内访问通道，暂代尚未更新的协作者镜像）。
 
+[0.0.4]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.4
 [0.0.3]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.3
 [0.0.2]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.2
 [0.0.1]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.1

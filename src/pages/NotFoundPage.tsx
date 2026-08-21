@@ -27,7 +27,7 @@ export function NotFoundPage() {
 
       <button
         className="btn btn-primary"
-        onClick={() => navigate('home')}
+        onClick={() => navigate('/home')}
       >
         <Icon name="Home" size={16} />
         {t('nav.home')}

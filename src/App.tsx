@@ -111,20 +111,20 @@ export default function App() {
 
       {/* 导航栏：非引导页显示；首次进入时由上滑入 */}
       {!isLanding && (
-        <div className="anim-slide-up">
+        <div className="animate-slide-up">
           <NavBar />
         </div>
       )}
 
       {/* 内容区：引导页全屏无边距，内页标准容器；底部为移动端 Tab 预留空间 */}
       <main className={`flex-1 ${isLanding ? '' : 'container py-6 pb-24 sm:pb-6'}`}>
-        <div key={`${route.name}-${route.slug ?? ''}-${route.id ?? ''}`} className="anim-fade-in">
+        <div key={`${route.name}-${route.slug ?? ''}-${route.id ?? ''}`} className="animate-fade-in">
           <Router />
         </div>
       </main>
 
       {!isLanding && (
-        <footer className="anim-fade-in" style={{ animationDelay: '0.15s' }}>
+        <footer className="animate-fade-in" style={{ animationDelay: '0.15s' }}>
           <Footer />
         </footer>
       )}

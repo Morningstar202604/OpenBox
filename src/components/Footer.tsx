@@ -23,7 +23,7 @@ export function Footer() {
             <p className="mb-2 font-semibold text-[var(--color-fg)]">{t('about.title')}</p>
             <ul className="space-y-1 text-[var(--color-muted)]">
               <li><a className="inline-block py-1 hover:text-[var(--color-primary)]" href="#/submit" onClick={(e)=>{e.preventDefault();navigate('/submit');}}>{t('nav.submit')}</a></li>
-              <li><a className="inline-block py-1 hover:text-[var(--color-primary)]" href="#/about" onClick={(e)=>{e.preventDefault();window.location.hash='/about';}}>{t('nav.about')}</a></li>
+              <li><a className="inline-block py-1 hover:text-[var(--color-primary)]" href="#/about" onClick={(e)=>{e.preventDefault();navigate('/about');}}>{t('nav.about')}</a></li>
             </ul>
           </div>
           <div>
@@ -47,7 +47,7 @@ export function Footer() {
           </div>
           <div>
             <p className="mb-2 font-semibold text-[var(--color-fg)]">{t('about.license')}</p>
-            <p className="text-sm leading-relaxed text-[var(--color-muted)]">© {year} OpenBox · <a className="inline-block py-1 hover:text-[var(--color-primary)]" href="#/scenario/invite-codes" onClick={(e)=>{e.preventDefault();window.location.hash='/scenario/invite-codes';}}>{t('footer.invite')}</a></p>
+            <p className="text-sm leading-relaxed text-[var(--color-muted)]">© {year} OpenBox · <a className="inline-block py-1 hover:text-[var(--color-primary)]" href="#/scenario/invite-codes" onClick={(e)=>{e.preventDefault();navigate('/scenario/invite-codes');}}>{t('footer.invite')}</a></p>
           </div>
         </div>
       </div>
