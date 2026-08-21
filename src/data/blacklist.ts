@@ -49,6 +49,8 @@ export const BLACKLIST_HOSTS: string[] = [
   'api.token5u.com',
   'api.tokenlab.cn',
   'api.tokenriver.com',
+  'shiyunapi.com',
+  'api.shiyunapi.com',
   'api.tokenrunning.com',
   'api.uiuiapi.com',
   'api.uyunzhisuan.com',
