@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT, useLocalize } from '@/i18n/useI18n';
 import { getSubType } from '@/data/taxonomy';
@@ -202,15 +202,15 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
 /** 弹窗包装（列表点击查看详情时使用） */
 export function DetailView({ resource, onClose }: { resource: Resource; onClose: () => void }) {
   const [closing, setClosing] = useState(false);
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => onClose(), 280);
+  }, [onClose]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
-  const handleClose = () => {
-    setClosing(true);
-    setTimeout(() => onClose(), 280);
-  };
+  }, [handleClose]);
 
   return (
     <div

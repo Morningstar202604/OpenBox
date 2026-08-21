@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { useI18nStore } from '@/i18n/useI18n';
 import { slogans } from '@/i18n/slogans';
 
@@ -9,11 +9,12 @@ import { slogans } from '@/i18n/slogans';
 export function PageLoader() {
   const lang = useI18nStore((s) => s.lang);
 
-  // 每次渲染随机一条语录（按当前语言）
-  const slogan = useMemo(() => {
+  // 每次挂载随机一条语录（按当前语言）。useState lazy initializer 只在挂载时执行一次，
+  // 避免在 render 期间调用不纯的 Math.random()（react-hooks/purity）。
+  const [slogan] = useState(() => {
     const pool = slogans[lang] ?? slogans.zh;
     return pool[Math.floor(Math.random() * pool.length)];
-  }, [lang]);
+  });
 
   return (
     <div

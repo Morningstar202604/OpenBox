@@ -85,7 +85,7 @@ function strHash(s: string): string {
 }
 
 function mk(subType: string, name: string, url: string, extra: Partial<Resource> = {}): Resource {
-  const base = `cur-${subType}-${name}`.replace(/[^a-zA-Z0-9\-]/g, '-').toLowerCase();
+  const base = `cur-${subType}-${name}`.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase();
   let id: string = base;
   if (usedIds.has(id)) id = `${base}-${strHash(name)}`;
   usedIds.add(id);
