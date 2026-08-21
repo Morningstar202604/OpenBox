@@ -39,6 +39,9 @@ jobs:
       - name: TypeScript check
         run: npx tsc -b --noEmit
 
+      - name: Lint
+        run: npm run lint
+
       - name: Build (Vite → docs/)
         run: npm run build
 

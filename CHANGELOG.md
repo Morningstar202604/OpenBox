@@ -7,6 +7,27 @@
 > **版本约定**：项目从 `0.0.1` 起算，每次更新为一个「小版本」（修订号 +1，如 `0.0.1 → 0.0.2 → 0.0.3`），
 > 并在 GitHub / GitCode / Gitee 三端同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
 
+## [0.0.6] - 2026-08-22
+
+### 安全收敛 + 质量门生效
+
+#### 0.0.6a — 安全：移除仓库中硬编码的生产 Supabase anon key/URL
+- `supabaseConfig.ts` 中真实密钥改为占位空值，强制通过 `.env` 注入
+- 任何 fork/克隆不再自动绑定站长的生产 Supabase 项目
+- 部署平台需通过环境变量注入 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`
+
+#### 0.0.6b — 工程：恢复 ESLint 对 TypeScript 源码的实际覆盖
+- TypeScript 7.0.2 → 6.0.3（typescript-eslint 8.67 支持范围 <6.1.0）
+- typescript-eslint 8.65 → 8.67.0
+- eslint.config.js 恢复 `tseslint.configs.recommended` 覆盖 `**/*.{ts,tsx}`
+- `react-hooks/set-state-in-effect` 降为 warn（React 19 新增激进规则，存量 fetch-on-effect 技术债）
+- 修复 3 处 lint error：DetailView 闭包时序 bug、PageLoader 纯度违规、seed.ts 正则转义
+- 验证：tsc (exit 0) + vite build + eslint (0 errors, 9 warnings)
+
+#### 0.0.6c — CI：增加 lint 质量门
+- ci.yml 在 tsc 检查后增加 `npm run lint` 步骤
+- 质量门变为：tsc → lint → build → deploy
+
 ## [0.0.5] - 2026-08-21
 
 ### 全量实开质检：247 条资源逐一点开核实（分类/排版/介绍）
