@@ -5,7 +5,7 @@
 //   登录成功时自动把云端收藏合并进本地（并集，本地优先），实现跨设备同步且不丢本地已有项。
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { supabase, hasSupabase, AUTH_ENABLED } from '@/lib/supabase';
+import { getSupabase, hasSupabase, AUTH_ENABLED } from '@/lib/supabase';
 import { useAuthStore } from './useAuthStore';
 
 const authOn = AUTH_ENABLED && hasSupabase;
@@ -30,20 +30,25 @@ export const useFavoritesStore = create<FavoritesState>()(
         set({ ids: next });
         // 登录态：镜像到云端收藏表（匿名 key + 用户会话，受 RLS 约束只能改自己的行）
         const uid = useAuthStore.getState().user?.id;
-        if (authOn && supabase && uid) {
-          if (added) {
-            void supabase.from('favorites').upsert({ user_id: uid, resource_id: id });
-          } else {
-            void supabase.from('favorites').delete().eq('user_id', uid).eq('resource_id', id);
-          }
+        if (authOn && uid) {
+          void getSupabase().then((sb) => {
+            if (!sb) return;
+            if (added) {
+              void sb.from('favorites').upsert({ user_id: uid, resource_id: id });
+            } else {
+              void sb.from('favorites').delete().eq('user_id', uid).eq('resource_id', id);
+            }
+          });
         }
       },
       has: (id) => get().ids.includes(id),
       clear: () => set({ ids: [] }),
       syncFromCloud: async () => {
         const uid = useAuthStore.getState().user?.id;
-        if (!authOn || !supabase || !uid) return;
-        const { data, error } = await supabase.from('favorites').select('resource_id').eq('user_id', uid);
+        if (!authOn || !uid) return;
+        const sb = await getSupabase();
+        if (!sb) return;
+        const { data, error } = await sb.from('favorites').select('resource_id').eq('user_id', uid);
         if (error || !data) return;
         const cloudIds = (data as { resource_id: string }[]).map((r) => r.resource_id);
         // 并集：本地已有项优先保留，云端补充

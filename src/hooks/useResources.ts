@@ -9,22 +9,19 @@ import type { Resource } from '@/lib/types';
  */
 export function useResources(query: ResourceQuery = {}): { resources: Resource[]; loading: boolean } {
   const key = JSON.stringify(query);
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
+  // 派生 loading：state 携带所属 query key，key 变化即视为加载中，无需在 effect 里手动重置
+  const [data, setData] = useState<{ key: string; list: Resource[] } | null>(null);
+  const loading = data?.key !== key;
 
   useEffect(() => {
     let m = true;
-    setLoading(true);
     getResources(JSON.parse(key) as ResourceQuery).then((list) => {
-      if (m) {
-        setResources(list);
-        setLoading(false);
-      }
+      if (m) setData({ key, list });
     });
     return () => {
       m = false;
     };
   }, [key]);
 
-  return { resources, loading };
+  return { resources: data?.list ?? [], loading };
 }

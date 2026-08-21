@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
 import { ResourceCard } from './ResourceCard';
@@ -27,10 +27,9 @@ function loadView(): ViewMode {
 export function ResourceList({ resources, loading = false, allowViewSwitch = true }: { resources: Resource[]; loading?: boolean; allowViewSwitch?: boolean }) {
   const t = useT();
   const [view, setView] = useState<ViewMode>(loadView);
-  const [page, setPage] = useState(1);
-
-  // 当资源列表变化时（搜索/筛选），重置分页
-  useEffect(() => { setPage(1); }, [resources.length]);
+  // 派生分页：记录页码对应的列表长度，列表变化（搜索/筛选）时自动回到第 1 页，无需 effect 重置
+  const [pager, setPager] = useState<{ key: number; page: number }>({ key: resources.length, page: 1 });
+  const page = pager.key === resources.length ? pager.page : 1;
 
   const switchView = (v: ViewMode) => {
     setView(v);
@@ -62,7 +61,7 @@ export function ResourceList({ resources, loading = false, allowViewSwitch = tru
   const sliced = resources.slice(0, page * PAGE_SIZE);
   const hasMore = resources.length > page * PAGE_SIZE;
   const LoadMore = hasMore ? (
-    <button className="btn btn-ghost mx-auto mt-4 block" onClick={() => setPage((p) => p + 1)}>
+    <button className="btn btn-ghost mx-auto mt-4 block" onClick={() => setPager({ key: resources.length, page: page + 1 })}>
       {t('common.loadMore') ?? '加载更多'} ({resources.length - page * PAGE_SIZE} 条)
     </button>
   ) : null;

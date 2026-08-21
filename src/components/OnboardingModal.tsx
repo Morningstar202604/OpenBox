@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useT } from '@/i18n/useI18n';
 import { navigate } from '@/hooks/useHashRoute';
 import { Icon } from './Icon';
@@ -14,15 +14,15 @@ const STEPS = [
 /** 首次访问引导（解决「拿到不会用」）。localStorage 标记只弹一次。 */
 export function OnboardingModal() {
   const t = useT();
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
+  // 直接在惰性初始化器读 localStorage：首次渲染即定结果，无需 effect 二次 setState
+  const [show, setShow] = useState(() => {
     try {
-      if (!localStorage.getItem(FLAG)) setShow(true);
+      return !localStorage.getItem(FLAG);
     } catch {
       /* 隐私模式不可用时静默不弹 */
+      return false;
     }
-  }, []);
+  });
 
   const finish = (goHome: boolean) => {
     try { localStorage.setItem(FLAG, '1'); } catch { /* ignore */ }

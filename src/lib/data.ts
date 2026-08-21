@@ -5,7 +5,7 @@
 //     使 Supabase 成为一个可读写的投稿审核库，而无需把整个资源库搬到云端（避免空表导致首页空白）。
 //   - 投稿提交（submitResource）在配置 Supabase 时写入云端审核库，否则落本地草稿。
 // 上层页面只依赖本文件的异步接口，无需关心数据来自哪里 —— 单一入口、可替换、易测试。
-import { supabase, hasSupabase } from './supabase';
+import { getSupabase, hasSupabase } from './supabase';
 import { useAuthStore } from '@/store/useAuthStore';
 import { subTypes, scenarios, resolveScenarios } from '@/data/taxonomy';
 import { seedResources } from '@/data/seed';
@@ -108,9 +108,11 @@ function submissionToResource(row: SubmissionRow): Resource {
 
 /** 拉取已审核通过的社区投稿（仅配置 Supabase 时调用） */
 export async function getCommunityResources(): Promise<Resource[]> {
-  if (!(hasSupabase && supabase)) return [];
+  if (!hasSupabase) return [];
+  const sb = await getSupabase();
+  if (!sb) return [];
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('submissions')
       .select('*')
       .eq('status', 'approved')
@@ -146,7 +148,7 @@ export async function getResources(query: ResourceQuery = {}): Promise<Resource[
   }
   // 本地种子始终作为基础来源，保证离线/未配置时也能渲染
   const local = filterResources(seedResources, query);
-  if (!(hasSupabase && supabase)) {
+  if (!hasSupabase) {
     cache = { key: cacheKey, data: local, ts: Date.now() };
     return local;
   }
@@ -163,9 +165,11 @@ export async function getResources(query: ResourceQuery = {}): Promise<Resource[
 
 export async function getResource(id: string): Promise<Resource | null> {
   // 社区投稿走云端
-  if (id.startsWith(COMMUNITY_PREFIX) && hasSupabase && supabase) {
+  if (id.startsWith(COMMUNITY_PREFIX) && hasSupabase) {
+    const sb = await getSupabase();
+    if (!sb) return null;
     const subId = id.slice(COMMUNITY_PREFIX.length);
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('submissions')
       .select('*')
       .eq('id', subId)
@@ -220,8 +224,10 @@ export async function submitResource(
 ): Promise<SubmitResult> {
   const err = validateSubmission(payload);
   if (err) return { ok: false, mode: 'local', message: err };
-  if (hasSupabase && supabase) {
-    const { data, error } = await supabase
+  if (hasSupabase) {
+    const sb = await getSupabase();
+    if (!sb) return { ok: false, mode: 'local', message: 'Supabase 客户端初始化失败' };
+    const { data, error } = await sb
       .from('submissions')
       .insert({ ...payload, status: 'pending', created_at: new Date().toISOString() })
       .select()
@@ -256,11 +262,13 @@ export async function submitReport(
   reason: string,
   note?: string,
 ): Promise<{ ok: boolean; message?: string }> {
-  if (!(hasSupabase && supabase)) {
+  if (!hasSupabase) {
     return { ok: false, message: '反馈功能需要配置 Supabase' };
   }
+  const sb = await getSupabase();
+  if (!sb) return { ok: false, message: 'Supabase 客户端初始化失败' };
   try {
-    const { error } = await supabase.from('reports').insert({
+    const { error } = await sb.from('reports').insert({
       resource_id: resourceId,
       reason: note ? `${reason} | ${note}` : reason,
       created_at: new Date().toISOString(),
@@ -275,7 +283,7 @@ export async function submitReport(
 
 /** 当前数据模式（用于页脚提示「本地演示 / 已连接 Supabase」） */
 export function dataSourceMode(): 'supabase' | 'local' {
-  return hasSupabase && supabase ? 'supabase' : 'local';
+  return hasSupabase ? 'supabase' : 'local';
 }
 
 // ============================================================
@@ -342,9 +350,11 @@ export async function submitVerification(
 ): Promise<{ ok: boolean; message?: string }> {
   // 先落本地（无论云端成败都保留本设备记录，用于防重复 + 未上云时的兜底统计）
   saveLocalVote(resourceId, result, false);
-  if (hasSupabase && supabase) {
+  if (hasSupabase) {
+    const sb = await getSupabase();
+    if (!sb) return { ok: true };
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('verifications')
         .insert({ resource_id: resourceId, result, voter_fp: voterFingerprint(), created_at: new Date().toISOString() });
       if (error) {
@@ -370,7 +380,7 @@ export async function submitVerification(
 export async function getVerificationStats(resourceId: string): Promise<VerificationStats> {
   const local = localVote(resourceId);
   // 本地模式（未配置 Supabase）：本设备票并入统计
-  if (!(hasSupabase && supabase)) {
+  if (!hasSupabase) {
     const base = { ok: 0, dead: 0, total: 0, lastAt: null as string | null };
     if (local) {
       if (local.result === 'ok') base.ok += 1;
@@ -379,24 +389,27 @@ export async function getVerificationStats(resourceId: string): Promise<Verifica
     }
     return { ...base, total: base.ok + base.dead };
   }
+  const sb = await getSupabase();
   // Supabase 模式：以云端统计为准
   let ok = 0;
   let dead = 0;
   let lastAt: string | null = null;
-  try {
-    const { data, error } = await supabase
-      .from('verifications')
-      .select('result, created_at')
-      .eq('resource_id', resourceId);
-    if (!error && data) {
-      for (const r of data as { result: string; created_at: string }[]) {
-        if (r.result === 'ok') ok += 1;
-        else if (r.result === 'dead') dead += 1;
-        if (!lastAt || r.created_at > lastAt) lastAt = r.created_at;
+  if (sb) {
+    try {
+      const { data, error } = await sb
+        .from('verifications')
+        .select('result, created_at')
+        .eq('resource_id', resourceId);
+      if (!error && data) {
+        for (const r of data as { result: string; created_at: string }[]) {
+          if (r.result === 'ok') ok += 1;
+          else if (r.result === 'dead') dead += 1;
+          if (!lastAt || r.created_at > lastAt) lastAt = r.created_at;
+        }
       }
+    } catch {
+      /* 云端读取失败：继续用下面的本地兜底 */
     }
-  } catch {
-    /* 云端读取失败：继续用下面的本地兜底 */
   }
   // 本设备「未成功上云」的票兜底计入（如云端 insert 失败但本地已记录），已上云的不重复计
   if (local && local.synced !== true) {
@@ -441,9 +454,11 @@ function saveLocalComment(resourceId: string, item: CommentItem) {
 /** 读取某资源的留言列表（云端在前，本地兜底并集去重） */
 export async function getComments(resourceId: string): Promise<CommentItem[]> {
   const local = localComments(resourceId);
-  if (!(hasSupabase && supabase)) return local;
+  if (!hasSupabase) return local;
+  const sb = await getSupabase();
+  if (!sb) return local;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('comments')
       .select('id, resource_id, content, nickname, created_at')
       .eq('resource_id', resourceId)
@@ -481,9 +496,14 @@ export async function addComment(
     nickname: nick,
     createdAt: new Date().toISOString(),
   };
-  if (hasSupabase && supabase) {
+  if (hasSupabase) {
+    const sb = await getSupabase();
+    if (!sb) {
+      saveLocalComment(resourceId, item);
+      return { ok: false, message: 'Supabase 客户端初始化失败' };
+    }
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('comments')
         .insert({ resource_id: resourceId, content, nickname: nick, user_id: uid, created_at: item.createdAt });
       if (error) {
@@ -503,9 +523,11 @@ export async function addComment(
 
 /** 读取某用户发表的所有留言（用于「我的评论」；按时间倒序） */
 export async function getMyComments(userId: string): Promise<CommentItem[]> {
-  if (!(hasSupabase && supabase)) return [];
+  if (!hasSupabase) return [];
+  const sb = await getSupabase();
+  if (!sb) return [];
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('comments')
       .select('id, resource_id, content, nickname, created_at')
       .eq('user_id', userId)

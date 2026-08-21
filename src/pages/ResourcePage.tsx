@@ -15,25 +15,23 @@ export function ResourcePage() {
   const id = route.id ?? '';
   const pushRecent = useRecentStore((s) => s.push);
 
-  const [res, setRes] = useState<Resource | null>(null);
-  const [related, setRelated] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
+  // 派生 loading：state 记录所属资源 id，id 变化即视为加载中，无需在 effect 里手动重置
+  const [data, setData] = useState<{ id: string; res: Resource | null; related: Resource[] } | null>(null);
+  const loading = data?.id !== id;
+  const res = loading ? null : data!.res;
+  const related = loading ? [] : data!.related;
 
   useEffect(() => {
     let m = true;
-    setLoading(true);
-    setRelated([]);
     getResource(id).then(async (r) => {
       if (!m) return;
-      setRes(r);
-      setLoading(false);
+      setData({ id, res: r, related: [] });
       // 记录最近浏览
       if (r) pushRecent(r.id);
       // 加载相关推荐
-      if (r) {
-        const rel = await getRelatedResources(r.id, 4);
-        if (m) setRelated(rel);
-      }
+      const related = r ? await getRelatedResources(r.id, 4) : [];
+      if (!m) return;
+      setData((prev) => (prev && prev.id === id ? { ...prev, related } : prev));
     });
     return () => {
       m = false;

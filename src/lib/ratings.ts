@@ -1,7 +1,7 @@
 // 分维度评分数据层（「针对不同模块的不同评论体系」的评分部分）。
 // - Supabase 可用：读写 ratings 表（每用户每维度一行，upsert），聚合均值跨用户共享。
 // - 本地模式（未配置 Supabase）：暂不支持云端评分，返回空（UI 提示登录/连接后可用）。
-import { supabase, hasSupabase, AUTH_ENABLED } from '@/lib/supabase';
+import { getSupabase, hasSupabase, AUTH_ENABLED } from '@/lib/supabase';
 import { useAuthStore } from '@/store/useAuthStore';
 
 const authOn = AUTH_ENABLED && hasSupabase;
@@ -20,9 +20,10 @@ export interface ResourceRatings {
 /** 读取某资源的分维度聚合（均值 + 票数） */
 export async function getRatings(resourceId: string): Promise<ResourceRatings> {
   const empty: ResourceRatings = { byDimension: {}, overall: 0, total: 0 };
-  if (!(authOn && supabase)) return empty;
+  const sb = authOn ? await getSupabase() : null;
+  if (!sb) return empty;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('ratings')
       .select('dimension, score')
       .eq('resource_id', resourceId);
@@ -58,9 +59,10 @@ export async function upsertRating(
 ): Promise<{ ok: boolean; message?: string }> {
   const uid = useAuthStore.getState().user?.id;
   if (!uid) return { ok: false, message: '请先登录后评分' };
-  if (!supabase) return { ok: false, message: '评分服务未连接' };
+  const sb = await getSupabase();
+  if (!sb) return { ok: false, message: '评分服务未连接' };
   try {
-    const { error } = await supabase
+    const { error } = await sb
       .from('ratings')
       .upsert(
         { resource_id: resourceId, user_id: uid, dimension, score },
@@ -81,9 +83,10 @@ export interface MyRating {
 
 /** 读取当前登录用户的所有评分（用于「我的评分」） */
 export async function getMyRatings(userId: string): Promise<MyRating[]> {
-  if (!(authOn && supabase)) return [];
+  const sb = authOn ? await getSupabase() : null;
+  if (!sb) return [];
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('ratings')
       .select('resource_id, dimension, score')
       .eq('user_id', userId);
