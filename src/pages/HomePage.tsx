@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
-import { getResources, getResourcesByIds } from '@/lib/data';
+import { getResourcesByIds } from '@/lib/data';
 import { buildScenarioTree } from '@/data/taxonomy';
+import { useResources } from '@/hooks/useResources';
 import { ResourceRow } from '@/components/ResourceRow';
 import { Icon } from '@/components/Icon';
 import { useRecentStore } from '@/store/useRecentStore';
@@ -20,19 +21,7 @@ const FEATURED_SUBTYPES = ['relays', 'free-api', 'free-server', 'free-domain', '
 
 export function HomePage() {
   const t = useT();
-  const [resources, setResources] = useState<Resource[]>([]);
-
-  useEffect(() => {
-    let m = true;
-    getResources({ sort: 'default' }).then((list) => {
-      if (m) {
-        setResources(list);
-      }
-    });
-    return () => {
-      m = false;
-    };
-  }, []);
+  const { resources } = useResources({ sort: 'default' });
 
   const tree = useMemo(() => buildScenarioTree(resources), [resources]);
 

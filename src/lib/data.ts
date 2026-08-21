@@ -9,6 +9,7 @@ import { supabase, hasSupabase } from './supabase';
 import { useAuthStore } from '@/store/useAuthStore';
 import { subTypes, scenarios, resolveScenarios } from '@/data/taxonomy';
 import { seedResources } from '@/data/seed';
+import { isValidUrl } from './format';
 import type { Resource, ResourceStatus, ResourceType, Scenario, SubType, Submission } from './types';
 
 export interface ResourceQuery {
@@ -208,7 +209,7 @@ function validateSubmission(p: Omit<Submission, 'id' | 'status' | 'createdAt'>):
   const url = p.url?.trim() ?? '';
   const summary = p.summary?.trim() ?? '';
   if (!name || name.length > 80) return '名称需 1–80 个字符';
-  if (!/^https?:\/\/[^\s]+\.[^\s]{2,}$/i.test(url) || url.length > 500) return '请输入有效的 http(s) 链接';
+  if (!isValidUrl(url) || url.length > 500) return '请输入有效的 http(s) 链接';
   if (!summary || summary.length > 200) return '简介需 1–200 个字符';
   if (p.description && p.description.length > 1000) return '详细描述最多 1000 个字符';
   return null;

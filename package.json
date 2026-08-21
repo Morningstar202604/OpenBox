@@ -1,7 +1,7 @@
 {
   "name": "openbox",
   "private": true,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "OpenBox · 开源 AI 资源导航 — 聚合免费 API、中转站、代理节点、AI 应用、工具与学习资料。14 大分类 270+ 精选资源，社区投稿 + 集体验证，三语界面，登录云同步。主站：openbox-13o.pages.dev",
   "license": "Apache-2.0",
   "type": "module",

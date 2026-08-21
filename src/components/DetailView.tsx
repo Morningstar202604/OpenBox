@@ -4,14 +4,16 @@ import { useT, useLocalize } from '@/i18n/useI18n';
 import { getSubType } from '@/data/taxonomy';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useToastStore } from '@/store/useToastStore';
+import { copyText } from '@/lib/clipboard';
 import { Icon } from './Icon';
+import { SoftIcon } from './SoftIcon';
 import { StatusBadge, TypeBadge } from './Badge';
 import { ResourceFlags } from './ResourceFlags';
 import { VerifyWidget } from './VerifyWidget';
 import { CommentsWidget } from './CommentsWidget';
 import { RatingWidget } from './RatingWidget';
 import { getVerificationStats } from '@/lib/data';
-import { scoreFreeApi, type RankScore } from '@/lib/ranking';
+import { scoreResource, type ScoreBreakdown } from '@/lib/ranking';
 
 function Field({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
@@ -23,15 +25,15 @@ function Field({ label, value }: { label: string; value?: string }) {
   );
 }
 
-/** 免费 API 专项评分卡（8 维），仅 free-api 子类型展示（前端/呈现优化 + 启用原本死代码 scoreFreeApi） */
+/** 免费 API 专项评分卡（通用混合分：免费度/官方可信/稳定性/新鲜度/功能丰富/人气 + 社区信号） */
 function FreeApiScorecard({ resource }: { resource: Resource }) {
   const t = useT();
-  const [score, setScore] = useState<RankScore | null>(null);
+  const [score, setScore] = useState<ScoreBreakdown | null>(null);
   useEffect(() => {
     let m = true;
     getVerificationStats(resource.id)
-      .then((s) => { if (m) setScore(scoreFreeApi(resource, { ok: s.ok, dead: s.dead })); })
-      .catch(() => { if (m) setScore(scoreFreeApi(resource)); });
+      .then((s) => { if (m) setScore(scoreResource(resource, { verifyOk: s.ok, verifyDead: s.dead })); })
+      .catch(() => { if (m) setScore(scoreResource(resource)); });
     return () => { m = false; };
   }, [resource]);
   if (!score) return null;
@@ -68,23 +70,14 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
   const push = useToastStore((s) => s.push);
 
   const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(resource.url);
-      push(t('detail.copied'), 'success');
-    } catch {
-      push(resource.url, 'info');
-    }
+    if (await copyText(resource.url)) push(t('detail.copied'), 'success');
+    else push(resource.url, 'info');
   };
 
   return (
     <>
       <div className="flex items-start gap-3">
-        <span
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: `${cat?.color ?? '#888'}1a`, color: cat?.color }}
-        >
-          <Icon name={cat?.icon ?? 'Globe'} size={24} />
-        </span>
+        <SoftIcon icon={cat?.icon} color={cat?.color} size={24} className="h-12 w-12" />
         <div className="min-w-0 flex-1">
           <h2 className="text-xl font-bold text-[var(--color-fg)]">{resource.name}</h2>
           <p className="text-sm text-[var(--color-muted)]">{cat ? localize(cat.name) : ''}</p>

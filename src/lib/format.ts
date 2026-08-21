@@ -17,3 +17,27 @@ export const STATUS_META: Record<ResourceStatus, { label: string; color: string 
 
 export const ALL_TYPES: ResourceType[] = ['free', 'freemium', 'trial', 'paid'];
 export const ALL_STATUSES: ResourceStatus[] = ['ok', 'unstable', 'unknown', 'dead'];
+
+/**
+ * 统一时间显示（ISO 或短日期兼容）：
+ * - fmtDate('2026-08-19') → '08-19'
+ * - fmtDate('2026-08-21T02:14:00Z', true) → '08-21 02:14'
+ * 解析失败时回退到原串截断，不抛异常。
+ */
+export function fmtDate(s?: string | null, withTime = false): string {
+  if (!s) return '';
+  const d = new Date(s);
+  if (!Number.isNaN(d.getTime())) {
+    const p = (n: number) => `${n}`.padStart(2, '0');
+    const date = `${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    return withTime ? `${date} ${p(d.getHours())}:${p(d.getMinutes())}` : date;
+  }
+  const m = s.match(/^\d{4}-(\d{2}-\d{2})/);
+  return m ? m[1] : s.slice(0, 5);
+}
+
+/** http(s) 链接白名单（前端校验 + 数据层双重防线共用） */
+export const URL_PATTERN = /^https?:\/\/[^\s]+\.[^\s]{2,}$/i;
+
+/** 是否合法 http(s) 链接 */
+export const isValidUrl = (u: string) => URL_PATTERN.test(u);

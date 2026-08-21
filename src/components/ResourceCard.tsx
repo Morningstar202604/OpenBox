@@ -1,24 +1,19 @@
-import { type CSSProperties, useState, memo } from 'react';
+import { type CSSProperties, memo } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT, useLocalize } from '@/i18n/useI18n';
 import { navigate } from '@/hooks/useHashRoute';
 import { getSubType } from '@/data/taxonomy';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useToastStore } from '@/store/useToastStore';
-import { submitReport } from '@/lib/data';
 import { displayTags } from '@/lib/tags';
+import { fmtDate } from '@/lib/format';
+import { copyText } from '@/lib/clipboard';
+import { useReport } from '@/hooks/useReport';
 import { Icon } from './Icon';
+import { SoftIcon } from './SoftIcon';
 import { StatusBadge, TypeBadge } from './Badge';
 import { ResourceFlags } from './ResourceFlags';
-import { ReportModal } from './ReportModal';
 import { VerifyWidget } from './VerifyWidget';
-
-/** 把 ISO 日期或短日期统一显示为 MM-DD（「更新 08-04」） */
-function fmtUpdatedAt(s?: string): string {
-  if (!s) return '';
-  const m = s.match(/^\d{4}-(\d{2}-\d{2})/);
-  return m ? m[1] : s.slice(0, 5);
-}
 
 export const ResourceCard = memo(function ResourceCard({ resource, index = 0 }: { resource: Resource; index?: number }) {
   const t = useT();
@@ -26,17 +21,13 @@ export const ResourceCard = memo(function ResourceCard({ resource, index = 0 }: 
   const cat = getSubType(resource.subType);
   const fav = useFavoritesStore((s) => s.ids.includes(resource.id));
   const toggleFav = useFavoritesStore((s) => s.toggle);
-  const [showReport, setShowReport] = useState(false);
+  const report = useReport(resource);
   const push = useToastStore((s) => s.push);
 
   const copyUrl = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(resource.url);
-      push(t('detail.copied'), 'success');
-    } catch {
-      push(resource.url, 'info');
-    }
+    if (await copyText(resource.url)) push(t('detail.copied'), 'success');
+    else push(resource.url, 'info');
   };
 
   return (
@@ -45,12 +36,7 @@ export const ResourceCard = memo(function ResourceCard({ resource, index = 0 }: 
       style={{ ['--i' as string]: index } as CSSProperties}
     >
       <div className="flex items-start gap-3">
-        <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: `${cat?.color ?? '#888'}1a`, color: cat?.color }}
-        >
-          <Icon name={cat?.icon ?? 'Globe'} size={20} />
-        </span>
+        <SoftIcon icon={cat?.icon} color={cat?.color} size={20} className="h-10 w-10" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <button
@@ -73,7 +59,7 @@ export const ResourceCard = memo(function ResourceCard({ resource, index = 0 }: 
           <Icon name="Heart" size={18} fill={fav ? 'var(--color-primary)' : 'none'} color={fav ? 'var(--color-primary)' : undefined} />
         </button>
         <button
-          onClick={(e) => { e.stopPropagation(); setShowReport(true); }}
+          onClick={(e) => { e.stopPropagation(); report.open(); }}
           aria-label={t('report.button')}
           className="shrink-0 text-[var(--color-muted)] transition-colors hover:text-orange-500"
           title={t('report.button')}
@@ -112,7 +98,7 @@ export const ResourceCard = memo(function ResourceCard({ resource, index = 0 }: 
             title={resource.updatedAt}
           >
             <Icon name="Clock" size={13} />
-            {t('card.updated')} {fmtUpdatedAt(resource.updatedAt)}
+            {t('card.updated')} {fmtDate(resource.updatedAt)}
           </span>
         )}
         <button className="btn btn-primary btn-sm flex-1" onClick={() => navigate(`/resource/${resource.id}`)}>
@@ -127,17 +113,7 @@ export const ResourceCard = memo(function ResourceCard({ resource, index = 0 }: 
         </button>
       </div>
 
-      {showReport && (
-        <ReportModal
-          resourceName={resource.name}
-          resourceId={resource.id}
-          onClose={() => setShowReport(false)}
-          onSubmit={async (id, reason, note) => {
-            const res = await submitReport(id, reason, note);
-            return res.ok;
-          }}
-        />
-      )}
+      {report.node}
     </div>
   );
 });

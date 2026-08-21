@@ -2,14 +2,8 @@ import { useEffect, useState } from 'react';
 import { useT } from '@/i18n/useI18n';
 import { getVerificationStats, submitVerification, type VerificationStats } from '@/lib/data';
 import { useToastStore } from '@/store/useToastStore';
+import { fmtDate } from '@/lib/format';
 import { Icon } from './Icon';
-
-/** 显示 MM-DD（ISO 或短日期兼容） */
-function fmtDate(s?: string | null): string {
-  if (!s) return '';
-  const m = s.match(/^\d{4}-(\d{2}-\d{2})/);
-  return m ? m[1] : s.slice(0, 5);
-}
 
 /**
  * 社区验证投票（「还能不能薅」社区验证：薅到投「还能用」、踩坑投「已失效」，

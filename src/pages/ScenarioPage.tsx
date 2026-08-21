@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT, useLocalize } from '@/i18n/useI18n';
-import { getResources } from '@/lib/data';
 import { getScenario, getSubType } from '@/data/taxonomy';
 import { useHashRoute, navigate } from '@/hooks/useHashRoute';
+import { useResources } from '@/hooks/useResources';
 import { ResourceList } from '@/components/ResourceList';
 import { EmptyState } from '@/components/EmptyState';
+import { SoftIcon } from '@/components/SoftIcon';
 import { Icon } from '@/components/Icon';
 
 export function ScenarioPage() {
@@ -15,22 +16,7 @@ export function ScenarioPage() {
   const slug = route.slug ?? '';
   const scenario = getScenario(slug);
 
-  const [all, setAll] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let m = true;
-    setLoading(true);
-    getResources({ scenario: slug }).then((list) => {
-      if (m) {
-        setAll(list);
-        setLoading(false);
-      }
-    });
-    return () => {
-      m = false;
-    };
-  }, [slug]);
+  const { resources: all, loading } = useResources({ scenario: slug });
 
   const groups = useMemo(() => {
     const map = new Map<string, Resource[]>();
@@ -53,12 +39,7 @@ export function ScenarioPage() {
       </button>
 
       <div className="flex items-center gap-3">
-        <span
-          className="flex h-11 w-11 items-center justify-center rounded-xl"
-          style={{ background: `${scenario.color}1a`, color: scenario.color }}
-        >
-          <Icon name={scenario.icon} size={22} />
-        </span>
+        <SoftIcon icon={scenario.icon} color={scenario.color} size={22} className="h-11 w-11" />
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-fg)]">{localize(scenario.name)}</h1>
           <p className="text-sm text-[var(--color-muted)]">{localize(scenario.description)}</p>

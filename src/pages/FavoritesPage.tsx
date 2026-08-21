@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
-import type { Resource } from '@/lib/types';
+import { useMemo } from 'react';
 import { useT } from '@/i18n/useI18n';
-import { getResources } from '@/lib/data';
+import { useResources } from '@/hooks/useResources';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { ResourceList } from '@/components/ResourceList';
 import { EmptyState } from '@/components/EmptyState';
@@ -10,11 +9,7 @@ import { navigate } from '@/hooks/useHashRoute';
 export function FavoritesPage() {
   const t = useT();
   const ids = useFavoritesStore((s) => s.ids);
-  const [all, setAll] = useState<Resource[]>([]);
-
-  useEffect(() => {
-    getResources({ sort: 'default' }).then(setAll);
-  }, []);
+  const { resources: all } = useResources({ sort: 'default' });
 
   const favs = useMemo(() => all.filter((r) => ids.includes(r.id)), [all, ids]);
 

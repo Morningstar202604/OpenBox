@@ -7,6 +7,21 @@
 > **版本约定**：项目从 `0.0.1` 起算，每次更新为一个「小版本」（修订号 +1，如 `0.0.1 → 0.0.2 → 0.0.3`），
 > 并在 GitHub / GitCode / Gitee 三端同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
 
+## [0.0.3] - 2026-08-21
+
+### 重构：全面去重优化（最小代码实现完整功能）
+全站 86 个源文件审查，消除重复造轮子与死代码：
+
+- **删除死代码**：`RankingList.tsx`（hotScore 榜单，零引用）、`data/references.ts`（内部参考清单，零引用）、`ranking.ts` 中废弃的 `scoreFreeApi`/`RankScore`/`RankPart`（与通用 `scoreResource` 两套评分合并为一套）。
+- **6 处重复日期格式化合并**：`fmtDate(s, withTime?)` 统一收入 `lib/format.ts`（ResourceCard / ResourceRow / FeaturedCard / VerifyWidget / CommentsWidget / MyPage 各自的本地副本删除）。
+- **6 处重复分类图标块合并**：新增 `SoftIcon` 组件（底色 = color+10% 透明），ResourceCard / ResourceRow / FeaturedCard / DetailView / CategoryCard / CategoryPage / ScenarioPage 复用。
+- **举报弹窗逻辑去重**：新增 `useReport` hook，ResourceCard / ResourceRow 共用（删掉各自重复的 showReport state + onSubmit 包装）。
+- **URL 校验统一**：`isValidUrl` 收进 `lib/format.ts`，SubmitForm 与 data.ts 校验共用；`copyText` 收进 `lib/clipboard.ts`，ResourceCard / DetailView 复制逻辑共用。
+- **7 处资源加载逻辑收敛**：新增 `useResources(query)` hook（加载 + 卸载防竞态 + query 序列化依赖），HomePage / RankingPage / FavoritesPage / MyPage / ScenarioPage / CategoryPage / SearchPage 复用。
+- **CategoryPage 与 SearchPage 合并**：新增 `FilterablePage` 骨架组件（加载 + 类型/状态双过滤 + FilterBar + 计数 + 资源列表），两页重复的 ~50 行逻辑收敛。
+- **ResourceList 去重**：网格/列表两个几乎相同的分支合并（分页切片 + 加载更多 + 视图切换共用），并修正用 `useMemo` 做副作用的问题。
+- 重构后 `src/` 总行数 **8212 → 7945**（净减 267 行），tsc / eslint / vite build 全绿，功能与视觉零变化。
+
 ## [0.0.2] - 2026-08-21
 
 ### 修复：资源分类全面核查（逐条实开链接验证）
@@ -50,5 +65,6 @@
 ### 发布
 - 新增 **WB 国内访问通道**：`https://a50a62f0345c835a5.app.workbuddy.link`（已写入 README 访问入口，作为国内访问通道，暂代尚未更新的协作者镜像）。
 
+[0.0.3]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.3
 [0.0.2]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.2
 [0.0.1]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.1

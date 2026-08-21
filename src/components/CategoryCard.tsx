@@ -1,6 +1,7 @@
 import type { SubType } from '@/lib/types';
 import { useLocalize } from '@/i18n/useI18n';
 import { navigate } from '@/hooks/useHashRoute';
+import { SoftIcon } from './SoftIcon';
 import { Icon } from './Icon';
 
 /** 子类型卡片：用于首页「全部分类」场景树，点击进入 #/category/:slug */
@@ -13,12 +14,7 @@ export function CategoryCard({ subType, count }: { subType: SubType; count?: num
     >
       {/* 分类色条（差异化视觉锚点） */}
       <span className="absolute inset-y-0 left-0 w-1" style={{ background: subType.color }} />
-      <span
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg sm:h-11 sm:w-11 sm:rounded-xl"
-        style={{ background: `${subType.color}1a`, color: subType.color }}
-      >
-        <Icon name={subType.icon} size={20} />
-      </span>
+      <SoftIcon icon={subType.icon} color={subType.color} size={20} className="h-10 w-10 sm:h-11 sm:w-11" rounded="rounded-lg sm:rounded-xl" />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <h3 className="text-[15px] font-semibold leading-snug text-[var(--color-fg)]">{localize(subType.name)}</h3>

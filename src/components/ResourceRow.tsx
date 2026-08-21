@@ -1,24 +1,18 @@
 import type { CSSProperties } from 'react';
-import { useState, memo } from 'react';
+import { memo } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
 import { navigate } from '@/hooks/useHashRoute';
 import { getSubType } from '@/data/taxonomy';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
-import { submitReport } from '@/lib/data';
 import { displayTags } from '@/lib/tags';
+import { fmtDate } from '@/lib/format';
+import { useReport } from '@/hooks/useReport';
 import { Icon } from './Icon';
+import { SoftIcon } from './SoftIcon';
 import { StatusBadge, TypeBadge } from './Badge';
 import { ResourceFlags } from './ResourceFlags';
-import { ReportModal } from './ReportModal';
 import { VerifyWidget } from './VerifyWidget';
-
-/** 显示 MM-DD（ISO 或短日期兼容） */
-function fmtDate(s?: string): string {
-  if (!s) return '';
-  const m = s.match(/^\d{4}-(\d{2}-\d{2})/);
-  return m ? m[1] : s.slice(0, 5);
-}
 
 /**
  * 列表行形态（信息密集行）：横向图标 + 标题/徽章/标签/摘要 + 底部操作。
@@ -29,17 +23,12 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
   const cat = getSubType(resource.subType);
   const fav = useFavoritesStore((s) => s.ids.includes(resource.id));
   const toggleFav = useFavoritesStore((s) => s.toggle);
-  const [showReport, setShowReport] = useState(false);
+  const report = useReport(resource);
 
   return (
     <div className="card card-hover card-in p-4" style={{ ['--i' as string]: index } as CSSProperties}>
       <div className="flex items-start gap-3">
-        <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
-          style={{ background: `${cat?.color ?? '#888'}1a`, color: cat?.color }}
-        >
-          <Icon name={cat?.icon ?? 'Globe'} size={19} />
-        </span>
+        <SoftIcon icon={cat?.icon} color={cat?.color} size={19} className="h-10 w-10" rounded="rounded-lg" />
         <div className="min-w-0 flex-1">
           {/* 标题行：名称 + 官方标 + 状态/类型徽章 */}
           <div className="flex flex-wrap items-center gap-1.5">
@@ -91,7 +80,7 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
                 {fav ? t('detail.unfavorite') : t('detail.favorite')}
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); setShowReport(true); }}
+                onClick={(e) => { e.stopPropagation(); report.open(); }}
                 className="inline-flex items-center gap-1 transition-colors hover:text-orange-500"
                 aria-label={t('report.button')}
               >
@@ -117,17 +106,7 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
         </div>
       </div>
 
-      {showReport && (
-        <ReportModal
-          resourceName={resource.name}
-          resourceId={resource.id}
-          onClose={() => setShowReport(false)}
-          onSubmit={async (id, reason, note) => {
-            const res = await submitReport(id, reason, note);
-            return res.ok;
-          }}
-        />
-      )}
+      {report.node}
     </div>
   );
 });

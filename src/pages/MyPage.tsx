@@ -1,25 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { Resource } from '@/lib/types';
 import { useT, useLocalize } from '@/i18n/useI18n';
-import { getResources } from '@/lib/data';
 import { getMyRatings, type MyRating } from '@/lib/ratings';
 import { getMyComments, type CommentItem } from '@/lib/data';
 import { getRatingDimensions } from '@/lib/ratingDimensions';
+import { useResources } from '@/hooks/useResources';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { ResourceList } from '@/components/ResourceList';
 import { SubmitForm } from '@/components/SubmitForm';
 import { EmptyState } from '@/components/EmptyState';
 import { navigate } from '@/hooks/useHashRoute';
+import { fmtDate } from '@/lib/format';
 import { Icon } from '@/components/Icon';
-
-/** 时间格式化 MM-DD HH:mm */
-function fmt(s: string): string {
-  const d = new Date(s);
-  if (Number.isNaN(d.getTime())) return s.slice(0, 10);
-  const p = (n: number) => `${n}`.padStart(2, '0');
-  return `${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-}
 
 /**
  * 「我的」页：注册前（未登录）仅可浏览本地收藏 + 看到登录引导；
@@ -34,13 +26,9 @@ export function MyPage() {
   const signOut = useAuthStore((s) => s.signOut);
   const ids = useFavoritesStore((s) => s.ids);
 
-  const [all, setAll] = useState<Resource[]>([]);
+  const { resources: all } = useResources({ sort: 'default' });
   const [myRatings, setMyRatings] = useState<MyRating[]>([]);
   const [myComments, setMyComments] = useState<CommentItem[]>([]);
-
-  useEffect(() => {
-    getResources({ sort: 'default' }).then(setAll);
-  }, []);
 
   // 登录态变化时拉取「我的评分 / 我的评论」
   useEffect(() => {
@@ -178,7 +166,7 @@ export function MyPage() {
                         {res?.name ?? c.resourceId}
                       </button>
                       <span>·</span>
-                      <span>{fmt(c.createdAt)}</span>
+                      <span>{fmtDate(c.createdAt, true)}</span>
                     </div>
                     <p className="whitespace-pre-wrap text-sm leading-relaxed text-[var(--color-fg)]">{c.content}</p>
                   </li>

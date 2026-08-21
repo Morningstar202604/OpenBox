@@ -2,18 +2,8 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useT } from '@/i18n/useI18n';
 import { getComments, addComment, type CommentItem } from '@/lib/data';
 import { useToastStore } from '@/store/useToastStore';
+import { fmtDate } from '@/lib/format';
 import { Icon } from './Icon';
-
-/** 显示 MM-DD 与时刻 */
-function fmtTime(s: string): string {
-  const d = new Date(s);
-  if (Number.isNaN(d.getTime())) return s.slice(0, 10);
-  const mm = `${d.getMonth() + 1}`.padStart(2, '0');
-  const dd = `${d.getDate()}`.padStart(2, '0');
-  const hh = `${d.getHours()}`.padStart(2, '0');
-  const mi = `${d.getMinutes()}`.padStart(2, '0');
-  return `${mm}-${dd} ${hh}:${mi}`;
-}
 
 /**
  * 资源评论区（社区式：薅到/踩坑在此分享，帮后来人避坑）。
@@ -97,7 +87,7 @@ export function CommentsWidget({ resourceId }: { resourceId: string }) {
               <div className="mb-1 flex items-center gap-2 text-xs text-[var(--color-muted)]">
                 <span className="font-semibold text-[var(--color-fg)]">{c.nickname}</span>
                 <span>·</span>
-                <span>{fmtTime(c.createdAt)}</span>
+                <span>{fmtDate(c.createdAt, true)}</span>
               </div>
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-[var(--color-fg)]">{c.content}</p>
             </li>

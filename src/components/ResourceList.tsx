@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
 import { ResourceCard } from './ResourceCard';
@@ -30,7 +30,7 @@ export function ResourceList({ resources, loading = false, allowViewSwitch = tru
   const [page, setPage] = useState(1);
 
   // 当资源列表变化时（搜索/筛选），重置分页
-  useMemo(() => { setPage(1); }, [resources.length]);
+  useEffect(() => { setPage(1); }, [resources.length]);
 
   const switchView = (v: ViewMode) => {
     setView(v);
@@ -39,30 +39,33 @@ export function ResourceList({ resources, loading = false, allowViewSwitch = tru
     } catch { /* ignore */ }
   };
 
+  const toggleBtn = (v: ViewMode, icon: string, label: string) => (
+    <button
+      className={`flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
+        view === v ? 'border-[var(--color-primary)] bg-[var(--color-primary-soft)] text-[var(--color-primary)]' : 'border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-fg)]'
+      }`}
+      onClick={() => switchView(v)}
+      aria-label={label}
+      title={label}
+    >
+      <Icon name={icon} size={16} />
+    </button>
+  );
+
   const Toggle = (
     <div className="mb-3 flex items-center justify-end gap-1">
-      <button
-        className={`flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
-          view === 'grid' ? 'border-[var(--color-primary)] bg-[var(--color-primary-soft)] text-[var(--color-primary)]' : 'border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-fg)]'
-        }`}
-        onClick={() => switchView('grid')}
-        aria-label={t('view.grid')}
-        title={t('view.grid')}
-      >
-        <Icon name="LayoutGrid" size={16} />
-      </button>
-      <button
-        className={`flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
-          view === 'list' ? 'border-[var(--color-primary)] bg-[var(--color-primary-soft)] text-[var(--color-primary)]' : 'border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-fg)]'
-        }`}
-        onClick={() => switchView('list')}
-        aria-label={t('view.list')}
-        title={t('view.list')}
-      >
-        <Icon name="List" size={16} />
-      </button>
+      {toggleBtn('grid', 'LayoutGrid', t('view.grid'))}
+      {toggleBtn('list', 'List', t('view.list'))}
     </div>
   );
+
+  const sliced = resources.slice(0, page * PAGE_SIZE);
+  const hasMore = resources.length > page * PAGE_SIZE;
+  const LoadMore = hasMore ? (
+    <button className="btn btn-ghost mx-auto mt-4 block" onClick={() => setPage((p) => p + 1)}>
+      {t('common.loadMore') ?? '加载更多'} ({resources.length - page * PAGE_SIZE} 条)
+    </button>
+  ) : null;
 
   if (loading) {
     return (
@@ -77,45 +80,25 @@ export function ResourceList({ resources, loading = false, allowViewSwitch = tru
     );
   }
 
-  if (!resources.length) {
-    return <EmptyState icon="Search" title={t('common.empty')} />;
-  }
+  if (!resources.length) return <EmptyState icon="Search" title={t('common.empty')} />;
 
-  if (view === 'list') {
-    const sliced = resources.slice(0, page * PAGE_SIZE);
-    const hasMore = resources.length > page * PAGE_SIZE;
-    return (
-      <div>
-        {allowViewSwitch && Toggle}
+  return (
+    <div>
+      {allowViewSwitch && Toggle}
+      {view === 'list' ? (
         <div className="space-y-3">
           {sliced.map((r, i) => (
             <ResourceRow key={r.id} resource={r} index={i} />
           ))}
         </div>
-        {hasMore && (
-          <button className="btn btn-ghost mx-auto mt-4 block" onClick={() => setPage((p) => p + 1)}>
-            {t('common.loadMore') ?? '加载更多'} ({resources.length - page * PAGE_SIZE} 条)
-          </button>
-        )}
-      </div>
-    );
-  }
-
-  const sliced = resources.slice(0, page * PAGE_SIZE);
-  const hasMore = resources.length > page * PAGE_SIZE;
-  return (
-    <div>
-      {allowViewSwitch && Toggle}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {sliced.map((r, i) => (
-          <ResourceCard key={r.id} resource={r} index={i} />
-        ))}
-      </div>
-      {hasMore && (
-        <button className="btn btn-ghost mx-auto mt-4 block" onClick={() => setPage((p) => p + 1)}>
-          {t('common.loadMore') ?? '加载更多'} ({resources.length - page * PAGE_SIZE} 条)
-        </button>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {sliced.map((r, i) => (
+            <ResourceCard key={r.id} resource={r} index={i} />
+          ))}
+        </div>
       )}
+      {LoadMore}
     </div>
   );
 }

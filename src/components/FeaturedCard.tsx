@@ -2,16 +2,11 @@ import type { Resource } from '@/lib/types';
 import { useT, useLocalize } from '@/i18n/useI18n';
 import { navigate } from '@/hooks/useHashRoute';
 import { getSubType } from '@/data/taxonomy';
+import { fmtDate } from '@/lib/format';
 import { Icon } from './Icon';
+import { SoftIcon } from './SoftIcon';
 import { StatusBadge, TypeBadge } from './Badge';
 import { ResourceFlags } from './ResourceFlags';
-
-/** 显示 MM-DD（ISO 或短日期兼容） */
-function fmtDate(s?: string): string {
-  if (!s) return '';
-  const m = s.match(/^\d{4}-(\d{2}-\d{2})/);
-  return m ? m[1] : s.slice(0, 5);
-}
 
 /**
  * 首页精选横幅大卡：与普通网格卡差异化 —— 整宽横向布局、大图标、副标题、双按钮。
@@ -30,12 +25,7 @@ export function FeaturedCard({ resource }: { resource: Resource }) {
       {/* 顶部分类色条（差异化视觉锚点） */}
       <span className="absolute inset-x-0 top-0 h-1" style={{ background: cat?.color ?? '#888' }} />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <span
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl sm:h-16 sm:w-16"
-          style={{ background: `${cat?.color ?? '#888'}1a`, color: cat?.color }}
-        >
-          <Icon name={cat?.icon ?? 'Globe'} size={28} />
-        </span>
+        <SoftIcon icon={cat?.icon} color={cat?.color} size={28} className="h-14 w-14 sm:h-16 sm:w-16" rounded="rounded-2xl" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-lg font-bold text-[var(--color-fg)]">{resource.name}</h3>

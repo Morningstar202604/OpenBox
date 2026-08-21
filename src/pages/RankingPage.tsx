@@ -1,20 +1,12 @@
-import { useEffect, useState } from 'react';
-import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
-import { getResources } from '@/lib/data';
+import { useResources } from '@/hooks/useResources';
 import { RankingBoard } from '@/components/RankingBoard';
 import { Icon } from '@/components/Icon';
 
 /** 排行榜页：复用首页的多榜单组件，默认展开全部榜单 */
 export function RankingPage() {
   const t = useT();
-  const [resources, setResources] = useState<Resource[]>([]);
-
-  useEffect(() => {
-    let m = true;
-    getResources({ sort: 'default' }).then((list) => { if (m) setResources(list); });
-    return () => { m = false; };
-  }, []);
+  const { resources } = useResources({ sort: 'default' });
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">

@@ -4,7 +4,7 @@ import { useT, useLocalize } from '@/i18n/useI18n';
 import { subTypes } from '@/data/taxonomy';
 import { submitResource } from '@/lib/data';
 import { useToastStore } from '@/store/useToastStore';
-import { ALL_TYPES, TYPE_META } from '@/lib/format';
+import { ALL_TYPES, TYPE_META, isValidUrl } from '@/lib/format';
 import { Icon } from './Icon';
 
 /** 提交冷却：60 秒内禁止重复投稿（防刷垃圾） */
@@ -47,7 +47,7 @@ export function SubmitForm() {
       return;
     }
     // URL 格式白名单（http/https 且域名有效），拦截 javascript:/data: 等畸形输入
-    if (!/^https?:\/\/[^\s]+\.[^\s]{2,}$/i.test(urlV)) {
+    if (!isValidUrl(urlV)) {
       push(t('submit.invalidUrl'), 'error');
       return;
     }
