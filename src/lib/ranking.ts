@@ -31,7 +31,9 @@ function staticScore(r: Resource): { score: number; parts: ScorePart[] } {
   // 官方可信给 modest 加分：官方≠免费（用户要求不混淆），故不过分加权。
   const officialTrust = r.official ? 8 : 5;
   const status = r.status === 'ok' ? 15 : r.status === 'unstable' ? 8 : r.status === 'unknown' ? 5 : 2;
-  const days = r.updatedAt ? Math.max(0, (Date.now() - Date.parse(r.updatedAt)) / 86_400_000) : 999;
+  // 防御非法日期串：Date.parse 返回 NaN 会污染整条评分链（NaN 传播），回退为最旧
+  const parsedTs = r.updatedAt ? Date.parse(r.updatedAt) : NaN;
+  const days = Number.isFinite(parsedTs) ? Math.max(0, (Date.now() - parsedTs) / 86_400_000) : 999;
   const fresh = Math.max(0, Math.min(12, 12 - days / 30)); // 近一月满分，逐月衰减
   const rich = Math.min(10, (r.tags?.length ?? 0) + (r.models?.length ?? 0) + (r.protocols?.length ?? 0));
   const pop = Math.round(((r.popularity ?? 0) / 100) * 10);
