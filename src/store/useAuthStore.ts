@@ -10,7 +10,7 @@ const authOn = AUTH_ENABLED && hasSupabase;
 /** 在 zustand store 中获取当前语言的翻译文本 */
 function authT(key: string): string {
   const lang = useI18nStore.getState().lang;
-  return dict[lang][key] ?? dict.zh[key] ?? key;
+  return dict[lang]?.[key] ?? dict.zh[key] ?? key;
 }
 
 interface AuthState {

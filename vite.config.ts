@@ -27,9 +27,9 @@ export default defineConfig({
             }
             return 'vendor';
           }
-          // 站点数据集与多语言文案是大体积静态资源，单独成块
+          // 站点数据集是大体积静态资源，单独成块；
+          // i18n 语言包不在此合并——en/ja 需保持独立异步 chunk 按需加载
           if (id.includes('src/data/sites')) return 'sites-data';
-          if (id.includes('src/i18n/translations')) return 'i18n';
           return undefined;
         },
       },
