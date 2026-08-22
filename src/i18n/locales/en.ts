@@ -88,9 +88,10 @@ export const messages: Record<string, string> = {
     'help.faq2a': 'Official is non-free by default; "Proxy" means hard to reach without proxy/overseas.',
     'help.faq3q': 'Do ratings/comments need login?',
     'help.faq3a': 'Browsing, search, rankings, reading comments are open; rating, commenting, submitting need login.',
+    'card.freemium': 'Partially Free',
     'card.nonFree': 'Not Free',
     'card.overseas': 'Proxy/Overseas',
-    'category.nonFreeHint': 'This category includes non-free items, marked "Not Free" for clarity.',
+    'category.nonFreeHint': 'Includes paid or partially-free items, marked "Not Free / Partially Free" for clarity.',
     'nav.github': 'Source',
 
     'common.search': 'Search',
