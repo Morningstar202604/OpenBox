@@ -52,6 +52,7 @@ function mapLegacy(s: Site): Resource | null {
 // 原 sites.ts 中 160+ 个免费镜像/公益站已不可达（超时/404/关站），
 // 此类站点生命周期极短，仅保留经 curl -L 实测可访问的。
 const ALIVE_LEGACY_URLS = new Set([
+'https://aierxin.cc', 'https://api.koozhan.com', 'https://runapi.host',
 'https://1.bixin123.com', 'https://1000zhen.com', 'https://4router.net', 'https://80aj.com', 'https://ai.huaibao.top',
   'https://ai.huan666.de', 'https://ai.qaq.al', 'https://ai.wendabao.net', 'https://ai.wisech.com', 'https://aifast.com',
   'https://aigc2d.com', 'https://aigcbar.com', 'https://aiproxy.best', 'https://aiproxy.io', 'https://anticode.cn',
