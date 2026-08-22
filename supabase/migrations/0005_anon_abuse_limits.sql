@@ -24,9 +24,12 @@ alter table public.submissions
 
 alter table public.submissions
   drop constraint if exists submissions_url_format_check;
+-- 注意：Postgres 正则的 {m,n} 重复上限是 255，写 {1,500} 会在写入期报 2201B
+-- （invalid repetition count）导致所有 submissions 写入失败。
+-- 等价语义改写：http(s):// 开头、无空白字符、总长 ≤500 用 char_length 表达。
 alter table public.submissions
   add constraint submissions_url_format_check
-  check (url ~ '^https?://\S{1,500}$');
+  check (url ~ '^https?://\S+$' and char_length(url) <= 500);
 
 alter table public.submissions
   drop constraint if exists submissions_summary_len_check;
