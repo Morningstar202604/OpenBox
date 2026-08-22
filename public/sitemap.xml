@@ -284,12 +284,6 @@
     <lastmod>2026-08-22</lastmod>
   </url>
   <url>
-    <loc>https://openbox-nav.pages.dev/resource/ggboom</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-    <lastmod>2026-08-22</lastmod>
-  </url>
-  <url>
     <loc>https://openbox-nav.pages.dev/resource/anticode</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -1167,6 +1161,12 @@
   </url>
   <url>
     <loc>https://openbox-nav.pages.dev/resource/ob-charity-gy-hlool</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2026-08-22</lastmod>
+  </url>
+  <url>
+    <loc>https://openbox-nav.pages.dev/resource/ob-charity-gy-ggboom</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
     <lastmod>2026-08-22</lastmod>
