@@ -45,6 +45,10 @@ jobs:
       - name: Unit tests
         run: npm run test
 
+      # 数据质量门禁：type/status 分布、自夸矛盾、类目-tag 错位、数值伪 tag、空字段
+      - name: Data audit
+        run: npm run audit:data
+
       # 构建验证产物完整性；生产部署由 Cloudflare Pages 的 Git 集成独立完成，
       # CI 不再承担部署职责（避免双线路互相覆盖）。
       - name: Regenerate sitemap
