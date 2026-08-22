@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>OpenBox</title>
+    <!-- GitHub Pages 没有 SPA fallback：深层直链会落到这里。
+         把真实路径编码后带回首页，由路由器（ghpath 参数）原地还原为干净 URL。
+         Cloudflare Pages 部署走 _redirects，不会用到本文件。 -->
+    <script>
+      (function () {
+        var seg = window.location.pathname.split('/');
+        var base = seg.length > 1 && seg[1] ? '/' + seg[1] : ''; // 项目页部署取 /OpenBox
+        var ghpath = window.location.pathname + window.location.search;
+        window.location.replace(
+          base + '/?ghpath=' + encodeURIComponent(ghpath) + window.location.hash,
+        );
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

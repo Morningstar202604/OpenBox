@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { routeFromPath } from '../useHashRoute';
+import { routeFromPath, splitPath } from '../useHashRoute';
 
 /** 全路由回归：history 迁移（issue #15）后解析语义与旧 hash 路由逐段一致 */
 describe('routeFromPath', () => {
@@ -47,5 +47,16 @@ describe('routeFromPath', () => {
   it('页内锚不参与路由匹配', () => {
     // /help#intro 的 pathname 是 /help、hash 不传入
     expect(routeFromPath('/help', '')).toEqual({ name: 'help' });
+  });
+
+  it('splitPath：GH Pages 404 回跳（ghpath）与旧 hash 的路径/查询拆分', () => {
+    expect(splitPath('/resource/ob-relay-yunwu')).toEqual({
+      pathPart: '/resource/ob-relay-yunwu',
+      queryPart: '',
+    });
+    expect(splitPath('/search?q=claude')).toEqual({ pathPart: '/search', queryPart: 'q=claude' });
+    // ghpath 携带的原查询串：/OpenBox/search?q=x（parseLocation 会先 stripBase 再映射）
+    expect(splitPath('/OpenBox/search?q=%E5%85%8D%E8%B4%B9').queryPart).toBe('q=%E5%85%8D%E8%B4%B9');
+    expect(routeFromPath('/search', 'q=%E5%85%8D%E8%B4%B9')).toEqual({ name: 'search', q: '免费' });
   });
 });
