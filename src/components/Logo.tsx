@@ -1,9 +1,9 @@
-import { navigate } from '@/hooks/useHashRoute';
+import { navigate, routeHref } from '@/hooks/useHashRoute';
 
 export function Logo() {
   return (
     <a
-      href="#/home"
+      href={routeHref('/home')}
       onClick={(e) => {
         e.preventDefault();
         navigate('/home');

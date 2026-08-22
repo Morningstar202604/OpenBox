@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useT } from '@/i18n/useI18n';
-import { useHashRoute, navigate, type RouteName } from '@/hooks/useHashRoute';
+import { useHashRoute, navigate, routeHref, type RouteName } from '@/hooks/useHashRoute';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 import { LangSwitcher } from './LangSwitcher';
@@ -28,10 +28,10 @@ export function NavBar() {
   }, []);
 
   const links: { name: RouteName; label: string; href: string }[] = [
-    { name: 'home', label: t('nav.home'), href: '#/home' },
-    { name: 'ranking', label: t('nav.ranking'), href: '#/ranking' },
-    { name: 'help', label: t('nav.help'), href: '#/help' },
-    { name: 'my', label: t('nav.my'), href: '#/my' },
+    { name: 'home', label: t('nav.home'), href: '/home' },
+    { name: 'ranking', label: t('nav.ranking'), href: '/ranking' },
+    { name: 'help', label: t('nav.help'), href: '/help' },
+    { name: 'my', label: t('nav.my'), href: '/my' },
   ];
 
   return (
@@ -48,10 +48,10 @@ export function NavBar() {
             return (
               <a
                 key={l.name}
-                href={l.href}
+                href={routeHref(l.href)}
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate(l.href.replace('#', ''));
+                  navigate(l.href);
                 }}
                 className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                   active
