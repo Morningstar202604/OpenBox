@@ -74,31 +74,52 @@ export function routeFromPath(pathPart: string, queryPart = ''): Route {
   }
 }
 
+/** 路径与查询串拆分（'?' 后视为查询串） */
+export function splitPath(raw: string): { pathPart: string; queryPart: string } {
+  const i = raw.indexOf('?');
+  return i === -1
+    ? { pathPart: raw, queryPart: '' }
+    : { pathPart: raw.slice(0, i), queryPart: raw.slice(i + 1) };
+}
+
 /**
  * 从当前地址解析路由。
- * 兼容层：若仍存在旧 hash 路由链接（外链/收藏/搜索引擎已收录的 /#/resource/x），
- * 直接按 hash 解析渲染——hash 片段不会发送到服务器，_redirects 无法接管，
- * 只能在客户端解析；地址栏升级由 useHashRoute 挂载后的 rewriteLegacyHash 完成。
+ * 兼容层（按序）：
+ * 1. ghpath 参数：GitHub Pages 无 SPA fallback，深层直链先落到 public/404.html，
+ *    由它带 ?ghpath=<原路径> 回首页，这里原地 replaceState 还原干净 URL；
+ * 2. 旧 hash 链接（外链/收藏/搜索引擎已收录的 /#/resource/x）按 hash 解析渲染——
+ *    hash 片段不会发送到服务器，只能在客户端解析，地址栏升级由挂载后的 rewrite 完成。
  */
 export function parseLocation(): Route {
+  const ghRaw = new URLSearchParams(window.location.search).get('ghpath');
+  if (ghRaw) {
+    const { pathPart, queryPart } = splitPath(ghRaw);
+    return routeFromPath(stripBase(pathPart), queryPart);
+  }
   const rawHash = window.location.hash.replace(/^#/, '');
-  if (rawHash) {
-    // 页内锚（如 /help#intro 的 #intro）不属于路由，仅当 hash 以 "/" 开头才按路由处理
-    if (rawHash.startsWith('/')) {
-      const [pathPart, queryPart] = rawHash.split('?');
-      return routeFromPath(pathPart, queryPart);
-    }
+  if (rawHash.startsWith('/')) {
+    const { pathPart, queryPart } = splitPath(rawHash);
+    return routeFromPath(pathPart, queryPart);
   }
   return routeFromPath(stripBase(window.location.pathname), window.location.search.replace(/^\?/, ''));
 }
 
-/** 旧 hash 链接的地址栏升级：#/resource/x → /resource/x（replaceState，不产生历史记录） */
-function rewriteLegacyHash(): void {
-  const raw = window.location.hash.replace(/^#/, '');
-  if (!raw.startsWith('/')) return;
-  const [pathPart, queryPart] = raw.split('?');
-  const target = `${BASE}${pathPart}${queryPart ? `?${queryPart}` : ''}`;
-  window.history.replaceState(null, '', target);
+/** 首帧后的地址栏原地升级（不产生历史记录）：ghpath 回跳与旧 hash 一并处理 */
+function rewriteLegacyUrl(): void {
+  const search = new URLSearchParams(window.location.search);
+  const ghRaw = search.get('ghpath');
+  if (ghRaw !== null) {
+    search.delete('ghpath');
+    const rest = search.toString();
+    const { pathPart, queryPart } = splitPath(ghRaw);
+    const query = queryPart || rest;
+    window.history.replaceState(null, '', `${BASE}${stripBase(pathPart)}${query ? `?${query}` : ''}`);
+    return;
+  }
+  const rawHash = window.location.hash.replace(/^#/, '');
+  if (!rawHash.startsWith('/')) return;
+  const { pathPart, queryPart } = splitPath(rawHash);
+  window.history.replaceState(null, '', `${BASE}${pathPart}${queryPart ? `?${queryPart}` : ''}`);
 }
 
 /** 站内导航：pushState 一条干净路径并广播 popstate 驱动重渲染 */
@@ -115,7 +136,7 @@ export function routeHref(path: string): string {
 export function useHashRoute(): Route {
   const [route, setRoute] = useState<Route>(() => parseLocation());
   useEffect(() => {
-    rewriteLegacyHash();
+    rewriteLegacyUrl();
     const onNav = () => setRoute(parseLocation());
     window.addEventListener('popstate', onNav);
     return () => window.removeEventListener('popstate', onNav);
