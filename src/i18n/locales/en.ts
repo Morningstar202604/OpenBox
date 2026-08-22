@@ -104,6 +104,7 @@ export const messages: Record<string, string> = {
     'common.paid': 'Paid',
     'common.loading': 'Loading…',
     'common.loadMore': 'Load more',
+    'search.try': 'Try popular searches:',
     'common.empty': 'Nothing here yet',
     'common.back': 'Back',
     'common.visit': 'Visit',

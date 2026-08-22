@@ -7,6 +7,18 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getSupabase, hasSupabase, AUTH_ENABLED } from '@/lib/supabase';
 import { useAuthStore } from './useAuthStore';
+import { useToastStore } from './useToastStore';
+import { useI18nStore } from '@/i18n/useI18n';
+
+const FAV_MSG = {
+  added: { zh: '已收藏', en: 'Added to favorites', ja: 'お気に入りに追加しました' },
+  addedLocal: {
+    zh: '已加入本地收藏，登录后可云同步',
+    en: 'Saved locally — sign in to sync across devices',
+    ja: 'ローカルに保存しました。ログインで同期できます',
+  },
+  removed: { zh: '已取消收藏', en: 'Removed from favorites', ja: 'お気に入りを解除しました' },
+} as const;
 
 const authOn = AUTH_ENABLED && hasSupabase;
 
@@ -28,6 +40,17 @@ export const useFavoritesStore = create<FavoritesState>()(
         const added = !ids.includes(id);
         const next = added ? [...ids, id] : ids.filter((x) => x !== id);
         set({ ids: next });
+        // 反馈提示：未登录点收藏时告知仅存本地（云同步需登录），避免静默无感知
+        try {
+          const lang = useI18nStore.getState().lang;
+          const uid = useAuthStore.getState().user?.id;
+          const msg = !added
+            ? FAV_MSG.removed[lang]
+            : authOn && uid
+              ? FAV_MSG.added[lang]
+              : FAV_MSG.addedLocal[lang];
+          useToastStore.getState().push(msg, 'success');
+        } catch { /* toast 失败不影响收藏 */ }
         // 登录态：镜像到云端收藏表（匿名 key + 用户会话，受 RLS 约束只能改自己的行）
         const uid = useAuthStore.getState().user?.id;
         if (authOn && uid) {

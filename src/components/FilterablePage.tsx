@@ -15,12 +15,15 @@ export function FilterablePage({
   countLabel,
   header,
   nonFreeHint,
+  emptyHint,
 }: {
   query: ResourceQuery;
   countLabel: string;
   header?: ReactNode;
   /** 有非免费资源时展示的提示（如分类页「含付费项目」说明） */
   nonFreeHint?: ReactNode;
+  /** 空结果时的引导内容（如搜索页热门关键词） */
+  emptyHint?: ReactNode;
 }) {
   const { resources: all, loading } = useResources(query);
   const [type, setType] = useState<ResourceType | 'all'>('all');
@@ -40,7 +43,7 @@ export function FilterablePage({
       <p className="text-sm text-[var(--color-muted)]">
         {filtered.length} {countLabel}
       </p>
-      <ResourceList resources={filtered} loading={loading} />
+      <ResourceList resources={filtered} loading={loading} emptyHint={emptyHint} />
     </div>
   );
 }

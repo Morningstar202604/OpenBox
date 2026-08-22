@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
 import { ResourceCard } from './ResourceCard';
@@ -24,7 +24,7 @@ function loadView(): ViewMode {
  * 资源列表：支持「网格卡 / 信息密集列表行」两种形态（差异化），
  * 视图偏好本地记忆；移动端网格单列、列表行自然纵向，不做强制压缩。
  */
-export function ResourceList({ resources, loading = false, allowViewSwitch = true }: { resources: Resource[]; loading?: boolean; allowViewSwitch?: boolean }) {
+export function ResourceList({ resources, loading = false, allowViewSwitch = true, emptyHint }: { resources: Resource[]; loading?: boolean; allowViewSwitch?: boolean; emptyHint?: ReactNode }) {
   const t = useT();
   const [view, setView] = useState<ViewMode>(loadView);
   // 派生分页：记录页码对应的列表长度，列表变化（搜索/筛选）时自动回到第 1 页，无需 effect 重置
@@ -79,7 +79,15 @@ export function ResourceList({ resources, loading = false, allowViewSwitch = tru
     );
   }
 
-  if (!resources.length) return <EmptyState icon="Search" title={t('common.empty')} />;
+  if (!resources.length) {
+    return (
+      <EmptyState
+        icon="Search"
+        title={t('common.empty')}
+        hint={emptyHint ?? (loading ? '—' : undefined)}
+      />
+    );
+  }
 
   return (
     <div>
