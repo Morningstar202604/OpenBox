@@ -13,6 +13,66 @@ export interface WeeklyUpdate {
 // 配置文件驱动：后续在此追加「账号动态 / 每周更新」即可，组件无需改动。
 export const weeklyUpdates: WeeklyUpdate[] = [
   {
+    id: 'audit-0822',
+    date: '2026-08-22',
+    kind: 'update',
+    title: {
+      zh: '全量数据真实性审计完成',
+      en: 'Full data authenticity audit completed',
+      ja: '全データ真実性監査を完了',
+    },
+    desc: {
+      zh: '十种验证方法逐站核验 278 条资源：17+ 条停摆/转型/域名迁移条目已修正或标注，新增域名到期预警。',
+      en: 'All 278 resources verified site-by-site with 10 methods: 17+ dead/pivoted/migrated entries corrected or annotated, domain expiry warnings added.',
+      ja: '10種類の検証で278件を全站確認：停止・転換・ドメイン移転の17件以上を修正・注記し、ドメイン期限警告を追加。',
+    },
+  },
+  {
+    id: 'ratings-live',
+    date: '2026-08-22',
+    kind: 'account',
+    title: {
+      zh: '分维度评分功能正式可用',
+      en: 'Dimension ratings are now live',
+      ja: '多次元評価機能が利用可能に',
+    },
+    desc: {
+      zh: '登录后即可在资源详情页按稳定性/速度/性价比/模型覆盖打分，聚合均值全员可见。',
+      en: 'Log in to rate any resource on stability, speed, value and model coverage — aggregated averages are public.',
+      ja: 'ログインして安定性・速度・コスパ・モデル対応を評価でき、平均値は全員に公開されます。',
+    },
+  },
+  {
+    id: 'router-migration',
+    date: '2026-08-22',
+    kind: 'update',
+    title: {
+      zh: '路由升级为真实路径',
+      en: 'Routes upgraded to real paths',
+      ja: 'ルーティングを実パスに移行',
+    },
+    desc: {
+      zh: '/resource/xxx 直链可访问；旧 #/ 链接自动跳转兼容，收藏与搜索引擎收录不受影响。',
+      en: 'Direct links like /resource/xxx now work; legacy #/ links auto-compat — bookmarks and SEO unaffected.',
+      ja: '/resource/xxx の直リンクが可能に。旧 #/ リンクも自動互換、ブックマークやSEOは影響なし。',
+    },
+  },
+  {
+    id: 'domain-new',
+    date: '2026-08-22',
+    kind: 'notice',
+    title: {
+      zh: '站点迁移至新域名并支持自动部署',
+      en: 'Site migrated with auto-deploy enabled',
+      ja: 'サイトを新ドメインへ移行、自動デプロイ対応',
+    },
+    desc: {
+      zh: '主域名更新为 openbox-nav.pages.dev，此后每次代码合并都会自动构建发布。',
+      en: 'Primary domain is now openbox-nav.pages.dev; every merged change auto-builds and deploys.',
+      ja: 'メインドメインは openbox-nav.pages.dev に。マージするたび自動ビルド＆デプロイされます。',
+    },
+  },
+  {
     id: 'open',
     date: '2026-08-04',
     kind: 'notice',
