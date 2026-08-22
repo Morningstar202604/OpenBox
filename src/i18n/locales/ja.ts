@@ -11,6 +11,7 @@ export const messages: Record<string, string> = {
     'my.title': 'マイ',
     'my.favorites': 'お気に入り',
     'my.submit': 'リソースを投稿',
+    'my.language': '言語',
     'my.about': 'OpenBoxについて',
     'my.favoritesEmpty': 'まだお気に入りはありません。',
 

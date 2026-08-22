@@ -11,6 +11,7 @@ export const messages: Record<string, string> = {
     'my.title': '我的',
     'my.favorites': '我的收藏',
     'my.submit': '投稿资源',
+    'my.language': '语言',
     'my.about': '关于 OpenBox',
     'my.favoritesEmpty': '还没有收藏，去首页逛逛吧',
 

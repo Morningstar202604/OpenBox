@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useT, useLocalize } from '@/i18n/useI18n';
+﻿import { useEffect, useMemo, useState } from 'react';
+import { useT, useLocalize, useI18nStore, LANGS } from '@/i18n/useI18n';
 import { getMyRatings, type MyRating } from '@/lib/ratings';
 import { getMyComments, type CommentItem } from '@/lib/data';
 import { getRatingDimensions } from '@/lib/ratingDimensions';
@@ -13,6 +13,8 @@ import { navigate } from '@/hooks/useHashRoute';
 import { fmtDate } from '@/lib/format';
 import { Icon } from '@/components/Icon';
 
+const LANG_LABEL: Record<string, string> = { zh: '中文', en: 'English', ja: '日本語' };
+
 /**
  * 「我的」页：注册前（未登录）仅可浏览本地收藏 + 看到登录引导；
  * 注册后（已登录）解锁云端收藏同步、投稿、我的评分、我的评论。
@@ -21,6 +23,8 @@ import { Icon } from '@/components/Icon';
 export function MyPage() {
   const t = useT();
   const localize = useLocalize();
+  const lang = useI18nStore((s) => s.lang);
+  const setLang = useI18nStore((s) => s.setLang);
   const user = useAuthStore((s) => s.user);
   const openAuth = useAuthStore((s) => s.openAuth);
   const signOut = useAuthStore((s) => s.signOut);
@@ -184,10 +188,29 @@ export function MyPage() {
         </section>
       )}
 
-      {/* 关于入口 */}
+      {/* 语言设置（手机端 NavBar 隐藏 LangSwitcher，这里提供唯一移动端入口） */}
       <section>
         <div className="section-head mb-3">
           <span className="no">{user ? '05' : '03'}</span>
+          <h2>{t('my.language')}</h2>
+        </div>
+        <div className="flex gap-2">
+          {LANGS.map((l) => (
+            <button
+              key={l}
+              className={`btn btn-sm flex-1 ${lang === l ? 'btn-primary' : 'btn-ghost'}`}
+              onClick={() => setLang(l)}
+            >
+              {LANG_LABEL[l]}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* 关于入口 */}
+      <section>
+        <div className="section-head mb-3">
+          <span className="no">{user ? '06' : '04'}</span>
           <h2>{t('my.about')}</h2>
         </div>
         <button className="btn btn-ghost w-full justify-start" onClick={() => navigate('/about')}>

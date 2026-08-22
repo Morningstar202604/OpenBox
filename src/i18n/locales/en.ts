@@ -11,6 +11,7 @@ export const messages: Record<string, string> = {
     'my.title': 'My',
     'my.favorites': 'My Favorites',
     'my.submit': 'Submit Resource',
+    'my.language': 'Language',
     'my.about': 'About OpenBox',
     'my.favoritesEmpty': 'No favorites yet — explore the home page.',
 
