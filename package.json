@@ -34,7 +34,8 @@
     "check": "tsc -b --noEmit",
     "test": "vitest run",
     "gen:sitemap": "node scripts/gen-sitemap.mjs",
-    "check:links": "node scripts/check-links.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "audit:data": "node scripts/audit-data.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.8",
