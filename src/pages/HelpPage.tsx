@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useT } from '@/i18n/useI18n';
-import { navigate } from '@/hooks/useHashRoute';
+import { navigate, routeHref } from '@/hooks/useHashRoute';
 import { Icon } from '@/components/Icon';
 
 function Section({ id, title, icon, children }: { id: string; title: string; icon: string; children: ReactNode }) {
@@ -40,7 +40,7 @@ export function HelpPage() {
         {/* 目录（桌面端置顶吸附，移动端横向滚动） */}
         <nav className="card mb-5 flex gap-2 overflow-x-auto p-4 lg:mb-0 lg:sticky lg:top-20 lg:flex-col lg:self-start lg:overflow-visible">
           {TOC.map((x) => (
-            <a key={x.id} href={`#/help#${x.id}`} className="chip shrink-0" data-active={false} onClick={(e) => { e.preventDefault(); document.getElementById(x.id)?.scrollIntoView({ behavior: 'smooth' }); }}>
+            <a key={x.id} href={`${routeHref('/help')}#${x.id}`} className="chip shrink-0" data-active={false} onClick={(e) => { e.preventDefault(); document.getElementById(x.id)?.scrollIntoView({ behavior: 'smooth' }); }}>
               <Icon name={x.icon} size={14} /> {x.title}
             </a>
           ))}

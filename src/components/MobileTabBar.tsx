@@ -12,10 +12,10 @@ export function MobileTabBar() {
   const route = useHashRoute();
 
   const tabs = [
-    { name: 'home', label: t('nav.home'), icon: 'Home', href: '#/home', match: ['home', 'landing'] },
-    { name: 'search', label: t('nav.search'), icon: 'Search', href: '#/search', match: ['search'] },
-    { name: 'ranking', label: t('nav.ranking'), icon: 'TrendingUp', href: '#/ranking', match: ['ranking'] },
-    { name: 'my', label: t('nav.my'), icon: 'User', href: '#/my', match: ['my', 'favorites', 'submit', 'about'] },
+    { name: 'home', label: t('nav.home'), icon: 'Home', href: '/home', match: ['home', 'landing'] },
+    { name: 'search', label: t('nav.search'), icon: 'Search', href: '/search', match: ['search'] },
+    { name: 'ranking', label: t('nav.ranking'), icon: 'TrendingUp', href: '/ranking', match: ['ranking'] },
+    { name: 'my', label: t('nav.my'), icon: 'User', href: '/my', match: ['my', 'favorites', 'submit', 'about'] },
   ] as const;
 
   return (
@@ -30,7 +30,7 @@ export function MobileTabBar() {
           return (
             <button
               key={tab.name}
-              onClick={() => navigate(tab.href.replace('#', ''))}
+              onClick={() => navigate(tab.href)}
               className={`relative flex min-h-[3.5rem] flex-1 flex-col items-center justify-center gap-0.5 text-[0.7rem] transition-colors ${
                 active ? 'font-semibold text-[var(--color-primary)]' : 'text-[var(--color-muted)]'
               }`}

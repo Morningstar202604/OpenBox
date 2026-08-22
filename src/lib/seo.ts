@@ -1,6 +1,5 @@
 // 动态 SEO：路由切换时同步 title / meta description / OG / canonical。
-// SPA 的 hash 路由 URL 本身对搜索引擎不友好（见 issue #10），但执行 JS 的
-// 爬虫（Google）与社交分享卡片依赖这些标签，仍是零成本收益。
+// history 路由迁移（issue #15）后 URL 为真实路径，canonical/sitemap 与之保持一致。
 
 const SITE = 'https://openbox-13o.pages.dev';
 const DEFAULT_TITLE = 'OpenBox · 开源 AI 资源导航';
@@ -20,14 +19,14 @@ function upsertMeta(selector: string, attr: 'name' | 'property', key: string, co
 export interface SEOInfo {
   title?: string;
   description?: string;
-  /** hash 路由路径，如 '/resource/xxx'；省略则 canonical 指向站点根 */
+  /** history 路由路径，如 '/resource/xxx'；省略则 canonical 指向站点根 */
   path?: string;
 }
 
 export function setSEO(info: SEOInfo) {
   const title = info.title ? `${info.title} · OpenBox` : DEFAULT_TITLE;
   const desc = info.description?.trim() || DEFAULT_DESC;
-  const url = info.path ? `${SITE}/#${info.path}` : `${SITE}/`;
+  const url = info.path ? `${SITE}${info.path}` : `${SITE}/`;
 
   document.title = title;
   upsertMeta('meta[name="description"]', 'name', 'description', desc);

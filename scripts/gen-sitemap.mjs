@@ -4,7 +4,7 @@
  *   npm run gen:sitemap   （SITE_URL 环境变量可覆盖站点地址）
  *
  * 原理：用 vite 内置的 rolldown 把 scripts/_sitemap-entry.ts 打包后在 Node 执行，
- * 拿到与线上渲染完全同源的资源 id 与分类 slug 全集，生成 hash 路由 URL 清单。
+ * 拿到与线上渲染完全同源的资源 id 与分类 slug 全集，生成 history 路由的干净 URL 清单（issue #15）。
  * CI 在 build 前重新生成，保证 sitemap 与数据同步。
  */
 import { writeFile, mkdir } from 'node:fs/promises';
@@ -44,8 +44,8 @@ const data = JSON.parse(json.trim());
 const today = data.updatedAt;
 const urls = [
   { loc: `${SITE}/`, priority: '1.0', freq: 'daily' },
-  ...data.subs.map((s) => ({ loc: `${SITE}/#/category/${s}`, priority: '0.8', freq: 'weekly' })),
-  ...data.ids.map((id) => ({ loc: `${SITE}/#/resource/${id}`, priority: '0.6', freq: 'weekly' })),
+  ...data.subs.map((s) => ({ loc: `${SITE}/category/${s}`, priority: '0.8', freq: 'weekly' })),
+  ...data.ids.map((id) => ({ loc: `${SITE}/resource/${id}`, priority: '0.6', freq: 'weekly' })),
 ];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
