@@ -77,3 +77,19 @@ VITE_SUPABASE_ANON_KEY=你的-anon-key
 4. 审核投稿、管理用户：在 Supabase 控制台 → **Table Editor**（`submissions`）、**Authentication → Users**。
 
 `profiles` / `favorites` / `reports` 三张预留表已在 `0001_init.sql` 中建好并配置 RLS，可直接使用。
+
+## 七、增量迁移（0005-0006，2026-08）
+
+在 SQL Editor 依次执行（幂等）：
+
+1. `supabase/migrations/0005_anon_abuse_limits.sql` —— 字段约束 + 投票设备指纹去重
+2. `supabase/migrations/0006_admin_review.sql` —— 管理员策略 + 投稿同 URL 去重
+
+### 开通审核后台（#/admin）
+
+``sql
+insert into admin_emails values ('你的登录邮箱');
+``
+
+再在 Cloudflare Pages 环境变量加 `
+VITE_ADMIN_EMAILS=你的邮箱`，重新部署后访问 /#/admin 审核投稿。
