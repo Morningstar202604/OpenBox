@@ -55,7 +55,7 @@ git push origin main
    - **Build command**：`npm run build`
    - **Build output directory**：`docs`
    - **Node.js version**：20（Settings → Environment variables 里设 `NODE_VERSION=20`）
-4. 点 **Save and Deploy** → 等约 1 分钟，拿到 `openbox-13o.pages.dev` 预览域名
+4. 点 **Save and Deploy** → 等约 1 分钟，拿到 `openbox-nav.pages.dev` 预览域名
 
 > 注意：控制台连 Git 时，Cloudflare 自己跑 `npm run build`，
 > 不需要仓库里的 `deploy-cloudflare.yml`（那是给「手动 API Token 部署」用的）。
@@ -103,18 +103,18 @@ git push origin main
 1. 回到 Pages 项目 `openbox` → **Settings → Custom domains → Set up a domain**
 2. 填入你申请的免费域名（如 `openbox.us.kg`）
 3. Cloudflare 会自动：
-   - 给该域名加 **CNAME** 指向 `openbox-13o.pages.dev`
+   - 给该域名加 **CNAME** 指向 `openbox-nav.pages.dev`
    - 签发 **免费 SSL 证书**（Universal SSL，自动续期）
 4. 等 DNS 生效（通常几分钟~几小时），访问 `https://openbox.us.kg` 即可看到站点
 
 > 若域名 NS 不在 Cloudflare，需去域名提供商后台手动加 CNAME：
-> `openbox.us.kg` → `openbox-13o.pages.dev`，并开启代理（橙色云）。
+> `openbox.us.kg` → `openbox-nav.pages.dev`，并开启代理（橙色云）。
 
 ---
 
 ## 5. 验证
 
-- [ ] `https://openbox-13o.pages.dev` 能打开
+- [ ] `https://openbox-nav.pages.dev` 能打开
 - [ ] `https://openbox.us.kg`（你的免费域名）能打开且带小绿锁
 - [ ] 三语切换、分类浏览、投稿页正常
 - [ ] 控制台 → Analytics 能看到访问数据

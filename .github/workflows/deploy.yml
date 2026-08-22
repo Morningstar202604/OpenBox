@@ -1,0 +1,52 @@
+name: Deploy to Cloudflare Pages
+
+# 自建 Cloudflare Pages 项目（openbox-nav）的自动部署：
+# push main → 构建（根路径 base）→ wrangler 直传部署。
+# 凭据来自仓库 Secrets：CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Regenerate sitemap
+        run: npm run gen:sitemap
+
+      # 根路径部署：CF Pages 独立产物（默认 /OpenBox/ 是给 GitHub Pages 子路径用的）
+      - name: Build (Vite, root base)
+        run: npm run build
+        env:
+          VITE_BASE_URL: /
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy docs --project-name=openbox-nav --branch=main --commit-dirty=true
