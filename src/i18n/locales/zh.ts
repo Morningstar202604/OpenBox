@@ -88,9 +88,10 @@ export const messages: Record<string, string> = {
     'help.faq2a': '官方类默认非免费；需代理指国内直连困难、要走代理/海外网络。',
     'help.faq3q': '评分和评论要登录吗？',
     'help.faq3a': '浏览、搜索、看榜、看评论均无需登录；打分、评论、投稿需登录。',
+    'card.freemium': '部分免费',
     'card.nonFree': '非免费',
     'card.overseas': '需代理/海外',
-    'category.nonFreeHint': '本类含非免费项目，已标注「非免费」，请按需甄别。',
+    'category.nonFreeHint': '本类含付费或部分免费项目，已标注「非免费 / 部分免费」，请按需甄别。',
     'nav.github': '源码',
 
     'common.search': '搜索',

@@ -87,11 +87,7 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
       <div className="mt-4 flex flex-wrap items-center gap-2.5">
         <TypeBadge type={resource.type} />
         <StatusBadge status={resource.status} />
-        {resource.official && (
-          <span className="badge" style={{ color: 'var(--color-primary)', background: 'var(--color-primary-soft)' }}>
-            {t('common.official')}
-          </span>
-        )}
+        {/* 官方/部分免费/非免费/需代理 徽章统一由 ResourceFlags 输出，避免「官方」重复渲染 */}
         <ResourceFlags resource={resource} />
       </div>
 

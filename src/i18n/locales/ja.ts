@@ -88,9 +88,10 @@ export const messages: Record<string, string> = {
     'help.faq2a': '公式は基本有料。プロキシは代理／海外不要で届きにくい。',
     'help.faq3q': '評価／コメントはログイン必要？',
     'help.faq3a': '閲覧・検索・ランキング・コメント閲覧は不要。評価・コメント・投稿は要ログイン。',
+    'card.freemium': '一部無料',
     'card.nonFree': '有料',
     'card.overseas': 'プロキシ/海外',
-    'category.nonFreeHint': 'このカテゴリには有料項目が含まれ、「有料」と表示しています。',
+    'category.nonFreeHint': '有料・一部無料の項目を「有料 / 一部無料」と表示しています。',
     'nav.github': 'ソース',
 
     'common.search': '検索',
