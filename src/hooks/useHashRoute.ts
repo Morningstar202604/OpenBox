@@ -13,6 +13,7 @@ export type RouteName =
   | 'my'
   | 'ranking'
   | 'help'
+  | 'admin'
   | 'notfound';
 
 export interface Route {
@@ -66,6 +67,8 @@ export function parseHash(): Route {
       return { name: 'ranking' };
     case 'help':
       return { name: 'help' };
+    case 'admin':
+      return { name: 'admin' };
     default:
       return { name: 'notfound' };
   }
