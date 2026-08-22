@@ -1,4 +1,4 @@
-// 本地种子数据：作为「未配置 Supabase 时」的兜底数据源，也作为生产库的初始内容。
+﻿// 本地种子数据：作为「未配置 Supabase 时」的兜底数据源，也作为生产库的初始内容。
 // 内容来源：① 既有策展数据（src/data/sites.ts，API/中转类）经映射复用；② 新分类的精选真实条目。
 import type { Resource, ResourceType } from '@/lib/types';
 import { SUBTYPE_SCENARIOS } from './taxonomy';
@@ -54,7 +54,7 @@ function mapLegacy(s: Site): Resource | null {
 const ALIVE_LEGACY_URLS = new Set([
 'https://aierxin.cc', 'https://api.koozhan.com', 'https://runapi.host',
 'https://1.bixin123.com', 'https://1000zhen.com', 'https://4router.net', 'https://80aj.com', 'https://ai.huaibao.top',
-  'https://ai.huan666.de', 'https://ai.qaq.al', 'https://ai.wendabao.net', 'https://ai.wisech.com', 'https://aifast.com',
+  'https://ai.huan666.de', 'https://ai.wendabao.net', 'https://ai.wisech.com', 'https://aifast.com',
   'https://aigc2d.com', 'https://aigcbar.com', 'https://aiproxy.best', 'https://aiproxy.io', 'https://anticode.cn',
   'https://api.aizzz.xyz', 'https://api.bltcy.ai', 'https://api.gemai.cc', 'https://api.honglin.asia', 'https://api.lmuai.com',
   'https://api.rcouyi.com', 'https://api2d.com', 'https://api2gpt.com', 'https://apikeyfun.com',
