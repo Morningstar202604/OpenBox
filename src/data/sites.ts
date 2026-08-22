@@ -179,7 +179,7 @@ export const sites: Site[] = [
   { id: 'powerchat', name: 'PowerChat', url: 'https://powerchat.in/', category: 'freechat', type: 'free', status: 'unknown', models: ['GPT-4'], desc: '免费 GPT-4，无需登录' },
   { id: 'aifree', name: 'ai.free.ltd', url: 'https://ai.free.ltd/', category: 'freechat', type: 'free', status: 'unknown', models: ['GPT-4'], desc: '免费 GPT-4 对话' },
   { id: 'chatfree', name: 'chatfree.cc', url: 'https://chatfree.cc/', category: 'freechat', type: 'free', status: 'unknown', models: ['GPT-4'], desc: '免费 ChatGPT 对话' },
-  { id: 'chatz-free2gpt', name: 'chatz.free2gpt.com', url: 'https://chatz.free2gpt.com', category: 'freechat', type: 'free', status: 'unknown', models: ['ChatGPT'], desc: '免费 ChatGPT 对话' },
+  { id: 'chatz-free2gpt', name: 'chatz.free2gpt.com', url: 'https://chatz.free2gpt.com', category: 'freechat', type: 'free', status: 'unknown', models: ['ChatGPT'], desc: '免费 ChatGPT 对话', tips: '2026-08-22 RDAP 预警：主域 free2gpt.com 28 天后到期' },
   { id: 'newstop', name: 'newstop.cn', url: 'https://newstop.cn/', category: 'freechat', type: 'free', status: 'unknown', models: ['ChatGPT'], desc: '免费 ChatGPT 对话' },
   { id: 'azstudio', name: 'chat.azstudio.top', url: 'https://chat.azstudio.top/', category: 'freechat', type: 'free', status: 'unknown', models: ['ChatGPT'], desc: '免费 ChatGPT 对话' },
   { id: 'zenglingkun', name: 'chat.zenglingkun.com', url: 'https://chat.zenglingkun.com/', category: 'freechat', type: 'free', status: 'unknown', models: ['ChatGPT'], desc: '免费 ChatGPT 对话' },
