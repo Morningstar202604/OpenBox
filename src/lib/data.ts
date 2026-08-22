@@ -154,7 +154,12 @@ export async function getResources(query: ResourceQuery = {}): Promise<Resource[
   }
   // 已配置 Supabase：额外合并已通过审核的社区投稿
   try {
-    const community = await getCommunityResources();
+    // 云端合并设 1.5s 上限：慢网络下不让远程往返拖住首屏（本地种子即时可渲染，
+    // 超时则本轮先返回纯本地结果，缓存 TTL 过后自动重试合并）
+    const community = await Promise.race([
+      getCommunityResources(),
+      new Promise<Resource[]>((resolve) => setTimeout(() => resolve([]), 1500)),
+    ]);
     const result = [...local, ...filterResources(community, query)];
     cache = { key: cacheKey, data: result, ts: Date.now() };
     return result;
