@@ -21,7 +21,7 @@ const FEATURED_SUBTYPES = ['relays', 'free-api', 'free-server', 'free-domain', '
 
 export function HomePage() {
   const t = useT();
-  const { resources } = useResources({ sort: 'default' });
+  const { resources, loading } = useResources({ sort: 'default' });
 
   const tree = useMemo(() => buildScenarioTree(resources), [resources]);
 
@@ -79,7 +79,7 @@ export function HomePage() {
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 text-[15px] text-[var(--color-muted)]">
           <span className="term-prompt" />
           <span className="font-mono">{t('home.stats')}：</span>
-          <span className="font-mono font-semibold text-[var(--color-primary)]">{resources.length}</span>
+          <span className="font-mono font-semibold text-[var(--color-primary)]">{loading ? '—' : resources.length}</span>
           <span>·</span>
           <span className="font-mono">
             {tree.length} {t('nav.categories')}
@@ -87,11 +87,12 @@ export function HomePage() {
         </div>
 
         {/* 状态聚合条：信号灯式「现在还能不能薅」（全站健康度） */}
+        {/* 加载中显示 — 而非误导性的 0（冷启动时云端合并未完成，种子数据尚未返回） */}
         <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[15px]">
-          <span className="signal" data-status="ok">{statusCounts.ok ?? 0} {t('status.ok')}</span>
-          <span className="signal" data-status="unstable">{statusCounts.unstable ?? 0} {t('status.unstable')}</span>
-          <span className="signal" data-status="dead">{statusCounts.dead ?? 0} {t('status.dead')}</span>
-          <span className="signal" data-status="unknown">{statusCounts.unknown ?? 0} {t('status.unknown')}</span>
+          <span className="signal" data-status="ok">{loading ? '—' : statusCounts.ok ?? 0} {t('status.ok')}</span>
+          <span className="signal" data-status="unstable">{loading ? '—' : statusCounts.unstable ?? 0} {t('status.unstable')}</span>
+          <span className="signal" data-status="dead">{loading ? '—' : statusCounts.dead ?? 0} {t('status.dead')}</span>
+          <span className="signal" data-status="unknown">{loading ? '—' : statusCounts.unknown ?? 0} {t('status.unknown')}</span>
         </div>
 
         {/* 状态分布健康度条形（各状态占比，一眼看全局） */}
