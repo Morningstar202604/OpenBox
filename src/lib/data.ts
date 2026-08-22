@@ -227,8 +227,27 @@ export async function submitResource(
   if (hasSupabase) {
     const sb = await getSupabase();
     if (!sb) return { ok: false, mode: 'local', message: 'Supabase 客户端初始化失败' };
-    const { data, error } = await sb
-      .from('submissions')
+    // 同 URL 去重预检（服务端另有部分唯一索引兜底，见 0006 迁移）
+    try {
+      const { data: dup } = await sb
+        .from('submissions')
+        .select('id, status')
+        .eq('url', payload.url)
+        .in('status', ['pending', 'approved'])
+        .limit(1);
+      if (dup && dup.length) {
+        return {
+          ok: false,
+          mode: 'supabase',
+          message: '该链接已投稿过（待审或已收录），请勿重复提交',
+        };
+      }
+    } catch {
+      /* 预检失败不阻塞提交，唯一索引仍会拦截 */
+    }
+    try {
+      const { data, error } = await sb
+        .from('submissions')
       .insert({ ...payload, status: 'pending', created_at: new Date().toISOString() })
       .select()
       .single();
@@ -237,6 +256,9 @@ export async function submitResource(
       return { ok: true, mode: 'supabase', id: (data as SubmissionRow).id, message: '投稿已提交，等待审核通过后展示。' };
     }
     return { ok: false, mode: 'supabase', message: error?.message ?? '提交失败' };
+    } catch {
+      return { ok: false, mode: 'supabase', message: '提交失败，请稍后再试' };
+    }
   }
   // 本地兜底：存入 localStorage（仅本机可见，不进入审核库）
   try {
@@ -554,8 +576,63 @@ export async function addComment(
   return { ok: true };
 }
 
-/** 读取某用户发表的所有留言（用于「我的评论」；按时间倒序） */
-export async function getMyComments(userId: string): Promise<CommentItem[]> {
+// ============================================================
+// 管理员审核（issue #11）：待审队列 + 通过/拒绝。
+// 权限双层：前端用 VITE_ADMIN_EMAILS 显示入口，服务端 RLS（0006 is_admin()）强制执行。
+// ============================================================
+
+/** 当前登录用户是否为管理员（客户端预判；最终以 RLS 为准） */
+export function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+  const allow = (import.meta.env.VITE_ADMIN_EMAILS as string | undefined) ?? '';
+  return allow
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+    .includes(email.toLowerCase());
+}
+
+export async function getPendingSubmissions(): Promise<Submission[]> {
+  if (!hasSupabase) return [];
+  const sb = await getSupabase();
+  if (!sb) return [];
+  try {
+    const { data, error } = await sb
+      .from('submissions')
+      .select('*')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error || !data) return [];
+    return (data as SubmissionRow[]).map((r) => ({
+      id: r.id,
+      subType: r.subType,
+      name: r.name,
+      url: r.url,
+      type: r.type as ResourceType,
+      summary: r.summary,
+      description: r.description ?? '',
+      status: 'pending',
+      createdAt: r.created_at,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function reviewSubmission(
+  id: string,
+  decision: 'approved' | 'rejected',
+): Promise<{ ok: boolean; message?: string }> {
+  const sb = await getSupabase();
+  if (!sb) return { ok: false, message: 'Supabase 未配置' };
+  const { error } = await sb.from('submissions').update({ status: decision }).eq('id', id);
+  if (error) return { ok: false, message: error.message };
+  invalidateCache();
+  return { ok: true };
+}
+
+/** 读取某用户发表的所有留言（用于「我的评论」；按时间倒序） */export async function getMyComments(userId: string): Promise<CommentItem[]> {
   if (!hasSupabase) return [];
   const sb = await getSupabase();
   if (!sb) return [];

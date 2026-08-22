@@ -24,6 +24,7 @@ const FavoritesPage = lazy(() => import('@/pages/FavoritesPage').then(m => ({ de
 const MyPage = lazy(() => import('@/pages/MyPage').then(m => ({ default: m.MyPage })));
 const RankingPage = lazy(() => import('@/pages/RankingPage').then(m => ({ default: m.RankingPage })));
 const HelpPage = lazy(() => import('@/pages/HelpPage').then(m => ({ default: m.HelpPage })));
+const AdminPage = lazy(() => import('@/pages/AdminPage').then(m => ({ default: m.AdminPage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 function Router() {
@@ -44,6 +45,7 @@ function Router() {
           case 'my': return <MyPage />;
           case 'ranking': return <RankingPage />;
           case 'help': return <HelpPage />;
+          case 'admin': return <AdminPage />;
           case 'notfound': return <NotFoundPage />;
           default: return <HomePage />;
         }
