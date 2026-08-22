@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://openbox-13o.pages.dev/sitemap.xml
+Sitemap: https://openbox-nav.pages.dev/sitemap.xml

@@ -433,7 +433,7 @@ feat(data): add DeepSeek official free API
 当前配置：**main 分支 /docs 目录**（legacy 模式）。
 
 - 构建产物提交到 `docs/` 目录，GitHub Pages 自动从该目录提供服务
-- 地址：https://openbox-13o.pages.dev/（备用：https://weed33834.github.io/OpenBox/）
+- 地址：https://openbox-nav.pages.dev/（备用：https://weed33834.github.io/OpenBox/）
 - 每次推送 `main` 分支后，GitHub Actions 自动运行 CI 构建验证
 - 无需额外部署步骤
 
