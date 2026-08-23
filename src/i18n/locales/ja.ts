@@ -104,6 +104,7 @@ export const messages: Record<string, string> = {
     'common.paid': '有料',
     'common.loading': '読み込み中…',
     'common.loadMore': 'さらに読み込む',
+    'search.try': '人気の検索：',
     'common.empty': 'まだありません',
     'common.back': '戻る',
     'common.visit': '開く',

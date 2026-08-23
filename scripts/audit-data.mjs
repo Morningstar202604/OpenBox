@@ -9,6 +9,9 @@
  *   3) free-api / charity 中混入付费相关 tag 的错位项
  *   4) 标签体系噪音：不同 tag 总数、仅出现一次的长尾 tag
  *   5) 空 summary / 空 tags
+ *   6) 时效性数值承诺：summary/description/pricing/pros 中无时点限定的
+ *      具体倍率、价格、额度数字（变动频繁，极易过时）
+ *   7) 价格最高级营销话术：「全球最低价/最实惠」等绝对化承诺（引号内引用除外）
  *
  * 原理与 gen-sitemap 相同：rolldown 打包 seed 数据后在 Node 内执行分析，
  * 与线上渲染同源，零手工同步成本。发现的问题按 id 定位到 curated.ts /
@@ -27,7 +30,7 @@ const entryTs = join(cacheDir, 'audit-entry.ts');
 await mkdir(cacheDir, { recursive: true });
 await writeFile(
   entryTs,
-  `import { seedResources } from '${join(ROOT, 'src/data/seed').replace(/\\/g, '/')}';\nconsole.log(JSON.stringify(seedResources.map(r => ({ id: r.id, subType: r.subType, name: r.name, url: r.url, tags: r.tags ?? [], type: r.type, status: r.status, summary: r.summary }))));`,
+  `import { seedResources } from '${join(ROOT, 'src/data/seed').replace(/\\/g, '/')}';\nconsole.log(JSON.stringify(seedResources.map(r => ({ id: r.id, subType: r.subType, name: r.name, url: r.url, tags: r.tags ?? [], type: r.type, status: r.status, summary: r.summary, description: r.description, pricing: r.pricing, pros: r.pros ?? [] }))));`,
 );
 
 const bundle = await rolldown({ input: entryTs, platform: 'node' });
@@ -80,6 +83,50 @@ for (const r of rs) {
   if (bad.length) {
     problems++;
     out(`  ${r.id}: ${bad.join(',')}`);
+  }
+}
+
+// ---- 描述文本质量：时效性数值承诺 ----
+// 倍率/价格/额度类具体数字变动频繁，无时点限定的硬承诺极易过时。
+// 扫描用户可见的承诺面（summary/description/pricing/pros）；tips 按惯例自带日期戳，不扫。
+const claimFields = (r) =>
+  [r.summary, r.description, r.pricing, ...(Array.isArray(r.pros) ? r.pros : [])]
+    .filter(Boolean)
+    .map((s) => String(s));
+// 时点/模糊限定词：命中其一即视为已做防过时处理（含显式日期戳，如「2026-07 起」）
+const QUALIFIER = /(约|左右|快照|时点|截至|动态倍率|分时段|时段性|随.{0,8}(调整|浮动|变化)|仅供参考|以官网为准|以站内为准|历史|20\d{2}\s*[-年./])/;
+// 具体倍率/比例：0.45x 倍率、0.2 倍、低至 0.08 倍、官方 1:1
+const RATE = /[0-9]+(?:\.[0-9]+)?\s*[x×]?\s*倍[率数]?|[0-9]+\s*[:：]\s*1(?![0-9])/;
+// 具体价格/额度：$5、$0.01/M、1 元/M token、0.1 元/M
+const PRICE = /\$\s?[0-9]+(?:\.[0-9]+)?|[0-9]+(?:\.[0-9]+)?\s*(?:元|RMB|CNY|USD|刀)\s*(?:\/\s*M\b|M\s*token|\/\s*百万)?/i;
+
+out('\n== 时效性数值承诺：无时点限定的具体倍率/价格（建议加「约」或移入带日期 tips）==');
+for (const r of rs) {
+  const hits = [];
+  for (const raw of claimFields(r)) {
+    // 去掉资源名自身（品牌名含数字不算承诺，如「7倍算力」）与引号内引用
+    let text = raw;
+    if (r.name) text = text.split(String(r.name)).join('');
+    text = text.replace(/「[^」]*」/g, '');
+    if (!QUALIFIER.test(text) && (RATE.test(text) || PRICE.test(text))) {
+      hits.push(raw.length > 90 ? `${raw.slice(0, 90)}…` : raw);
+    }
+  }
+  if (hits.length) {
+    problems++;
+    out(`  ${r.id} [${r.subType}] ${hits.join(' | ')}`);
+  }
+}
+
+out('\n== 价格最高级营销话术（绝对化承诺易被打脸；引号内引用除外）==');
+const SUPERLATIVE = /(全球最低价|全网最低|最便宜|最实惠|价格最低)/;
+for (const r of rs) {
+  const hits = claimFields(r)
+    .map((t) => t.replace(/「[^」]*」/g, ''))
+    .filter((t) => SUPERLATIVE.test(t));
+  if (hits.length) {
+    problems++;
+    out(`  ${r.id} [${r.subType}] ${hits.join(' | ')}`);
   }
 }
 

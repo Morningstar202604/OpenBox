@@ -104,6 +104,7 @@ export const messages: Record<string, string> = {
     'common.paid': '付费',
     'common.loading': '加载中…',
     'common.loadMore': '加载更多',
+    'search.try': '试试热门搜索：',
     'common.empty': '暂无内容',
     'common.back': '返回',
     'common.visit': '访问',
