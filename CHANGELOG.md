@@ -157,8 +157,8 @@
 ### 发布
 - 新增 **WB 国内访问通道**：`https://a50a62f0345c835a5.app.workbuddy.link`（已写入 README 访问入口，作为国内访问通道，暂代尚未更新的协作者镜像）。
 
-[0.0.5]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.5
-[0.0.4]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.4
-[0.0.3]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.3
-[0.0.2]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.2
-[0.0.1]: https://github.com/weed33834/OpenBox/releases/tag/v0.0.1
+[0.0.5]: https://gitcode.com/badhope/OpenBox/releases/tag/v0.0.5
+[0.0.4]: https://gitcode.com/badhope/OpenBox/releases/tag/v0.0.4
+[0.0.3]: https://gitcode.com/badhope/OpenBox/releases/tag/v0.0.3
+[0.0.2]: https://gitcode.com/badhope/OpenBox/releases/tag/v0.0.2
+[0.0.1]: https://gitcode.com/badhope/OpenBox/releases/tag/v0.0.1

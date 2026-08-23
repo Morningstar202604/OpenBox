@@ -81,7 +81,7 @@ interface Resource {
 
 ```bash
 # 克隆
-git clone https://github.com/weed33834/OpenBox.git
+git clone https://gitcode.com/badhope/OpenBox.git
 cd OpenBox
 
 # 安装依赖

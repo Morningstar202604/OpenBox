@@ -32,7 +32,7 @@
 
 ## Reporting
 
-如需举报违规行为，联系 [Discussions](https://github.com/weed33834/OpenBox/discussions) 私聊 @weed33834。所有举报将被保密处理。
+如需举报违规行为，联系 [Discussions](https://gitcode.com/badhope/OpenBox/discussions) 私聊 @weed33834。所有举报将被保密处理。
 
 ## Attribution
 

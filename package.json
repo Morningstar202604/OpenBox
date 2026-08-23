@@ -20,11 +20,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/weed33834/OpenBox.git"
+    "url": "https://gitcode.com/badhope/OpenBox.git"
   },
   "homepage": "https://openbox-nav.pages.dev",
   "bugs": {
-    "url": "https://github.com/weed33834/OpenBox/issues"
+    "url": "https://gitcode.com/badhope/OpenBox/issues"
   },
   "scripts": {
     "dev": "vite",

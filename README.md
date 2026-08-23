@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://weed33834.github.io/OpenBox/"><strong>🌐 在线体验</strong></a>
   ·
-  <a href="https://github.com/weed33834/OpenBox">GitHub</a>
+  <a href="https://gitcode.com/badhope/OpenBox">GitHub</a>
   ·
   <a href="https://gitcode.com/badhope/OpenBox">GitCode</a>
   ·
@@ -29,8 +29,6 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-3178c6" alt="TypeScript">
   <img src="https://img.shields.io/badge/Tailwind-v4-38bdf8" alt="Tailwind">
   <img src="https://img.shields.io/badge/PWA-ready-blueviolet" alt="PWA">
-  <img src="https://img.shields.io/github/stars/weed33834/OpenBox?style=social" alt="Stars">
-  <img src="https://img.shields.io/github/last-commit/weed33834/OpenBox" alt="Last Commit">
 </p>
 
 ---
@@ -99,7 +97,7 @@ OpenBox 是一个**社区化的内容型资源导航平台**——把 AI 时代*
 ## 🚀 快速开始
 
 ```bash
-git clone https://github.com/weed33834/OpenBox
+git clone https://gitcode.com/badhope/OpenBox
 cd OpenBox
 npm install --legacy-peer-deps
 npm run dev        # 开发服务器 http://localhost:5173/OpenBox/
@@ -148,10 +146,10 @@ screenshots/           # README 演示截图
 
 OpenBox 是社区项目，**任何人都可以贡献，不需要会写代码**。详细规范见 [`CONTRIBUTING.md`](./CONTRIBUTING.md)。
 
-- 📤 **投稿资源** — 站内「投稿」页或 [新建议题](https://github.com/weed33834/OpenBox/issues/new?template=feature_request.md)
+- 📤 **投稿资源** — 站内「投稿」页或 [新建议题](https://gitcode.com/badhope/OpenBox/issues/new?template=feature_request.md)
 - 🗳️ **验证资源** — 薅到了投「还能用」、踩坑了投「已失效」——你的票直接更新社区状态
 - 💬 **留言避坑** — 资源详情页评论区分享你的使用经验
-- ⚠️ **报告问题** — 资源失效 / 链接错误 → [Bug 报告](https://github.com/weed33834/OpenBox/issues/new?template=bug_report.md)
+- ⚠️ **报告问题** — 资源失效 / 链接错误 → [Bug 报告](https://gitcode.com/badhope/OpenBox/issues/new?template=bug_report.md)
 - 🌍 **翻译** — 三语界面，欢迎补充改进 zh / en / ja 文案
 - 🧑‍💻 **代码** — Fork → 分支 → PR（参考 [PR 模板](.github/PULL_REQUEST_TEMPLATE.md)）
 - 💡 **反馈建议** — 任何想法都可以开 Issue 讨论

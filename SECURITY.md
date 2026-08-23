@@ -9,8 +9,8 @@ OpenBox 是一个静态前端 + 可选 Supabase 后端的导航站。**当前 `m
 
 发现安全漏洞请**不要**直接开公开 Issue，按以下方式私下报告：
 
-1. **首选**：[GitHub Security Advisories](https://github.com/weed33834/OpenBox/security/advisories/new) 提交私密报告（不公开讨论）
-2. **备选**：在 [Discussions](https://github.com/weed33834/OpenBox/discussions) 联系 @weed33834，告知详细情况后再走安全建议流程
+1. **首选**：[GitHub Security Advisories](https://gitcode.com/badhope/OpenBox/security/advisories/new) 提交私密报告（不公开讨论）
+2. **备选**：在 [Discussions](https://gitcode.com/badhope/OpenBox/discussions) 联系 @weed33834，告知详细情况后再走安全建议流程
 
 请在报告中说明：
 
