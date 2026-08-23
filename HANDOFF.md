@@ -16,7 +16,12 @@
 - #31 补建 ratings 表（评分功能自上线起即 404 的根因修复）｜#32 移动端徽章修正（官方重复渲染/freemium 误标非免费）
 
 ## 数据质量工具与经验
-- `npm run audit:data`：五项体检（type/status 分布、自夸矛盾、类目-tag 错位、数值伪 tag、空字段），当前 0 问题
+- `npm run audit:data`：七项体检（type/status 分布、自夸矛盾、类目-tag 错位、数值伪 tag、
+  **时效性数值承诺（2026-08-23 新增）**、**价格最高级话术（同日新增）**、空字段），已入 CI 门禁
+- **描述文本质量纪律（2026-08-23 起）**：summary/description/pricing/pros 中禁止无时点限定的
+  具体倍率/价格/额度数字——要么加「约/以官网为准」，要么移入带日期戳的 tips；引号内引用官方
+  自述不算承诺；品牌名自带数字（如「7倍算力」）、显式日期戳（「2026-07 起」）自动豁免。
+  首轮清理 10 条（closeai/api2d/siliconflow/4router/hlool/windsurf/vercel/railway/xkiro/evomap）
 - 移动端验证方法论：playwright-core + iPhone 视口(390x844)实拍截图逐页看 + scrollWidth 溢出检测 + 监听 404 响应
 - **seed 合并顺序陷阱**：legacy 白名单 > curatedRanked > curatedResources，URL/name 去重保首次出现者——
   改 curated 定性结论时必须同步清理 legacy 白名单（sites.ts ALIVE_LEGACY_URLS），否则旧数据遮蔽新审计
@@ -41,5 +46,5 @@
 4. /admin 审核：用 33383432254@qq.com 登录后访问 /admin（admin_emails 已登记）
 
 ## 待执行任务（新会话按序）
-1. Turnstile 接入（等 key）：前端 VerifyWidget 已有占位
-2. 可选深化：描述文本质量审计（过时倍率/价格信息）、audit:data 纳入 CI 门禁
+1. Turnstile 接入（等 key）：VerifyWidget 已演化为社区验证投票组件，拿到 key 后在投票/评论/投稿表单接入
+2. ~~可选深化：描述文本质量审计、audit:data 纳入 CI 门禁~~ ✅ 均已完成（审计 2026-08-23 上线，门禁此前已入 CI）

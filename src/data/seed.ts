@@ -481,9 +481,11 @@ const curated: Resource[] = [
   }),
   mk('tools', 'Devin Desktop（原 Windsurf）', 'https://devin.ai/desktop', {
     type: 'freemium', status: 'ok',
-    summary: 'Windsurf｜AI 原生编辑器（已并入 Devin）',
-    description: 'Devin Desktop（原 Windsurf）是 Cognition 出品的 AI 编程 IDE，Windsurf 独立产品已并入 Devin 生态。 AI 原生编辑器（原 Codeium 出品），以 Cascade Agent 实现多文件编辑与命令执行。2026 年已并入 Devin，官网现展示 Devin Desktop。',
-    tags: ['编程', '海外'], pros: ['Agent 强'], cons: ['已并入 Devin'],
+    summary: 'Devin Desktop｜AI 编程 IDE 与 Agent 指挥台（原 Windsurf）',
+    description: 'Devin Desktop（原 Windsurf）是 Cognition 出品的 AI 编程 IDE，Windsurf 独立产品已并入 Devin 生态。 AI 原生编辑器（原 Codeium 出品），以 Cascade Agent 实现多文件编辑与命令执行。2026 年已并入 Devin 并整体更名 Devin Desktop（原价计划不变），官网现展示 Devin Desktop。',
+    tags: ['编程', '海外'], pros: ['Agent 强', '含免费 IDE 档'], cons: ['高级档价格高'],
+    pricing: 'Free $0 / Pro $20/月 / Max $200/月（2026-08 核对，以官网为准）',
+    tips: '2026-08-23 实站核对：codeium.com/windsurf 已更名 Devin Desktop，FAQ 明确「仅改品牌名」，原计划与定价自动平移；Pro 为 $20/月（旧口径 $15 已停）。',
   }),
   mk('tools', 'Bolt.new', 'https://bolt.new', {
     type: 'freemium', status: 'ok',
