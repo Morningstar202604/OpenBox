@@ -97,7 +97,7 @@ OpenBox 是一个**社区化的内容型资源导航平台**——把 AI 时代*
 ## 🚀 快速开始
 
 ```bash
-git clone https://gitcode.com/badhope/OpenBox
+git clone https://github.com/Morningstar202604/OpenBox
 cd OpenBox
 npm install --legacy-peer-deps
 npm run dev        # 开发服务器 http://localhost:5173/OpenBox/
