@@ -1,8 +1,11 @@
 name: Deploy to Cloudflare Pages
 
-# 部署暂未启用：仅保留手动触发（workflow_dispatch），避免无令牌时“假成功”及与 monitor 形成冗余链路。
-# 待提供 CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID 并关闭 Cloudflare 直接 Git 集成后，再加回 push 触发。
+# push main 即构建并部署到 Cloudflare Pages（海外镜像轨）。
+# 未配置 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID 时部署步骤自动跳过，
+# 构建照常执行、不报错——密钥补上后无需再改本文件。
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -23,7 +26,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - run: VITE_BUILD_DIR=dist npm run build
         env:
           VITE_BASE_URL: /
