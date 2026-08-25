@@ -307,4 +307,72 @@ sudo systemctl enable --now caddy   # 域名解析由校园网 DNS 添加一条�
 
 ---
 
+## 8. 实施记录 · 第二轮（2026-08-26 深夜 · 三线并查）
+
+### 8.1 链接全量巡检（check-links，662 个 URL 字面量）
+
+| 结论 | 数值 | 判读 |
+|---|---|---|
+| alive | 254 | — |
+| blocked（反爬 403/429/999） | 37 | 站点大概率活着 |
+| dead | 40 | **多为 API 端点裸 GET 的天然 404**（siliconflow/dashscope/moonshot/nvidia 等 `/v1` base），非真死链 |
+| server-error | 7 | 530/522 = CF 源站宕，与既有 audit 记录吻合 |
+| unreachable | 324 | **本机出口受限噪声**（仅 github.com 就占 38 条），不作数 |
+
+**按纪律处置：单次探测不改任何资源状态**（monitor 的连续 2 次判死机制继续把关）。
+真正修掉的是巡检工具自身的缺陷：tips 散文里的裸链接字面量粘连中文备注
+（`…/v1——存活，不判死`）被整段当 URL 探测 → `extractUrls` 在首个 CJK 字符处截断，
+实测提取 662→661、污染清零。人工标记待复核项：`api.tokenriver.cn`（404，与在营的
+tokenriver.ai 疑似重复条目）、`caipacity` 条目的 `api.capacity.com` 域名存疑——留给下一轮 monitor 双确认。
+
+### 8.2 安全专项
+
+`npm audit fix` 修复 nanoid <3.3.18 高危（自定义生成器 size=0 死循环），修复后 **0 vulnerabilities**。
+
+### 8.3 P1-5 上帝模块拆分 ✅
+
+`lib/data.ts`（725 行）→ 门面 + 六域：
+```
+src/lib/data.ts          # 门面：export * 全量再导出，调用方零改动
+src/lib/data/shared.ts       # withSupabase 统一降级通道 + SubmissionRow 归一化
+src/lib/data/resources.ts    # 查询/筛选/LRU 缓存/社区投稿合并/隐藏分类闸门
+src/lib/data/submissions.ts  # 投稿双重校验+查重预检、失效反馈
+src/lib/data/verifications.ts# 验证投票：设备指纹、单条/批量统计、23505 去重
+src/lib/data/comments.ts     # 评论：云端+本地兜底并集、我的评论
+src/lib/data/admin.ts        # 待审队列、通过/拒绝、管理员预判
+```
+回归：tsc / eslint / vitest 51 用例全绿；13 个消费组件零改动。
+
+### 8.4 P1-2 数据外置：实测后缓做（工程裁决）
+
+首屏关键 chunk 实测（gzip 后）：**sites-data 仅 21.55 KB**、index 12.85 KB、icons 8.66 KB、react-vendor 57.3 KB。
+即全部种子数据上线传输成本 ≈ 一张小图。拆分按分类 JSON 的收益上限是这 21KB 的一部分，
+代价是 fetch 瀑布、SW 预缓存清单膨胀、离线兜底复杂化三重成本；
+且首页聚合视图（榜单/精选/标签云/场景树）本就需要全量数据，分类切片帮不了首屏。
+**裁决：缓做。重估阈值：gzip 后数据 >100KB（约 1200+ 条）或引入服务端搜索时再启动。**
+
+### 8.5 移动端/a11y
+
+浏览器级实测（playwright 视口截图/scrollWidth 检测）本机环境不具备条件，本轮未做，不假装做了。
+代码级现状（此前审计已确认）：Modal 有完整焦点陷阱/Esc/焦点归还，触控目标 ≥36px，
+safe-area 已适配——结构性无硬伤；专项实测列入下轮待办。
+
+### 8.6 GitCode Pages 可行性结论（回应「国内品牌部署」之问）
+
+**可行，定位为实验性第四轨。** 证据：官方文档 `gitcode.com/cocoachina/pages/overview`
+（"GitCode Pages 提供静态网址服务"）、2026 年多篇第三方实战记录（含踩坑帖）、
+访问形态 `<user>.gitcode.io/<repo>`、免费 + 自定义域名。
+保留意见：构建管线成熟度与稳定性证据弱于 EdgeOne（多数实战为推静态产物分支模式），
+故矩阵中标注实验性；**国内公网主力仍是 EdgeOne Pages，校内场景仍是内网部署**。
+开通路径（待站长账号实测）：推送 `dist/` 至专用分支 → 仓库设置启用 Pages → 绑定/使用默认域。
+
+### 8.7 对接准备状态
+
+- **数据库**：`SUPABASE_SETUP.md` 顶部新增 ⚡快速对接清单（7 步表）；迁移链 0001–0008 幂等可重跑；
+  校内版建议保持纯静态（零合规负担），公网版按清单接入。
+- **仓库**：本地已补配 `github` 远程（github.com/Morningstar202604/OpenBox），现有四远程
+  origin(gitee)/gitcode/github/(push 时按需带令牌)；未做任何推送。
+
+---
+
 *本评估基于 2026-08-25 代码库状态（commit `25c40b7`）。部署渠道政策以各家官网当期为准。*

@@ -1,5 +1,19 @@
 # OpenBox × Supabase 接入指南
 
+> ## ⚡ 快速对接清单（5 分钟版，细节见下文）
+>
+> | # | 动作 | 位置 |
+> |---|---|---|
+> | 1 | 新建项目（区域选 Singapore/东京，国内延迟更低） | supabase.com → New Project |
+> | 2 | SQL Editor 依次跑 `0001_init.sql` → … → `0008_contract_and_rls.sql`（全部幂等） | 本仓库 `supabase/migrations/` |
+> | 3 | 复制 Project URL 与 anon key | Project Settings → API |
+> | 4 | 填入部署平台环境变量 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`，重新部署 | EdgeOne Pages / CF Pages 控制台；本地则写 `.env` |
+> | 5 | Authentication → Providers → Email 关闭「Confirm email」= 注册即登录 | Auth 设置 |
+> | 6 | 开通审核后台：`insert into admin_emails values ('你的邮箱');` + 环境变量 `VITE_ADMIN_EMAILS=你的邮箱` | SQL Editor + 平台环境变量 |
+> | 7 | （可选·国内加速）CF Worker 反代 → `VITE_SUPABASE_PROXY_URL` | 见 `.env.example` 注释 |
+>
+> 不接数据库也完全可用：全站自动降级为纯静态模式（收藏/投票/评论仅存本机）。校内版推荐保持纯静态。
+
 本指南说明如何为 OpenBox 启用后端能力。当前后端承担 **「社区投稿审核库」** 职责：
 游客在前端提交资源 → 进入 `submissions` 表（pending）→ 你在后台审核通过（approved）→ 该资源自动合并进站点列表。
 

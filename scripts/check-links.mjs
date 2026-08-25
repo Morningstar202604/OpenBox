@@ -34,8 +34,12 @@ export function extractUrls() {
     const re = /https?:\/\/[^\s'"`\\)\]}>,]+/g;
     let m;
     while ((m = re.exec(text))) {
+      // tips 等说明散文里常出现「…/v1——存活，不判死」「…/v1，OpenAI 兼容」这类
+      // 粘连中文备注的裸链接字面量：在首个 CJK 字符/全角标点处截断，避免整段被当 URL 探测
+      const cut = m[0].search(/[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef—…·“”‘’《》【】]/);
+      const candidate = cut === -1 ? m[0] : m[0].slice(0, cut);
       // 去掉行尾注释粘连与尾随标点
-      const url = m[0].replace(/[.,;:]+$/, '');
+      const url = candidate.replace(/[.,;:]+$/, '');
       if (!/^https?:\/\//.test(url)) continue;
       const line = text.slice(0, m.index).split('\n').length;
       const loc = `${rel}:${line}`;

@@ -114,6 +114,7 @@ npm run preview    # 本地预览
 |---|---|---|
 | 🏫 **部署到学校（推荐）** | 校内网机器 + Caddy/Nginx 托管静态产物，校园网秒开、免备案、零后端 | [`DEPLOY-SCHOOL.md`](./DEPLOY-SCHOOL.md) |
 | 🌐 公网门面（大陆可达） | 腾讯 EdgeOne Pages 免费计划：流量/请求不限量，Git 推送自动构建 | [`EDGEONE_DEPLOY.md`](./EDGEONE_DEPLOY.md) |
+| 🧪 国内备选（实验性） | GitCode Pages：国内品牌免费静态托管（`<user>.gitcode.io/<repo>`），推 `dist/` 至专用分支开启；构建管线成熟度待实测 | [官方文档](https://gitcode.com/cocoachina/pages/overview) |
 | 🪞 海外镜像/备份 | Cloudflare Pages + 免费自定义域名 | [`CLOUDFLARE_DEPLOY.md`](./CLOUDFLARE_DEPLOY.md) |
 
 > 🏫 校园版支持构建期隐藏敏感分类：`VITE_HIDDEN_CATEGORIES=proxy-nodes,relays npm run build`
