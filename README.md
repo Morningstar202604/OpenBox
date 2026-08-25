@@ -168,5 +168,5 @@ OpenBox 是社区项目，**任何人都可以贡献，不需要会写代码**�
 ---
 
 <p align="center">
-  <sub>Built with care by <a href="https://github.com/Morningstar202604">@Morningstar202604</a> & <a href="https://github.com/Morningstar202604">@Morningstar202604</a> · Mirrored on <a href="https://gitcode.com/badhope/OpenBox">GitCode</a> & <a href="https://gitee.com/badhope/OpenBox">Gitee</a> · 如果觉得有帮助，欢迎 ⭐ Star 与 PR 🎉</sub>
+  <sub>Built with care by <a href="https://github.com/Morningstar202604">@Morningstar202604</a> · Mirrored on <a href="https://gitcode.com/badhope/OpenBox">GitCode</a> & <a href="https://gitee.com/badhope/OpenBox">Gitee</a> · 如果觉得有帮助，欢迎 ⭐ Star 与 PR 🎉</sub>
 </p>
