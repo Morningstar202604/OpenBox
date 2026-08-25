@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://weed33834.github.io/OpenBox/"><strong>🌐 在线体验</strong></a>
+  <a href="https://openbox-nav.pages.dev"><strong>🌐 在线体验</strong></a>
   ·
-  <a href="https://gitcode.com/badhope/OpenBox">GitHub</a>
+  <a href="https://github.com/Morningstar202604/OpenBox">GitHub</a>
   ·
   <a href="https://gitcode.com/badhope/OpenBox">GitCode</a>
   ·
@@ -87,7 +87,7 @@ OpenBox 是一个**社区化的内容型资源导航平台**——把 AI 时代*
 | 层 | 选型 |
 |---|---|
 | 框架 | React 19 + TypeScript（严格模式） |
-| 构建 | Vite 8（base: `/OpenBox/`，Cloudflare Pages 连 Git 自动构建部署） |
+| 构建 | Vite 8（本地 `base: /OpenBox/` 产 `docs/` 供 GitHub Pages 预览；CI 经 GitHub Actions 以 `base=/` 构建 `dist/` 直传 Cloudflare Pages 根域 `openbox-nav.pages.dev`） |
 | 样式 | Tailwind CSS v4（`@theme` 语义令牌 + `.dark` 覆写） |
 | 状态 | Zustand + `persist`（主题 / 收藏 / 提示 / 语言 / 会话） |
 | 路由 | 原生 Hash 路由（无需服务端） |
@@ -101,7 +101,7 @@ git clone https://gitcode.com/badhope/OpenBox
 cd OpenBox
 npm install --legacy-peer-deps
 npm run dev        # 开发服务器 http://localhost:5173/OpenBox/
-npm run build      # tsc -b && vite build（输出 docs/，由 Cloudflare Pages 部署）
+npm run build      # tsc -b && vite build（默认 base /OpenBox/ 输出 docs/ 供本地/GH Pages 预览；CI 用 VITE_BASE_URL=/ VITE_BUILD_DIR=dist 构建直传 Cloudflare Pages）
 npm run preview    # 本地预览
 ```
 
@@ -126,7 +126,7 @@ src/
    ├─ curated.ts            # 190+ 条社区精选
    ├─ sites.ts / seed.ts    # 旧数据映射 + 存活白名单
    └─ weekly.ts             # 每周更新
-supabase/migrations/        # RLS 安全的 SQL（0001 基础表 / 0002 验证投票表 / 0003 评论表）
+supabase/migrations/        # RLS 安全的 SQL（0001 基础表 / 0002 验证投票表 / 0003 评论表 / … / 0008 契约收编与 RLS 收口，共 0001–0008）
 .github/                    # Issue / PR 模板
 screenshots/           # README 演示截图
 ```
@@ -136,7 +136,7 @@ screenshots/           # README 演示截图
 本地种子即可完整运行。启用云后端（投稿审核 / 登录 / 云端收藏 / 反馈 / 投票 / 评论）：
 
 1. 在 [Supabase](https://supabase.com) 新建项目
-2. SQL Editor 依次执行 `supabase/migrations/0001_init.sql` → `0002_verifications.sql` → `0003_comments.sql`
+2. SQL Editor 依次执行 `supabase/migrations/0001_init.sql` → `0002_verifications.sql` → `0003_comments.sql` → … → `0008_contract_and_rls.sql`（当前共 0001–0008，含验证投票 / 评论 / 评分 / 投稿约束 / 列名与 RLS 收口等）
 3. 复制 `.env.example` 为 `.env`，填入 `VITE_SUPABASE_URL` 与 `VITE_SUPABASE_ANON_KEY`（anon 可公开，受 RLS 保护；service_role 严禁入前端）
 4. Authentication → Email 关闭「Confirm email」实现注册即登录
 

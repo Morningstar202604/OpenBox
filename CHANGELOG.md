@@ -7,6 +7,15 @@
 > **版本约定**：项目从 `0.0.1` 起算，每次更新为一个「小版本」（修订号 +1，如 `0.0.1 → 0.0.2 → 0.0.3`），
 > 并在 GitHub / GitCode / Gitee 三端同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
 
+## [0.0.8] - 2026-08-25
+
+### 收尾：Cloudflare Pages CI 部署 + 构建链路固化
+
+- GitHub Actions `deploy.yml`：push main 自动 `npm ci` → `VITE_BASE_URL=/ VITE_BUILD_DIR=dist npm run build` → 直传 Cloudflare Pages 根域 `openbox-nav.pages.dev`
+- 修复构建输出目录：`VITE_BUILD_DIR=dist` 切换 Cloudflare 根域产物，厘清与旧 `docs/`（GitHub Pages 子路径）的混淆
+- `scripts/gen-spa-paths.mjs`：CI 构建后自动生成 304 条 SPA 深链 `index.html`，路由直出 200（替代旧 `#/` 深链兜底）
+- 文档一致性：README「在线体验」指向线上根域、GitHub 链接指向实际远程、Supabase 迁移说明补全至 0001–0008（含 0008 契约收编与 RLS 收口）
+
 ## [0.0.7] - 2026-08-22
 
 ### 四周质量冲刺：安全 / 测试 / 性能 / SEO + 全量数据审计

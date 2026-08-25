@@ -2,13 +2,14 @@
 
 > 目标：用网站「免费服务器」分类里收录的 **Cloudflare Pages**（免绑卡、全球 CDN）托管 OpenBox，
 > 再用「免费域名」分类里的 **eu.org / us.kg / is-a.dev** 等二级域名挂上自定义根域名。
-> 全程免费，GitHub Pages 原部署保留不变（两条线路并存，互不影响）。
+> 全程免费。当前以 **Cloudflare Pages 为唯一生产部署**：push `main` 触发 `.github/workflows/deploy.yml`
+> 自动构建并直传根域 `openbox-nav.pages.dev`；旧的 GitHub Pages `/OpenBox/` 子路径方案已弃用。
 
 ---
 
 ## 0. 前置条件
 
-- 一个 GitHub 账号（OpenBox 仓库已存在：`weed33834/OpenBox`）
+- 一个 Git 仓库（OpenBox 主仓库：`gitcode.com/badhope/OpenBox`；镜像 `gitee.com/badhope/OpenBox` 与 `github.com/Morningstar202604/OpenBox`）
 - 一个 Cloudflare 账号（免费版即可，注册免绑卡）
 - 一个能收验证邮件的邮箱
 - Node.js 20（本地预览用，非必须——也可纯控制台部署）
@@ -22,19 +23,18 @@
 
 | 文件 | 作用 |
 |------|------|
-| `wrangler.toml` | Pages 项目名 + 构建输出目录 `docs/` |
+| `wrangler.toml` | 本地命令行部署用（Pages 项目名 + 输出目录 `docs/`）；**生产部署走 CI，不依赖它** |
 | `public/_headers` | 静态资源长缓存、安全响应头 |
-| `.github/workflows/deploy-cloudflare.yml` | 推送 `main` 自动构建并部署到 Pages |
+| `.github/workflows/deploy.yml` | 推送 `main` 自动 `npm ci` → `VITE_BASE_URL=/ VITE_BUILD_DIR=dist npm run build` → 直传 Cloudflare Pages 根域 |
 
-> 我已把 `vite.config.ts` 的 `base` 改成
-> `process.env.VITE_BASE_URL ?? '/OpenBox/'`——
-> GitHub Pages 仍走 `/OpenBox/` 子路径；Cloudflare 走根域名时设 `VITE_BASE_URL=/` 即可。
-> CI 里没设该变量，所以 Cloudflare 默认也是 `/OpenBox/` 子路径，完全兼容现有链接。
+> `vite.config.ts` 的 `base` = `process.env.VITE_BASE_URL ?? '/OpenBox/'`：
+> 本地 `npm run build` 默认 `/OpenBox/` 产 `docs/`（GitHub Pages 预览用）；
+> CI 显式设 `VITE_BASE_URL=/`、`VITE_BUILD_DIR=dist`，构建到 `dist/` 并直传根域，路由为真实路径（如 `/resource/xxx`）。
 
 ### 1.1 提交配置
 
 ```bash
-git add wrangler.toml public/_headers .github/workflows/deploy-cloudflare.yml vite.config.ts
+git add wrangler.toml public/_headers .github/workflows/deploy.yml vite.config.ts
 git commit -m "ci: 新增 Cloudflare Pages 部署配置"
 git push origin main
 ```
@@ -52,14 +52,13 @@ git push origin main
 3. 构建配置：
    - **Project name**：`openbox`
    - **Production branch**：`main`
-   - **Build command**：`npm run build`
-   - **Build output directory**：`docs`
+   - **Build command**：`VITE_BASE_URL=/ VITE_BUILD_DIR=dist npm run build`
+   - **Build output directory**：`dist`
    - **Node.js version**：20（Settings → Environment variables 里设 `NODE_VERSION=20`）
 4. 点 **Save and Deploy** → 等约 1 分钟，拿到 `openbox-nav.pages.dev` 预览域名
 
-> 注意：控制台连 Git 时，Cloudflare 自己跑 `npm run build`，
-> 不需要仓库里的 `deploy-cloudflare.yml`（那是给「手动 API Token 部署」用的）。
-> 两者二选一即可，不要同时触发避免重复。
+> 注意：控制台连 Git 时，Cloudflare 自己跑构建；仓库里的 `deploy.yml`（GitHub Actions）是另一条
+> 自动部署线路。二者都会部署到同一 `openbox-nav` 项目，**不要同时触发以免重复构建**。
 
 ### 方式 B：API Token + Wrangler（仓库 CI 自动部署）
 
@@ -72,7 +71,7 @@ git push origin main
 3. 在 GitHub 仓库 **Settings → Secrets → Actions** 新增：
    - `CLOUDFLARE_API_TOKEN` = 上面的 Token
    - `CLOUDFLARE_ACCOUNT_ID` = Account ID
-4. 之后每次 `git push origin main`，`deploy-cloudflare.yml` 会自动部署
+4. 之后每次 `git push origin main`，`deploy.yml` 会自动部署
 
 ---
 
@@ -125,7 +124,7 @@ git push origin main
 
 | 现象 | 原因 | 解决 |
 |------|------|------|
-| 页面空白 / 资源 404 | `base` 路径不对 | 确认 Cloudflare 没设 `VITE_BASE_URL`；要根域名访问就设 `/` |
+| 页面空白 / 资源 404 | `base` 路径不对 | CI 已设 `VITE_BASE_URL=/`；本地预览用 `npm run build`（默认 `/OpenBox/`）需在 `/OpenBox/` 路径访问 |
 | 构建失败 `tsc` 报错 | Node 版本低 | 设 `NODE_VERSION=20` |
 | 自定义域名一直待验证 | DNS 未生效 / NS 没改 | 用 `dig openbox.us.kg` 看是否指向 pages.dev |
 | SSL 红锁 | 证书未签发 | 等几分钟，或手动点「Retry Certificate」 |

@@ -16,11 +16,14 @@
 ## 二、初始化数据库
 
 1. 进入项目控制台 → **SQL Editor** → **New query**。
-2. 按顺序依次执行本仓库 `supabase/migrations/` 下的三个迁移文件（每段 Run 一次）：
+2. 按顺序依次执行本仓库 `supabase/migrations/` 下全部迁移文件（每段 Run 一次，当前共 0001–0008）：
    1. `0001_init.sql` — 基础表（投稿 / 资源 / 分类 / 用户 / 收藏 / 反馈 + RLS）
    2. `0002_verifications.sql` — 社区验证投票表（匿名可投"还能用/已失效"）
    3. `0003_comments.sql` — 资源评论区表（匿名可留言，带昵称）
-3. 每次执行看到 `Success` 即完成对应建表与 RLS 策略。
+   4. `0004_harden_anon_writes.sql` / `0005_anon_abuse_limits.sql` / `0006_admin_review.sql` — 投稿约束、投票设备指纹去重、管理员策略
+   5. `0007_ratings.sql` — 评分表（评分功能依赖）
+   6. `0008_contract_and_rls.sql` — 列名收编（`subtype`→`"subType"`）+ RLS 收口 + 基于 IP 的匿名写频控（幂等）
+3. 每次执行看到 `Success` 即完成对应建表 / 收口与 RLS 策略。
 
 表结构说明：
 - `submissions`：社区投稿（核心）。匿名可插入；**任何人都仅可读 `approved`**（登录用户同样只读已通过），待审/被拒内容仅管理员经控制台或 SQL 查看。
@@ -78,12 +81,15 @@ VITE_SUPABASE_ANON_KEY=你的-anon-key
 
 `profiles` / `favorites` / `reports` 三张预留表已在 `0001_init.sql` 中建好并配置 RLS，可直接使用。
 
-## 七、增量迁移（0005-0006，2026-08）
+## 七、增量迁移（0004–0008，2026-08 起）
 
-在 SQL Editor 依次执行（幂等）：
+在 SQL Editor 依次执行（幂等，可重复跑）：
 
-1. `supabase/migrations/0005_anon_abuse_limits.sql` —— 字段约束 + 投票设备指纹去重
-2. `supabase/migrations/0006_admin_review.sql` —— 管理员策略 + 投稿同 URL 去重
+1. `supabase/migrations/0004_harden_anon_writes.sql` —— 收紧匿名写面
+2. `supabase/migrations/0005_anon_abuse_limits.sql` —— 字段约束 + 投票设备指纹去重
+3. `supabase/migrations/0006_admin_review.sql` —— 管理员策略 + 投稿同 URL 去重
+4. `supabase/migrations/0007_ratings.sql` —— 评分表（评分功能依赖）
+5. `supabase/migrations/0008_contract_and_rls.sql` —— 列名收编（`subtype`→`"subType"`）+ RLS 收口 + IP 滑动窗口限流
 
 ### 开通审核后台（#/admin）
 

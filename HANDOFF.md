@@ -1,9 +1,10 @@
 # OpenBox 运维交接（2026-08-22 会话总结，新会话先读本文件）
 
 ## 项目状态
-- 仓库：github.com/weed33834/OpenBox，main 全绿；**线上：https://openbox-nav.pages.dev**（自建 CF 账号）
+- 仓库：origin=`gitcode.com/badhope/OpenBox`（主）；镜像 `gitee.com/badhope/OpenBox` + `github.com/Morningstar202604/OpenBox`；**线上：https://openbox-nav.pages.dev**（自建 CF 账号）
+- ⚠️ 远程账号：早期记载 `github.com/weed33834`，当前 `.git/config` 实际 github 远程为 `Morningstar202604/OpenBox`（三远程均带推送 token）。推送以 `.git/config` 为准。
 - 部署：GitHub Actions（deploy.yml）push main 自动构建直传，凭据在仓库 Secrets（CLOUDFLARE_API_TOKEN/ACCOUNT_ID）
-- 云端功能已激活：Supabase 凭据走 Actions Secrets 构建注入；**数据库迁移 0001–0007 已全部应用**，
+- 云端功能已激活：Supabase 凭据走 Actions Secrets 构建注入；**数据库迁移 0001–0008 已就绪**（0001–0007 此前已应用；0008 = 契约收编与 RLS 收口，幂等可重跑），
   九表全健康（resources/submissions/verifications/comments/reports/favorites/profiles/ratings/admin_emails）
 - 分支保护：必需检查名已对齐「Quality Gate (tsc + lint + build)」、评审要求归零，PR 可直接合并
 - GitHub 通知：本仓库已设 ignored（站长要求静音），恢复方法：仓库页 Watch 图标改回 All Activity
