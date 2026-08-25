@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { seedResources } from '../seed';
+import { seedResources, POPULARITY_BY_NAME } from '../seed';
 import { sites } from '../sites';
 import { curatedResources } from '../curated';
 import { subTypes, scenarios } from '../taxonomy';
@@ -35,6 +35,19 @@ describe('seedResources 数据完整性', () => {
   it('黑名单站点不得以 ok 状态出现在正式列表中', () => {
     const leaked = seedResources.filter((r) => isBlacklisted(r.url) && r.status === 'ok');
     expect(leaked.map((r) => r.id)).toEqual([]);
+  });
+
+  it('人气分表的每个键都必须命中一条真实资源名（改名失配会让热门榜静默归零）', () => {
+    const names = new Set(seedResources.map((r) => r.name));
+    const orphan = Object.keys(POPULARITY_BY_NAME).filter((k) => !names.has(k));
+    expect(orphan).toEqual([]);
+  });
+
+  it('存活白名单不得收录 status=dead 的条目（白名单语义与数据自洽）', () => {
+    const deadIncluded = sites.filter(
+      (s) => s.status === 'dead' && seedResources.some((r) => r.id === s.id),
+    );
+    expect(deadIncluded.map((s) => s.id)).toEqual([]);
   });
 });
 

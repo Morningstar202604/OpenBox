@@ -13,10 +13,13 @@ import { SoftIcon } from './SoftIcon';
 import { StatusBadge, TypeBadge } from './Badge';
 import { ResourceFlags } from './ResourceFlags';
 import { VerifyWidget } from './VerifyWidget';
+import { VisitDetailButtons } from './VisitDetailButtons';
 
 /**
- * 列表行形态（信息密集行）：横向图标 + 标题/徽章/标签/摘要 + 底部操作。
- * 与 ResourceCard（网格卡）并存，由 ResourceList 的「网格/列表」视图切换使用。
+ * 列表行形态（信息密集行，3 层结构）：
+ *   L1 图标 + 标题 + 标记徽章 + 状态/类型（官方 ✓ 不再重复画，ResourceFlags 唯一出口）
+ *   L2 标签（.tag 统一皮肤）+ 摘要单行 + meta（更新/收藏/反馈）
+ *   L3 操作行：验证投票 + 访问(主)/详情(次)
  */
 export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { resource: Resource; index?: number }) {
   const t = useT();
@@ -30,7 +33,7 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
       <div className="flex items-start gap-3">
         <SoftIcon icon={cat?.icon} color={cat?.color} size={19} className="h-10 w-10" rounded="rounded-lg" />
         <div className="min-w-0 flex-1">
-          {/* 标题行：名称 + 官方标 + 状态/类型徽章 */}
+          {/* L1 标题行：名称 + 标记徽章 + 状态/类型徽章 */}
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               className="text-left font-semibold leading-snug text-[var(--color-fg)] hover:text-[var(--color-primary)]"
@@ -38,7 +41,6 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
             >
               {resource.name}
             </button>
-            {resource.official && <Icon name="Check" size={14} className="shrink-0 text-[var(--color-primary)]" />}
             <ResourceFlags resource={resource} />
             <span className="hidden sm:inline-flex">
               <StatusBadge status={resource.status} />
@@ -47,22 +49,17 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
               <TypeBadge type={resource.type} />
             </span>
           </div>
-          {/* 标签 chips：剔除自报评分/可用率噪声标签 */}
+          {/* L2 标签（统一 .tag 皮肤）+ 摘要 + meta */}
           {displayTags(resource.tags).length > 0 && (
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {displayTags(resource.tags).slice(0, 4).map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center rounded-md border border-[var(--color-border)] px-1.5 py-0.5 text-[0.7rem] text-[var(--color-muted)]"
-                >
+                <span key={tag} className="tag">
                   {tag}
                 </span>
               ))}
             </div>
           )}
-          {/* 摘要：列表行单行截断，信息优先 */}
           <p className="mt-1.5 truncate text-sm text-[var(--color-muted)]">{resource.summary || resource.description}</p>
-          {/* 底部 meta：更新 + 验证 + 收藏/反馈 */}
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--color-muted)]">
             {resource.updatedAt && (
               <span className="inline-flex items-center gap-1">
@@ -70,18 +67,19 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
                 {t('card.updated')} {fmtDate(resource.updatedAt)}
               </span>
             )}
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-3">
               <button
                 onClick={() => toggleFav(resource.id)}
-                className="inline-flex items-center gap-1 transition-colors hover:text-[var(--color-primary)]"
+                className="inline-flex min-h-[36px] items-center gap-1 transition-colors hover:text-[var(--color-primary)]"
                 aria-label={t('detail.favorite')}
+                aria-pressed={fav}
               >
                 <Icon name="Heart" size={13} fill={fav ? 'var(--color-primary)' : 'none'} color={fav ? 'var(--color-primary)' : undefined} />
                 {fav ? t('detail.unfavorite') : t('detail.favorite')}
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); report.open(); }}
-                className="inline-flex items-center gap-1 transition-colors hover:text-orange-500"
+                onClick={() => report.open()}
+                className="inline-flex min-h-[36px] items-center gap-1 transition-colors hover:text-[var(--color-warning)]"
                 aria-label={t('report.button')}
               >
                 <Icon name="AlertTriangle" size={13} />
@@ -92,17 +90,11 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
         </div>
       </div>
 
-      {/* 操作行：验证投票 + 详情/访问 */}
+      {/* L3 操作行：出站访问是首要动作（主按钮），详情为次 */}
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <VerifyWidget resourceId={resource.id} />
         <div className="ml-auto flex items-center gap-2">
-          <button className="btn btn-primary btn-sm flex-1 sm:flex-none" onClick={() => navigate(`/resource/${resource.id}`)}>
-            {t('common.viewDetail')}
-          </button>
-          <a className="btn btn-ghost btn-sm flex-1 sm:flex-none" href={resource.url} target="_blank" rel="noreferrer">
-            <Icon name="ExternalLink" size={14} />
-            {t('common.visit')}
-          </a>
+          <VisitDetailButtons resource={resource} />
         </div>
       </div>
 

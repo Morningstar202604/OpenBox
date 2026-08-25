@@ -60,7 +60,6 @@ export default function App() {
   const isLanding = route.name === 'landing';
   const [showOverlay, setShowOverlay] = useState(false);
   const prevKey = useRef('');
-  const overlayMs = useRef(1500);
 
   // SEO：路由变化时同步 title / meta description / OG / canonical（利于收录与分享卡片）
   useEffect(() => {
@@ -91,16 +90,19 @@ export default function App() {
   // 路由切换时：仅从引导页跳转到主站时触发品牌露出 overlay，页面间切换不再显示
   useEffect(() => {
     const key = `${route.name}-${route.slug ?? ''}-${route.id ?? ''}`;
-    if (prevKey.current && prevKey.current !== key) {
-      const fromLanding = prevKey.current.startsWith('landing') && route.name !== 'landing';
-      if (fromLanding) {
-        overlayMs.current = 1500;
-        setShowOverlay(true);
-        const t = setTimeout(() => setShowOverlay(false), 1500);
-        return () => clearTimeout(t);
-      }
-    }
+    // prevKey 必须无条件先更新：否则从 landing 进入后 ref 永远停在 landing，
+    // 之后每次导航都会被误判为「从引导页进入」，1.5s 遮罩反复出现
+    const fromLanding = prevKey.current.startsWith('landing') && route.name !== 'landing';
     prevKey.current = key;
+    if (!fromLanding) return;
+    setShowOverlay(true);
+    const timer = setTimeout(() => setShowOverlay(false), 1500);
+    // 展示期间路由再变（如浏览器返回键）：cleanup 必须同时复位状态，
+    // 否则 clearTimeout 后 showOverlay 永久为 true，全屏遮罩卡死
+    return () => {
+      clearTimeout(timer);
+      setShowOverlay(false);
+    };
   }, [route.name, route.slug, route.id]);
 
   // 路由切换时强制回到顶部（在绘制前同步执行，避免新页面停在旧滚动位置的一帧闪烁）
@@ -134,7 +136,8 @@ export default function App() {
       </main>
 
       {!isLanding && (
-        <footer className="animate-fade-in" style={{ animationDelay: '0.15s' }}>
+        // pb 底部预留：移动端固定 TabBar（56px + safe-area）会遮挡页脚最后一行
+        <footer className="animate-fade-in pb-20 sm:pb-0" style={{ animationDelay: '0.15s' }}>
           <Footer />
         </footer>
       )}

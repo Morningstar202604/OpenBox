@@ -21,7 +21,7 @@ export function SoftIcon({
   return (
     <span
       className={`flex shrink-0 items-center justify-center ${rounded} ${className}`}
-      style={{ background: `${color ?? '#888'}1a`, color }}
+      style={{ background: `color-mix(in srgb, ${color ?? 'var(--color-muted)'} 10%, transparent)`, color }}
     >
       <Icon name={icon ?? 'Globe'} size={size} />
     </span>

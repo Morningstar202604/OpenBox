@@ -1,4 +1,4 @@
-// 数据访问层（Data Access Layer）
+﻿// 数据访问层（Data Access Layer）
 // 设计：
 //   - 资源主数据始终来自本地种子 src/data/seed.ts（可靠、离线可渲染、无需先建库）。
 //   - 当配置了 Supabase 时，额外合并「已审核通过的社区投稿」(submissions.status='approved')，
@@ -6,11 +6,29 @@
 //   - 投稿提交（submitResource）在配置 Supabase 时写入云端审核库，否则落本地草稿。
 // 上层页面只依赖本文件的异步接口，无需关心数据来自哪里 —— 单一入口、可替换、易测试。
 import { getSupabase, hasSupabase } from './supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { useAuthStore } from '@/store/useAuthStore';
 import { subTypes, scenarios, resolveScenarios } from '@/data/taxonomy';
 import { seedResources } from '@/data/seed';
 import { isValidUrl } from './format';
+import { readJSON, writeJSON, readRaw, writeRaw } from './storage';
 import type { Resource, ResourceStatus, ResourceType, Scenario, SubType, Submission } from './types';
+
+/**
+ * 云端读取统一通道：未配置 Supabase / 客户端初始化失败 / 网络异常时
+ * 统一返回 fallback（降级语义集中一处，调用方只写 happy path）。
+ * 需要感知具体错误（如 23505 冲突码）的写入路径不适用，保持显式处理。
+ */
+async function withSupabase<T>(fallback: T, fn: (sb: SupabaseClient) => Promise<T>): Promise<T> {
+  if (!hasSupabase) return fallback;
+  try {
+    const sb = await getSupabase();
+    if (!sb) return fallback;
+    return await fn(sb);
+  } catch {
+    return fallback;
+  }
+}
 
 export interface ResourceQuery {
   subType?: string;
@@ -40,6 +58,18 @@ interface SubmissionRow {
   submitter: string | null;
   status: string;
   created_at: string;
+}
+
+/**
+ * 行级归一化：历史库的 subType 列可能是小写 subtype（0001 旧文件未加引号被
+ * Postgres 折叠，0008 迁移负责重命名收编）。在映射层做一次防御性读取，
+ * 无论库处于哪种迁移状态，前端契约都稳定为驼峰 subType。
+ */
+function normalizeSubmissionRow(row: Partial<SubmissionRow> & { subtype?: string }): SubmissionRow {
+  return {
+    ...(row as SubmissionRow),
+    subType: row.subType ?? row.subtype ?? '',
+  };
 }
 
 /** 对给定资源列表执行统一筛选 + 排序（本地种子与社区投稿共用） */
@@ -107,21 +137,16 @@ function submissionToResource(row: SubmissionRow): Resource {
 }
 
 /** 拉取已审核通过的社区投稿（仅配置 Supabase 时调用） */
-export async function getCommunityResources(): Promise<Resource[]> {
-  if (!hasSupabase) return [];
-  const sb = await getSupabase();
-  if (!sb) return [];
-  try {
+export function getCommunityResources(): Promise<Resource[]> {
+  return withSupabase<Resource[]>([], async (sb) => {
     const { data, error } = await sb
       .from('submissions')
       .select('*')
       .eq('status', 'approved')
       .order('created_at', { ascending: false });
     if (error || !data) return [];
-    return (data as SubmissionRow[]).map(submissionToResource);
-  } catch {
-    return [];
-  }
+    return (data as SubmissionRow[]).map((r) => submissionToResource(normalizeSubmissionRow(r)));
+  });
 }
 
 export async function getSubTypes(): Promise<SubType[]> {
@@ -132,36 +157,68 @@ export async function getScenarios(): Promise<Scenario[]> {
   return scenarios;
 }
 
-// ---- 内存缓存（30 秒 TTL） ----
-let cache: { key: string; data: Resource[]; ts: number } | null = null;
+// ---- 内存缓存（多槽 LRU，30 秒 TTL） ----
+// 单槽缓存的问题：首页与分类页的 query key 不同，交替导航时互相驱逐，
+// 几乎每次路由切换都打一次云端；且云端超时降级的残缺结果也会被缓存 30s。
 const CACHE_TTL = 30_000;
+const CACHE_TTL_DEGRADED = 3_000; // 云端超时/失败降级结果的短 TTL，尽快自愈
+const CACHE_MAX_SLOTS = 12;
+const cacheMap = new Map<string, { data: Resource[]; ts: number; ttl: number }>();
+
+function cacheSet(key: string, data: Resource[], ttl: number) {
+  cacheMap.delete(key);
+  cacheMap.set(key, { data, ts: Date.now(), ttl });
+  if (cacheMap.size > CACHE_MAX_SLOTS) {
+    // Map 迭代序即插入序，淘汰最旧的槽
+    const oldest = cacheMap.keys().next().value;
+    if (oldest !== undefined) cacheMap.delete(oldest);
+  }
+}
 
 /** 清除数据层缓存，在投稿/投票等数据变更操作后调用 */
 export function invalidateCache() {
-  cache = null;
+  cacheMap.clear();
 }
 
 export async function getResources(query: ResourceQuery = {}): Promise<Resource[]> {
   const cacheKey = JSON.stringify(query);
-  if (cache && cache.key === cacheKey && Date.now() - cache.ts < CACHE_TTL) {
-    return cache.data;
+  const hit = cacheMap.get(cacheKey);
+  if (hit && Date.now() - hit.ts < hit.ttl) {
+    // LRU touch：重新插入到末尾
+    cacheMap.delete(cacheKey);
+    cacheMap.set(cacheKey, hit);
+    return hit.data;
   }
   // 本地种子始终作为基础来源，保证离线/未配置时也能渲染
   const local = filterResources(seedResources, query);
   if (!hasSupabase) {
-    cache = { key: cacheKey, data: local, ts: Date.now() };
+    cacheSet(cacheKey, local, CACHE_TTL);
     return local;
   }
   // 已配置 Supabase：额外合并已通过审核的社区投稿
   try {
-    // 云端合并设 1.5s 上限：慢网络下不让远程往返拖住首屏（本地种子即时可渲染，
-    // 超时则本轮先返回纯本地结果，缓存 TTL 过后自动重试合并）
-    const community = await Promise.race([
-      getCommunityResources(),
-      new Promise<Resource[]>((resolve) => setTimeout(() => resolve([]), 1500)),
-    ]);
+    // 云端合并设 1.5s 上限：慢网络下不让远程往返拖住首屏。
+    // 超时/失败标记 degraded，只允许 3s 短缓存，TTL 过后自动重试合并。
+    let degraded = false;
+    const community = await new Promise<Resource[]>((resolve) => {
+      const timer = setTimeout(() => {
+        degraded = true;
+        resolve([]);
+      }, 1500);
+      getCommunityResources().then(
+        (rows) => {
+          clearTimeout(timer);
+          resolve(rows);
+        },
+        () => {
+          clearTimeout(timer);
+          degraded = true;
+          resolve([]);
+        },
+      );
+    });
     const result = [...local, ...filterResources(community, query)];
-    cache = { key: cacheKey, data: result, ts: Date.now() };
+    cacheSet(cacheKey, result, degraded ? CACHE_TTL_DEGRADED : CACHE_TTL);
     return result;
   } catch {
     return local;
@@ -169,10 +226,12 @@ export async function getResources(query: ResourceQuery = {}): Promise<Resource[
 }
 
 export async function getResource(id: string): Promise<Resource | null> {
-  // 社区投稿走云端
-  if (id.startsWith(COMMUNITY_PREFIX) && hasSupabase) {
-    const sb = await getSupabase();
-    if (!sb) return null;
+  // 本地种子直接命中（绝大多数请求走这里，零网络开销）
+  if (!id.startsWith(COMMUNITY_PREFIX)) {
+    return seedResources.find((r) => r.id === id) ?? null;
+  }
+  // 社区投稿走云端（任何异常都降级为 null，绝不让详情页永久 loading）
+  return withSupabase<Resource | null>(null, async (sb) => {
     const subId = id.slice(COMMUNITY_PREFIX.length);
     const { data, error } = await sb
       .from('submissions')
@@ -180,10 +239,9 @@ export async function getResource(id: string): Promise<Resource | null> {
       .eq('id', subId)
       .eq('status', 'approved')
       .maybeSingle();
-    if (!error && data) return submissionToResource(data as SubmissionRow);
+    if (!error && data) return submissionToResource(normalizeSubmissionRow(data as SubmissionRow));
     return null;
-  }
-  return seedResources.find((r) => r.id === id) ?? null;
+  });
 }
 
 /** 获取与指定资源相关的推荐（同 subType，排除自身，最多 limit 条） */
@@ -194,15 +252,11 @@ export async function getRelatedResources(id: string, limit = 6): Promise<Resour
   return all.filter((r) => r.id !== id).slice(0, limit);
 }
 
-/** 根据 ID 列表批量获取资源（用于最近浏览等） */
+/** 根据 ID 列表批量获取资源（用于最近浏览等）；本地种子同步解析，社区投稿并行查询 */
 export async function getResourcesByIds(ids: string[]): Promise<Resource[]> {
   if (!ids.length) return [];
-  const results: Resource[] = [];
-  for (const id of ids) {
-    const r = await getResource(id);
-    if (r) results.push(r);
-  }
-  return results;
+  const results = await Promise.all(ids.map((id) => getResource(id)));
+  return results.filter((r): r is Resource => r !== null);
 }
 
 export type SubmitResult = {
@@ -224,6 +278,28 @@ function validateSubmission(p: Omit<Submission, 'id' | 'status' | 'createdAt'>):
   return null;
 }
 
+/** 投稿查重预检：与 0006 唯一索引同语义（lower(url)），大小写不敏感；失败不阻塞提交 */
+async function precheckDuplicateUrl(
+  sb: SupabaseClient,
+  url: string,
+): Promise<string | null> {
+  try {
+    // 转义 like 通配符，避免 URL 中的 %20 等编码被当作模式
+    const escaped = url.replace(/[\\%_]/g, (c) => `\\${c}`);
+    const { data: dup } = await sb
+      .from('submissions')
+      .select('id, status')
+      .ilike('url', escaped)
+      .in('status', ['pending', 'approved'])
+      .limit(1);
+    if (dup && dup.length) return '该链接已投稿过（待审或已收录），请勿重复提交';
+    return null;
+  } catch {
+    /* 预检失败不阻塞提交，唯一索引仍会拦截 */
+    return null;
+  }
+}
+
 export async function submitResource(
   payload: Omit<Submission, 'id' | 'status' | 'createdAt'>,
 ): Promise<SubmitResult> {
@@ -232,55 +308,40 @@ export async function submitResource(
   if (hasSupabase) {
     const sb = await getSupabase();
     if (!sb) return { ok: false, mode: 'local', message: 'Supabase 客户端初始化失败' };
-    // 同 URL 去重预检（服务端另有部分唯一索引兜底，见 0006 迁移）
-    try {
-      const { data: dup } = await sb
-        .from('submissions')
-        .select('id, status')
-        .eq('url', payload.url)
-        .in('status', ['pending', 'approved'])
-        .limit(1);
-      if (dup && dup.length) {
-        return {
-          ok: false,
-          mode: 'supabase',
-          message: '该链接已投稿过（待审或已收录），请勿重复提交',
-        };
-      }
-    } catch {
-      /* 预检失败不阻塞提交，唯一索引仍会拦截 */
-    }
+    // 同 URL 去重预检（服务端另有 lower(url) 部分唯一索引兜底，见 0006 迁移）
+    const dupMsg = await precheckDuplicateUrl(sb, payload.url);
+    if (dupMsg) return { ok: false, mode: 'supabase', message: dupMsg };
     try {
       const { data, error } = await sb
         .from('submissions')
-      .insert({ ...payload, status: 'pending', created_at: new Date().toISOString() })
-      .select()
-      .single();
-    if (!error && data) {
-      invalidateCache();
-      return { ok: true, mode: 'supabase', id: (data as SubmissionRow).id, message: '投稿已提交，等待审核通过后展示。' };
-    }
-    return { ok: false, mode: 'supabase', message: error?.message ?? '提交失败' };
+        .insert({ ...payload, status: 'pending', created_at: new Date().toISOString() })
+        .select()
+        .single();
+      if (!error && data) {
+        invalidateCache();
+        return { ok: true, mode: 'supabase', id: (data as SubmissionRow).id, message: '投稿已提交，等待审核通过后展示。' };
+      }
+      // 23505 = 唯一索引冲突（并发下预检漏判的重复投稿），给出与预检一致的友好文案
+      if (error?.code === '23505') {
+        return { ok: false, mode: 'supabase', message: '该链接已投稿过（待审或已收录），请勿重复提交' };
+      }
+      return { ok: false, mode: 'supabase', message: error?.message ?? '提交失败' };
     } catch {
       return { ok: false, mode: 'supabase', message: '提交失败，请稍后再试' };
     }
   }
   // 本地兜底：存入 localStorage（仅本机可见，不进入审核库）
-  try {
-    const key = 'ob_submissions';
-    const list = JSON.parse(localStorage.getItem(key) ?? '[]') as Submission[];
-    const item: Submission = {
-      ...payload,
-      id: `local-${Date.now()}`,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    };
-    list.push(item);
-    localStorage.setItem(key, JSON.stringify(list));
+  const item: Submission = {
+    ...payload,
+    id: `local-${Date.now()}`,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  };
+  const list = readJSON<Submission[]>('ob_submissions', []);
+  if (writeJSON('ob_submissions', [...list, item])) {
     return { ok: true, mode: 'local', id: item.id, message: '已保存到本地草稿（未配置 Supabase，不会进入审核库）。' };
-  } catch {
-    return { ok: false, mode: 'local', message: '本地保存失败（浏览器存储不可用）。' };
   }
+  return { ok: false, mode: 'local', message: '本地保存失败（浏览器存储不可用）。' };
 }
 
 /** 匿名反馈报告：写入 reports 表（无需登录） */
@@ -330,51 +391,55 @@ const VKEY = 'ob_verifications';
 
 /**
  * 稳定匿名设备指纹：首次生成随机 UUID 存 localStorage，之后复用。
- * 用途：服务端投票去重（verifications.voter_fp 唯一索引）。
- * 随机生成、不含任何个人身份信息；localStorage 不可用时返回空串（退化为不去重）。
+ * 用途：服务端投票去重（verifications.voter_fp 唯一索引 + 0008 RLS 长度校验）。
+ * 随机生成、不含任何个人身份信息；localStorage 不可用时退化为会话级内存指纹
+ * （仍满足服务端 ≥8 字符校验与会话内去重，不再返回空串绕过约束）。
  */
-function voterFingerprint(): string {
-  try {
-    let fp = localStorage.getItem('ob_voter_fp');
-    if (!fp) {
-      fp =
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto
-          ? crypto.randomUUID()
-          : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
-      localStorage.setItem('ob_voter_fp', fp);
-    }
-    return fp.slice(0, 64);
-  } catch {
-    return '';
-  }
+let memoryFingerprint: string | null = null;
+
+function newFingerprint(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}-${Math.random().toString(36).slice(2, 12)}`;
 }
 
-/** 读取本设备的投票记录（未投返回 null） */
-function localVote(resourceId: string): { result: 'ok' | 'dead'; at: string; synced?: boolean } | null {
-  try {
-    const m = JSON.parse(localStorage.getItem(VKEY) ?? '{}') as Record<string, { result: 'ok' | 'dead'; at: string; synced?: boolean }>;
-    return m[resourceId] ?? null;
-  } catch {
-    return null;
-  }
+function voterFingerprint(): string {
+  const saved = readRaw('ob_voter_fp');
+  if (saved) return saved.slice(0, 64);
+  // localStorage 不可用：退化为会话级内存指纹（仍满足服务端长度校验与会话内去重）
+  memoryFingerprint ??= newFingerprint();
+  writeRaw('ob_voter_fp', memoryFingerprint);
+  return memoryFingerprint;
+}
+
+/** 本设备投票记录的存储形状 */
+export interface LocalVote {
+  result: 'ok' | 'dead';
+  at: string;
+  synced?: boolean;
+}
+
+function readVoteMap(): Record<string, LocalVote> {
+  return readJSON<Record<string, LocalVote>>(VKEY, {});
+}
+
+/** 读取本设备的投票记录（未投返回 null）；导出供 VerifyWidget 复用，避免重复解析 */
+export function getLocalVote(resourceId: string): LocalVote | null {
+  return readVoteMap()[resourceId] ?? null;
 }
 
 /** 记录本设备投票；synced=true 表示该票已成功写入云端（统计时不再与云端重复计数） */
 function saveLocalVote(resourceId: string, result: 'ok' | 'dead', synced = false) {
-  try {
-    const m = JSON.parse(localStorage.getItem(VKEY) ?? '{}') as Record<string, { result: 'ok' | 'dead'; at: string; synced?: boolean }>;
-    m[resourceId] = { result, at: new Date().toISOString(), synced };
-    localStorage.setItem(VKEY, JSON.stringify(m));
-  } catch {
-    /* localStorage 不可用时静默降级 */
-  }
+  const m = readVoteMap();
+  m[resourceId] = { result, at: new Date().toISOString(), synced };
+  writeJSON(VKEY, m);
 }
 
-/** 提交一次验证投票：'ok'=还能用，'dead'=已失效 */
+/** 提交一次验证投票：'ok'=还能用，'dead'=已失效；duplicate=true 表示该设备此前已投过（服务端去重命中） */
 export async function submitVerification(
   resourceId: string,
   result: 'ok' | 'dead',
-): Promise<{ ok: boolean; message?: string }> {
+): Promise<{ ok: boolean; duplicate?: boolean; message?: string }> {
   // 先落本地（无论云端成败都保留本设备记录，用于防重复 + 未上云时的兜底统计）
   saveLocalVote(resourceId, result, false);
   if (hasSupabase) {
@@ -389,7 +454,7 @@ export async function submitVerification(
         // 标记本地票已同步，统计以云端为准，避免同一设备被计两次。
         if (error.code === '23505') {
           saveLocalVote(resourceId, result, true);
-          return { ok: true, message: '本设备已投过票' };
+          return { ok: true, duplicate: true, message: '本设备已投过票' };
         }
         return { ok: false, message: error.message };
       }
@@ -405,41 +470,37 @@ export async function submitVerification(
 
 /** 读取某资源的验证统计（总票数 / 可用票 / 失效票 / 最近验证时间） */
 export async function getVerificationStats(resourceId: string): Promise<VerificationStats> {
-  const local = localVote(resourceId);
-  // 本地模式（未配置 Supabase）：本设备票并入统计
-  if (!hasSupabase) {
-    const base = { ok: 0, dead: 0, total: 0, lastAt: null as string | null };
-    if (local) {
-      if (local.result === 'ok') base.ok += 1;
-      else base.dead += 1;
-      base.lastAt = local.at;
-    }
-    return { ...base, total: base.ok + base.dead };
-  }
-  const sb = await getSupabase();
-  // Supabase 模式：以云端统计为准
-  let ok = 0;
-  let dead = 0;
-  let lastAt: string | null = null;
-  if (sb) {
-    try {
-      const { data, error } = await sb
-        .from('verifications')
-        .select('result, created_at')
-        .eq('resource_id', resourceId);
-      if (!error && data) {
-        for (const r of data as { result: string; created_at: string }[]) {
-          if (r.result === 'ok') ok += 1;
-          else if (r.result === 'dead') dead += 1;
-          if (!lastAt || r.created_at > lastAt) lastAt = r.created_at;
-        }
-      }
-    } catch {
-      /* 云端读取失败：继续用下面的本地兜底 */
-    }
-  }
-  // 本设备「未成功上云」的票兜底计入（如云端 insert 失败但本地已记录），已上云的不重复计
-  if (local && local.synced !== true) {
+  const local = getLocalVote(resourceId);
+  // 云端精确计数（head 请求不传回行）——不受 PostgREST max_rows 截断影响，
+  // 热门资源过千票也不会悄悄算少；未配置/失败时 cloud 为 null，走本地兜底
+  const cloud = await withSupabase<{ ok: number; dead: number; lastAt: string | null } | null>(
+    null,
+    async (sb) => {
+      const countOpts = { count: 'exact', head: true } as const;
+      const [okRes, deadRes, lastRes] = await Promise.all([
+        sb.from('verifications').select('*', countOpts).eq('resource_id', resourceId).eq('result', 'ok'),
+        sb.from('verifications').select('*', countOpts).eq('resource_id', resourceId).eq('result', 'dead'),
+        sb
+          .from('verifications')
+          .select('created_at')
+          .eq('resource_id', resourceId)
+          .order('created_at', { ascending: false })
+          .limit(1),
+      ]);
+      if (okRes.error || deadRes.error || lastRes.error) return null;
+      const lastRow = lastRes.data as { created_at: string }[] | null;
+      return {
+        ok: okRes.count ?? 0,
+        dead: deadRes.count ?? 0,
+        lastAt: lastRow && lastRow.length ? lastRow[0].created_at : null,
+      };
+    },
+  );
+  // 云端可用：以云端为准；本设备「未成功上云」的票兜底计入（已上云的不重复计）
+  let ok = cloud?.ok ?? 0;
+  let dead = cloud?.dead ?? 0;
+  let lastAt = cloud?.lastAt ?? null;
+  if (local && (cloud === null || local.synced !== true)) {
     if (local.result === 'ok') ok += 1;
     else dead += 1;
     if (!lastAt || local.at > lastAt) lastAt = local.at;
@@ -461,21 +522,32 @@ export interface CommentItem {
 }
 
 function localComments(resourceId: string): CommentItem[] {
-  try {
-    return JSON.parse(localStorage.getItem(`ob_comments_${resourceId}`) ?? '[]') as CommentItem[];
-  } catch {
-    return [];
-  }
+  return readJSON<CommentItem[]>(`ob_comments_${resourceId}`, []);
 }
 
 function saveLocalComment(resourceId: string, item: CommentItem) {
-  try {
-    const list = localComments(resourceId);
-    list.unshift(item);
-    localStorage.setItem(`ob_comments_${resourceId}`, JSON.stringify(list.slice(0, 100)));
-  } catch {
-    /* ignore */
-  }
+  const list = localComments(resourceId);
+  writeJSON(`ob_comments_${resourceId}`, [item, ...list].slice(0, 100));
+}
+
+/** comments 表行形状（snake_case） */
+interface CommentRow {
+  id: string;
+  resource_id: string;
+  content: string;
+  nickname: string | null;
+  created_at: string;
+}
+
+/** DB 行 → CommentItem（getComments / getMyComments 共用，此前两处重复实现） */
+function mapCommentRow(r: CommentRow): CommentItem {
+  return {
+    id: r.id,
+    resourceId: r.resource_id,
+    content: r.content,
+    nickname: r.nickname ?? '匿名',
+    createdAt: r.created_at,
+  };
 }
 
 /** 批量读取多个资源的验证统计：单次 in() 查询替代逐资源 N 次请求（榜单/列表页性能关键） */
@@ -485,60 +557,52 @@ export async function getVerificationStatsBatch(
   const out: Record<string, { ok: number; dead: number }> = {};
   // 本设备「未成功上云」的票先兜底计入
   for (const id of resourceIds) {
-    const local = localVote(id);
+    const local = getLocalVote(id);
     if (local && local.synced !== true) {
       out[id] = { ok: local.result === 'ok' ? 1 : 0, dead: local.result === 'dead' ? 1 : 0 };
     }
   }
-  if (!hasSupabase || !resourceIds.length) return out;
-  const sb = await getSupabase();
-  if (!sb) return out;
-  try {
-    const { data, error } = await sb
-      .from('verifications')
-      .select('resource_id, result')
-      .in('resource_id', resourceIds);
-    if (!error && data) {
+  if (!resourceIds.length) return out;
+  return withSupabase(out, async (sb) => {
+    // 分页循环拉取：显式 range 绕开 PostgREST 默认 max_rows 截断，
+    // 避免热门资源票数被静默算少；order 保证分页窗口稳定（并发写不漏不重）
+    const PAGE = 1000;
+    let from = 0;
+    for (;;) {
+      const { data, error } = await sb
+        .from('verifications')
+        .select('resource_id, result')
+        .in('resource_id', resourceIds)
+        .order('created_at', { ascending: true })
+        .range(from, from + PAGE - 1);
+      if (error || !data || !data.length) break;
       for (const r of data as { resource_id: string; result: string }[]) {
         (out[r.resource_id] ??= { ok: 0, dead: 0 });
         if (r.result === 'ok') out[r.resource_id].ok += 1;
         else if (r.result === 'dead') out[r.resource_id].dead += 1;
       }
+      if (data.length < PAGE) break;
+      from += PAGE;
     }
-  } catch {
-    /* 云端失败：保留本地兜底结果 */
-  }
-  return out;
+    return out;
+  });
 }
 
 /** 读取某资源的留言列表（云端在前，本地兜底并集去重） */
 export async function getComments(resourceId: string): Promise<CommentItem[]> {
   const local = localComments(resourceId);
-  if (!hasSupabase) return local;
-  const sb = await getSupabase();
-  if (!sb) return local;
-  try {
+  const cloud = await withSupabase<CommentItem[]>([], async (sb) => {
     const { data, error } = await sb
       .from('comments')
       .select('id, resource_id, content, nickname, created_at')
       .eq('resource_id', resourceId)
       .order('created_at', { ascending: false })
       .limit(50);
-    if (error || !data) return local;
-    const cloud = (data as { id: string; resource_id: string; content: string; nickname: string | null; created_at: string }[]).map(
-      (r) => ({
-        id: r.id,
-        resourceId: r.resource_id,
-        content: r.content,
-        nickname: r.nickname ?? '匿名',
-        createdAt: r.created_at,
-      }),
-    );
-    const cloudIds = new Set(cloud.map((c) => c.id));
-    return [...cloud, ...local.filter((l) => !cloudIds.has(l.id))];
-  } catch {
-    return local;
-  }
+    if (error || !data) return [];
+    return (data as CommentRow[]).map(mapCommentRow);
+  });
+  const cloudIds = new Set(cloud.map((c) => c.id));
+  return [...cloud, ...local.filter((l) => !cloudIds.has(l.id))];
 }
 
 /** 发表一条留言（昵称可选，默认匿名；登录时一并写入 user_id 以支持「我的评论」） */
@@ -550,7 +614,8 @@ export async function addComment(
   const nick = nickname?.trim() || '匿名';
   const uid = useAuthStore.getState().user?.id ?? null;
   const item: CommentItem = {
-    id: `local-${Date.now()}`,
+    // 同毫秒碰撞防护：附加随机后缀，避免 React key 重复
+    id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     resourceId,
     content,
     nickname: nick,
@@ -573,8 +638,9 @@ export async function addComment(
       invalidateCache();
       return { ok: true };
     } catch {
+      // 网络异常：仅存本机。必须如实告知降级，否则用户以为全世界都能看到这条评论
       saveLocalComment(resourceId, item);
-      return { ok: true };
+      return { ok: false, message: '网络异常，内容已暂存到本机（其他设备不可见）' };
     }
   }
   saveLocalComment(resourceId, item);
@@ -597,11 +663,8 @@ export function isAdminEmail(email: string | null | undefined): boolean {
     .includes(email.toLowerCase());
 }
 
-export async function getPendingSubmissions(): Promise<Submission[]> {
-  if (!hasSupabase) return [];
-  const sb = await getSupabase();
-  if (!sb) return [];
-  try {
+export function getPendingSubmissions(): Promise<Submission[]> {
+  return withSupabase<Submission[]>([], async (sb) => {
     const { data, error } = await sb
       .from('submissions')
       .select('*')
@@ -609,39 +672,42 @@ export async function getPendingSubmissions(): Promise<Submission[]> {
       .order('created_at', { ascending: false })
       .limit(100);
     if (error || !data) return [];
-    return (data as SubmissionRow[]).map((r) => ({
-      id: r.id,
-      subType: r.subType,
-      name: r.name,
-      url: r.url,
-      type: r.type as ResourceType,
-      summary: r.summary,
-      description: r.description ?? '',
-      status: 'pending',
-      createdAt: r.created_at,
-    }));
-  } catch {
-    return [];
-  }
+    return (data as SubmissionRow[]).map((r) => {
+      const row = normalizeSubmissionRow(r);
+      return {
+        id: row.id,
+        subType: row.subType,
+        name: row.name,
+        url: row.url,
+        type: row.type as ResourceType,
+        summary: row.summary,
+        description: row.description ?? '',
+        status: 'pending',
+        createdAt: row.created_at,
+      };
+    });
+  });
 }
 
 export async function reviewSubmission(
   id: string,
   decision: 'approved' | 'rejected',
 ): Promise<{ ok: boolean; message?: string }> {
-  const sb = await getSupabase();
-  if (!sb) return { ok: false, message: 'Supabase 未配置' };
-  const { error } = await sb.from('submissions').update({ status: decision }).eq('id', id);
-  if (error) return { ok: false, message: error.message };
-  invalidateCache();
-  return { ok: true };
+  try {
+    const sb = await getSupabase();
+    if (!sb) return { ok: false, message: 'Supabase 未配置' };
+    const { error } = await sb.from('submissions').update({ status: decision }).eq('id', id);
+    if (error) return { ok: false, message: error.message };
+    invalidateCache();
+    return { ok: true };
+  } catch {
+    return { ok: false, message: '操作失败，请稍后再试' };
+  }
 }
 
-/** 读取某用户发表的所有留言（用于「我的评论」；按时间倒序） */export async function getMyComments(userId: string): Promise<CommentItem[]> {
-  if (!hasSupabase) return [];
-  const sb = await getSupabase();
-  if (!sb) return [];
-  try {
+/** 读取某用户发表的所有留言（用于「我的评论」；按时间倒序） */
+export function getMyComments(userId: string): Promise<CommentItem[]> {
+  return withSupabase<CommentItem[]>([], async (sb) => {
     const { data, error } = await sb
       .from('comments')
       .select('id, resource_id, content, nickname, created_at')
@@ -649,16 +715,6 @@ export async function reviewSubmission(
       .order('created_at', { ascending: false })
       .limit(50);
     if (error || !data) return [];
-    return (data as { id: string; resource_id: string; content: string; nickname: string | null; created_at: string }[]).map(
-      (r) => ({
-        id: r.id,
-        resourceId: r.resource_id,
-        content: r.content,
-        nickname: r.nickname ?? '匿名',
-        createdAt: r.created_at,
-      }),
-    );
-  } catch {
-    return [];
-  }
+    return (data as CommentRow[]).map(mapCommentRow);
+  });
 }

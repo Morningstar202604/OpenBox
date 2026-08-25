@@ -1,4 +1,4 @@
-﻿// 语言包：中文（按语言独立分包，useI18n 按需动态加载）
+// 语言包：中文（按语言独立分包，useI18n 按需动态加载）
 export const messages: Record<string, string> = {
     'nav.home': '首页',
     'nav.categories': '全部分类',
@@ -103,6 +103,13 @@ export const messages: Record<string, string> = {
     'common.free': '免费',
     'common.paid': '付费',
     'common.loading': '加载中…',
+    'common.close': '关闭',
+    'notfound.title': '页面不存在',
+    'notfound.desc': '你访问的链接可能已失效或输入有误，返回首页继续探索吧。',
+    'machine.checked': '机器巡检',
+    'machine.ok': '可达',
+    'machine.suspect': '存疑',
+    'machine.dead': '不可达',
     'common.loadMore': '加载更多',
     'search.try': '试试热门搜索：',
     'common.empty': '暂无内容',
@@ -253,4 +260,5 @@ export const messages: Record<string, string> = {
     'auth.signupSuccess': '注册成功，如开启邮箱验证请查收确认邮件',
     'auth.logoutSuccess': '已退出登录',
     'auth.signupNeedConfirm': '注册成功，请查收确认邮件后登录',
+    'auth.networkError': '网络异常，请稍后再试',
 };

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useT } from '@/i18n/useI18n';
 import { navigate, routeHref } from '@/hooks/useHashRoute';
 import { Icon } from '@/components/Icon';
+import { PageHeader } from '@/components/PageHeader';
 
 function Section({ id, title, icon, children }: { id: string; title: string; icon: string; children: ReactNode }) {
   return (
@@ -9,7 +10,7 @@ function Section({ id, title, icon, children }: { id: string; title: string; ico
       <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold text-[var(--color-fg)]">
         <Icon name={icon} size={18} className="text-[var(--color-primary)]" /> {title}
       </h2>
-      <div className="space-y-2 text-[15px] leading-7 text-[var(--color-fg)]">{children}</div>
+      <div className="space-y-2 text-base leading-7 text-[var(--color-fg)]">{children}</div>
     </section>
   );
 }
@@ -29,18 +30,13 @@ export function HelpPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="card mb-5 p-6 text-center">
-        <h1 className="flex items-center justify-center gap-2 text-2xl font-bold text-[var(--color-fg)]">
-          <Icon name="LifeBuoy" size={22} className="text-[var(--color-primary)]" /> {t('nav.help')}
-        </h1>
-        <p className="mt-2 text-sm text-[var(--color-muted)]">{t('help.subtitle')}</p>
-      </div>
+      <PageHeader icon="LifeBuoy" title={t('nav.help')} desc={t('help.subtitle')} center />
 
       <div className="lg:grid lg:grid-cols-[13rem_1fr] lg:gap-6">
         {/* 目录（桌面端置顶吸附，移动端横向滚动） */}
         <nav className="card mb-5 flex gap-2 overflow-x-auto p-4 lg:mb-0 lg:sticky lg:top-20 lg:flex-col lg:self-start lg:overflow-visible">
           {TOC.map((x) => (
-            <a key={x.id} href={`${routeHref('/help')}#${x.id}`} className="chip shrink-0" data-active={false} onClick={(e) => { e.preventDefault(); document.getElementById(x.id)?.scrollIntoView({ behavior: 'smooth' }); }}>
+            <a key={x.id} href={`${routeHref('/help')}#${x.id}`} className="chip shrink-0" onClick={(e) => { e.preventDefault(); document.getElementById(x.id)?.scrollIntoView({ behavior: 'smooth' }); }}>
               <Icon name={x.icon} size={14} /> {x.title}
             </a>
           ))}

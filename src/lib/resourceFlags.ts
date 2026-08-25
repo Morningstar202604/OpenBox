@@ -70,9 +70,10 @@ export function needsOverseas(r: Resource): boolean {
   // 2. 官方海外域名白名单（确定性）
   if (isOverseasHost(hostOf(r.url))) return true;
 
-  // 3. 文案负面语境（排除「国内直连」正面用法：仅当其后跟随失败类描述才算）
+  // 3. 文案负面语境（排除「国内直连」正面用法：仅当其后跟随失败类描述才算）。
+  //    i 标志：PROXY/Proxy 等大小写变体此前漏检。
   const txt = `${r.description ?? ''} ${r.tags?.join(' ') ?? ''}`;
-  if (/需海外|海外网络|地区限制|需代理|proxy|境外|要求.*海外/.test(txt)) return true;
+  if (/需海外|海外网络|地区限制|需代理|proxy|境外|要求.*海外/i.test(txt)) return true;
   if (/国内直连[^，。;]{0,8}(超时|403|SSL|异常|失败|无法|不可)/.test(txt)) return true;
 
   return false;

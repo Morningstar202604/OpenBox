@@ -33,14 +33,21 @@ let clientPromise: Promise<SupabaseClient | null> | null = null;
 
 export function getSupabase(): Promise<SupabaseClient | null> {
   if (!isReal) return Promise.resolve(null);
-  clientPromise ??= import("@supabase/supabase-js").then(({ createClient }) =>
-    createClient(requestUrl, supabaseAnonKey, {
-      auth: {
-        // 确保 auth 回调走 Supabase 原始域名（而非代理域名），避免 OAuth 回调地址不匹配。
-        detectSessionInUrl: true,
-      },
-    }),
-  );
+  clientPromise ??= import("@supabase/supabase-js")
+    .then(({ createClient }) =>
+      createClient(requestUrl, supabaseAnonKey, {
+        auth: {
+          // 确保 auth 回调走 Supabase 原始域名（而非代理域名），避免 OAuth 回调地址不匹配。
+          detectSessionInUrl: true,
+        },
+      }),
+    )
+    .catch((err: unknown) => {
+      // chunk 加载失败（弱网/被拦）：重置 promise 允许下次调用重试，
+      // 否则 rejected 状态会永久缓存，之后所有云端功能永远失败。
+      clientPromise = null;
+      throw err;
+    });
   return clientPromise;
 }
 

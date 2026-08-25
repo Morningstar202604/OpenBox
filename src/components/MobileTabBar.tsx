@@ -31,10 +31,11 @@ export function MobileTabBar() {
             <button
               key={tab.name}
               onClick={() => navigate(tab.href)}
-              className={`relative flex min-h-[3.5rem] flex-1 flex-col items-center justify-center gap-0.5 text-[0.7rem] transition-colors ${
+              className={`relative flex min-h-[3.5rem] flex-1 flex-col items-center justify-center gap-0.5 text-xs transition-colors ${
                 active ? 'font-semibold text-[var(--color-primary)]' : 'text-[var(--color-muted)]'
               }`}
               aria-label={tab.label}
+              aria-current={active ? 'page' : undefined}
             >
               {active && (
                 <span className="absolute -top-px left-1/4 right-1/4 h-0.5 rounded-full bg-[var(--color-primary)]" />

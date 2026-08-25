@@ -33,11 +33,36 @@
   --color-primary-soft: rgba(15, 118, 110, 0.09);
   --color-ink: #1c1a17;
 
-  /* 圆角与阴影：更紧的圆角 + 更硬的轻阴影（GitHub 卡片式），去掉大模糊浮空感 */
+  /* ---- 状态色（全站唯一来源）----
+     浅色用深阶（徽章小字对比度 ≥4.5:1），暗色覆写亮阶。
+     组件一律引用令牌，禁止再写硬编码色值。 */
+  --color-success: #047857;
+  --color-success-soft: rgba(4, 120, 87, 0.1);
+  --color-warning: #b45309;
+  --color-warning-soft: rgba(180, 83, 9, 0.12);
+  --color-danger: #dc2626;
+  --color-danger-soft: rgba(220, 38, 38, 0.08);
+  --color-info: #0369a1;
+  --color-info-soft: rgba(3, 105, 161, 0.1);
+  --color-official: #4f46e5;
+  --color-official-soft: rgba(79, 70, 229, 0.08);
+
+  /* ---- 圆角刻度（4 档收敛，覆写 Tailwind 默认刻度，全站 rounded-* 自动归一）----
+     8px 控件 / 10px 卡片 / 14px 模态大卡 / 16px hero，禁止再出现第三种语言 */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 14px;
+  --radius-3xl: 16px;
+  --radius-4xl: 18px;
   --radius-card: 10px;
   --radius-pill: 999px;
   --shadow-card: 0 1px 2px rgba(28, 26, 23, 0.06);
   --shadow-card-hover: 0 1px 2px rgba(28, 26, 23, 0.06), 0 6px 16px rgba(28, 26, 23, 0.1);
+
+  /* 触控目标最小尺寸（移动端媒体查询引用） */
+  --touch-min: 36px;
 
   /* 字体：标题用衬线（杂志感），正文用系统无衬线，等宽用于终端细节。零外部依赖，国内秒开 */
   --font-sans: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Noto Sans CJK SC", "Helvetica Neue", sans-serif;
@@ -67,6 +92,18 @@
   --color-primary-soft: rgba(45, 212, 191, 0.12);
   --color-ink: #e8e4dc;
 
+  /* 状态色暗色亮阶（暗底上深阶色对比度不足，换亮阶） */
+  --color-success: #34d399;
+  --color-success-soft: rgba(52, 211, 153, 0.12);
+  --color-warning: #fbbf24;
+  --color-warning-soft: rgba(251, 191, 36, 0.12);
+  --color-danger: #f87171;
+  --color-danger-soft: rgba(248, 113, 113, 0.12);
+  --color-info: #38bdf8;
+  --color-info-soft: rgba(56, 189, 248, 0.12);
+  --color-official: #a5b4fc;
+  --color-official-soft: rgba(165, 180, 252, 0.14);
+
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-card-hover: 0 1px 2px rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.5);
 }
@@ -74,6 +111,11 @@
 @layer base {
   :root {
     color-scheme: light;
+    /* 层级刻度：导航 < 弹窗 < Toast < 全屏加载，禁止随手 z-[60]/z-[100] */
+    --z-nav: 40;
+    --z-modal: 50;
+    --z-toast: 100;
+    --z-loader: 110;
   }
   .dark {
     color-scheme: dark;
@@ -173,7 +215,14 @@
   .btn-sm {
     padding: 0.35rem 0.7rem;
     font-size: 0.8rem;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
+  }
+  /* 移动端触控目标 ≥36px（WCAG 2.5.8 最低 24px，取舒适下限） */
+  @media (max-width: 639px) {
+    .btn,
+    .btn-sm {
+      min-height: var(--touch-min);
+    }
   }
 
   /* 卡片 */
@@ -184,9 +233,12 @@
     box-shadow: var(--shadow-card);
     transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
   }
+  /* hover 单一反馈：阴影 + 边框加深 + 极淡主色描边（不再三层叠加） */
   .card-hover:hover {
-    box-shadow: var(--shadow-card-hover);
     border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));
+    box-shadow:
+      var(--shadow-card-hover),
+      0 0 0 1px color-mix(in srgb, var(--color-primary) 22%, transparent);
   }
 
   /* 输入框 */
@@ -195,7 +247,7 @@
     padding: 0.6rem 0.85rem;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: var(--color-fg);
     font-size: 0.95rem;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -206,13 +258,13 @@
     box-shadow: 0 0 0 3px var(--color-primary-soft);
   }
 
-  /* 标签 / 徽章 */
+  /* 标签 / 徽章：chip=可交互筛选，tag=纯展示标签（两种形态不再混用皮肤） */
   .chip {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.25rem 0.6rem;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 500;
     border-radius: var(--radius-pill);
     border: 1px solid var(--color-border);
@@ -231,13 +283,32 @@
     color: var(--color-primary-fg);
     border-color: transparent;
   }
+  @media (max-width: 639px) {
+    .chip {
+      min-height: var(--touch-min);
+    }
+  }
+
+  /* 纯展示标签：无 hover/pointer 伪可供性（资源标签专用） */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    color: var(--color-muted);
+    background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+    white-space: nowrap;
+  }
 
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
     padding: 0.15rem 0.5rem;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
     border-radius: var(--radius-pill);
     line-height: 1.4;
@@ -277,13 +348,13 @@
     animation: blink 1.1s steps(2, start) infinite;
   }
 
-  /* 信号灯状态标签：ok=绿 / unstable=琥珀 / dead=红 / unknown=灰 */
+  /* 信号灯状态标签：颜色全部引用状态令牌（浅/暗双阶自动适配） */
   .signal {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.02em;
     padding: 0.12rem 0.5rem;
@@ -298,10 +369,10 @@
     background: currentColor;
     box-shadow: 0 0 0 0 currentColor;
   }
-  .signal[data-status="ok"] { color: #0f9d58; background: rgba(15, 157, 88, 0.1); }
-  .signal[data-status="unstable"] { color: #b45309; background: rgba(180, 83, 9, 0.1); }
-  .signal[data-status="dead"] { color: #dc2626; background: rgba(220, 38, 38, 0.1); }
-  .signal[data-status="unknown"] { color: var(--color-muted); background: var(--color-primary-soft); }
+  .signal[data-status="ok"] { color: var(--color-success); background: var(--color-success-soft); }
+  .signal[data-status="unstable"] { color: var(--color-warning); background: var(--color-warning-soft); }
+  .signal[data-status="dead"] { color: var(--color-danger); background: var(--color-danger-soft); }
+  .signal[data-status="unknown"] { color: var(--color-muted); background: color-mix(in srgb, var(--color-muted) 10%, transparent); }
 
   /* 编辑式分区标题：编号 + 衬线大标题（杂志目录感） */
   .section-head {
@@ -512,7 +583,7 @@
   position: absolute;
   border-radius: 999px;
   filter: blur(70px);
-  opacity: 0.42;
+  opacity: 0.22; /* 浅色模式压低：大片青晕会显「脏」且压内容 */
   will-change: transform;
 }
 .bg-fx-blob-1 {
@@ -545,20 +616,11 @@
   position: fixed;
   top: 0; left: 0;
   height: 2px;
-  z-index: 50;
+  z-index: var(--z-nav);
   background: linear-gradient(90deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 55%, var(--color-ink)));
   box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 60%, transparent);
   transition: width 0.12s ease-out;
   pointer-events: none;
-}
-
-/* 卡片悬停微光：保留原 border-color，叠加克制青绿外发光（电影感，不抢内容） */
-.card-hover:hover {
-  border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));
-  box-shadow:
-    var(--shadow-card-hover),
-    0 0 0 1px color-mix(in srgb, var(--color-primary) 28%, transparent),
-    0 12px 34px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
 /* 首页 Hero 光晕呼吸 */

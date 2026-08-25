@@ -1,4 +1,4 @@
-﻿// 语言包：English（按语言独立分包，useI18n 按需动态加载）
+// 语言包：English（按语言独立分包，useI18n 按需动态加载）
 export const messages: Record<string, string> = {
     'nav.home': 'Home',
     'nav.categories': 'Categories',
@@ -103,6 +103,13 @@ export const messages: Record<string, string> = {
     'common.free': 'Free',
     'common.paid': 'Paid',
     'common.loading': 'Loading…',
+    'common.close': 'Close',
+    'notfound.title': 'Page not found',
+    'notfound.desc': 'The link may be broken or the address mistyped. Head back home to keep exploring.',
+    'machine.checked': 'Machine check',
+    'machine.ok': 'Reachable',
+    'machine.suspect': 'Unverified',
+    'machine.dead': 'Unreachable',
     'common.loadMore': 'Load more',
     'search.try': 'Try popular searches:',
     'common.empty': 'Nothing here yet',
@@ -253,4 +260,5 @@ export const messages: Record<string, string> = {
     'auth.signupSuccess': 'Signed up! Check email if confirmation is enabled',
     'auth.logoutSuccess': 'Signed out',
     'auth.signupNeedConfirm': 'Signed up! Please confirm your email to continue',
+    'auth.networkError': 'Network error, please try again later',
 };

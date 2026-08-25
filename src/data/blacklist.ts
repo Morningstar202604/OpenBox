@@ -1,5 +1,6 @@
 // 已确认真死链域名黑名单（DoH 复核无 DNS 解析）。
 // seed 生成时按此过滤，防止死链回流站点；新增死链审计结果追加到此列表即可。
+import { urlHost } from '@/lib/url';
 export const BLACKLIST_HOSTS: string[] = [
   '0011.cc',
   '147api.com',
@@ -125,12 +126,8 @@ export const BLACKLIST_HOSTS: string[] = [
 
 ];
 
-/** 判断 URL 是否命中黑名单（host 精确匹配，去 www 与端口） */
+/** 判断 URL 是否命中黑名单（host 级匹配，归一化逻辑统一走 lib/url） */
 export function isBlacklisted(url: string): boolean {
-  try {
-    const host = new URL(url).host.replace(/^www\./, '').replace(/:\d+$/, '');
-    return BLACKLIST_HOSTS.includes(host);
-  } catch {
-    return false;
-  }
+  const host = urlHost(url);
+  return host !== '' && BLACKLIST_HOSTS.includes(host);
 }

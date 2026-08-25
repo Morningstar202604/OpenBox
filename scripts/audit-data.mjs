@@ -17,38 +17,26 @@
  * 与线上渲染同源，零手工同步成本。发现的问题按 id 定位到 curated.ts /
  * sites.ts 修复后重跑本脚本复查。
  */
-import { rolldown } from 'rolldown';
-import { writeFile, mkdir } from 'node:fs/promises';
-import { pathToFileURL } from 'node:url';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadSeedResources } from './lib-bundle-data.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const cacheDir = join(ROOT, 'node_modules/.cache');
 
-const entryTs = join(cacheDir, 'audit-entry.ts');
-await mkdir(cacheDir, { recursive: true });
-await writeFile(
-  entryTs,
-  `import { seedResources } from '${join(ROOT, 'src/data/seed').replace(/\\/g, '/')}';\nconsole.log(JSON.stringify(seedResources.map(r => ({ id: r.id, subType: r.subType, name: r.name, url: r.url, tags: r.tags ?? [], type: r.type, status: r.status, summary: r.summary, description: r.description, pricing: r.pricing, pros: r.pros ?? [] }))));`,
-);
-
-const bundle = await rolldown({ input: entryTs, platform: 'node' });
-const { output } = await bundle.generate({ format: 'cjs' });
-await bundle.close();
-if (!output?.[0]?.code) throw new Error('bundle failed');
-const tmpFile = join(cacheDir, `audit-run-${Date.now()}.cjs`);
-await writeFile(tmpFile, output[0].code);
-
-let json = '';
-const origLog = console.log;
-console.log = (...a) => (json += a.join(' '));
-try {
-  await import(pathToFileURL(tmpFile));
-} finally {
-  console.log = origLog;
-}
-const rs = JSON.parse(json.trim());
+const raw = await loadSeedResources();
+const rs = raw.map((r) => ({
+  id: r.id,
+  subType: r.subType,
+  name: r.name,
+  url: r.url,
+  tags: r.tags ?? [],
+  type: r.type,
+  status: r.status,
+  summary: r.summary,
+  description: r.description,
+  pricing: r.pricing,
+  pros: r.pros ?? [],
+}));
 
 const out = (...a) => process.stdout.write(a.join(' ') + '\n');
 out(`[audit] total=${rs.length}`);

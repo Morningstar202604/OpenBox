@@ -8,78 +8,78 @@
  *   node scripts/check-links.mjs --fail-on-dead     # 有死链时退出码 1
  *
  * 设计：
- *   - 正则提取（url: 'https://...'），与 TS 编译解耦，CI 零构建成本；
- *   - HEAD 优先、405/501 时降级 GET（只读响应头即断开）；
+ *   - 全文扫描引号内的 http(s) 字面量——同时覆盖三种书写形态：
+ *     sites.ts 的 `url: '...'`、curated.ts 的 JSON `"url": "..."`、
+ *     seed.ts 的 mk() 位置参数，避免只巡检到其中一个文件；
+ *   - HEAD 优先，405/501 显式降级 GET（独立 AbortController）；
  *   - 每条 12s 超时、并发 8、失败重试 1 次——把网络抖动误报压到最低；
  *   - HTTP 999/403（部分站点反爬）视为「存疑」而非死链，单独归类。
  */
 import { readFileSync, writeFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DATA_FILES = ['src/data/sites.ts', 'src/data/curated.ts', 'src/data/seed.ts'];
-const TIMEOUT_MS = 12_000;
-const CONCURRENCY = 8;
+export const TIMEOUT_MS = 12_000;
+export const CONCURRENCY = 8;
 const RETRIES = 1;
+const UA = { 'user-agent': 'Mozilla/5.0 (compatible; OpenBox-LinkPatrol/1.0)' };
 
-function extractUrls() {
+export function extractUrls() {
   const found = new Map(); // url -> [来源位置]
   for (const rel of DATA_FILES) {
     const text = readFileSync(join(ROOT, rel), 'utf8');
-    const re = /url:\s*['"`](https?:\/\/[^'"`\s]+)['"`]/g;
+    const re = /https?:\/\/[^\s'"`\\)\]}>,]+/g;
     let m;
     while ((m = re.exec(text))) {
+      // 去掉行尾注释粘连与尾随标点
+      const url = m[0].replace(/[.,;:]+$/, '');
+      if (!/^https?:\/\//.test(url)) continue;
       const line = text.slice(0, m.index).split('\n').length;
       const loc = `${rel}:${line}`;
-      if (found.has(m[1])) found.get(m[1]).push(loc);
-      else found.set(m[1], [loc]);
+      if (found.has(url)) found.get(url).push(loc);
+      else found.set(url, [loc]);
     }
   }
   return found;
 }
 
-async function probe(url) {
+export async function fetchStatus(url, method) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(url, { method, redirect: 'follow', signal: ctrl.signal, headers: UA });
+    if (method === 'GET') await res.body?.cancel(); // 只读状态码，立即断开
+    return res.status;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export async function probe(url) {
   for (let attempt = 0; attempt <= RETRIES; attempt++) {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
     try {
-      const res = await fetch(url, {
-        method: 'HEAD',
-        redirect: 'follow',
-        signal: ctrl.signal,
-        headers: { 'user-agent': 'Mozilla/5.0 (compatible; OpenBox-LinkPatrol/1.0)' },
-      });
-      clearTimeout(timer);
-      if (res.status === 405 || res.status === 501) continue; // 不支持 HEAD，降级 GET 重试
-      return res.status;
+      const status = await fetchStatus(url, 'HEAD');
+      if (status === 405 || status === 501) {
+        // 不支持 HEAD：用全新的控制器显式降级 GET（旧实现复用已 abort 的
+        // 控制器，GET 发出即中止，降级从未真正生效）
+        return await fetchStatus(url, 'GET');
+      }
+      return status;
     } catch (e) {
-      clearTimeout(timer);
       if (e?.name === 'AbortError') {
         if (attempt === RETRIES) return 'timeout';
       } else if (attempt === RETRIES) {
         return 'network-error';
-      }
-      // 支持 GET 降级的重试路径
-      try {
-        const res = await fetch(url, {
-          method: 'GET',
-          redirect: 'follow',
-          signal: ctrl.signal,
-          headers: { 'user-agent': 'Mozilla/5.0 (compatible; OpenBox-LinkPatrol/1.0)' },
-        });
-        await res.body?.cancel();
-        if (res.status === 405 || res.status === 501) return res.status;
-        return res.status;
-      } catch {
-        /* 进入下一次 attempt */
       }
     }
   }
   return 'unknown';
 }
 
-function classify(status) {
+export function classify(status) {
   if (status === 200 || status === 206 || status === 301 || status === 302 || status === 303 || status === 307 || status === 308 || status === 401 || status === 402) return 'alive';
   if (status === 403 || status === 429 || status === 999) return 'blocked'; // 反爬/限流，站点大概率活着
   if (status === 404 || status === 410) return 'dead';
@@ -123,4 +123,7 @@ async function main() {
   if (failOnDead && (report.dead.length > 0)) process.exit(1);
 }
 
-main();
+// 被 monitor.mjs 复用时只导入函数，不执行 CLI 入口
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  main();
+}

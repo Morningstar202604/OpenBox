@@ -1,0 +1,104 @@
+# OpenBox 资源自动巡检
+# 每天定时运行 scripts/monitor.mjs（HTTP 探测 + DNS 检查 + 连续失败防抖 + 数据交叉比对）：
+#   1. 巡检结果写入 public/resource-status.json 并自动提交 → push 触发 deploy.yml 重新构建上线
+#   2. 出现「新判死」资源（机器判死且数据未标 dead）时自动开/更新 Issue 通知站长
+# 手动触发：Actions 页 Run workflow（支持 dispatch）
+name: Resource Monitor
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 每天 UTC 03:00（北京时间 11:00）
+  workflow_dispatch:
+
+permissions:
+  contents: write # 提交巡检产物
+  issues: write # 死链告警 Issue
+
+concurrency:
+  group: resource-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run resource monitor
+        id: monitor
+        run: |
+          set -o pipefail
+          node scripts/monitor.mjs --fail-on-dead 2>&1 | tee monitor-output.log
+        continue-on-error: true # 判死不中断，后续步骤仍需提交状态与开 Issue
+
+      - name: Commit monitor artifacts
+        id: commit
+        run: |
+          git config user.name "openbox-monitor[bot]"
+          git config user.email "openbox-monitor[bot]@users.noreply.github.com"
+          git add public/resource-status.json scripts/monitor-state.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "[monitor] 状态无变化，跳过提交"
+          else
+            git commit -m "chore(monitor): 每日资源巡检 $(date -u +%F)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open/update issue for newly dead resources
+        if: steps.monitor.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const log = fs.readFileSync('monitor-output.log', 'utf8');
+            // 从巡检输出截取「新死链清单」段落作为 Issue 正文
+            const start = log.indexOf('新死链清单');
+            const deadSection = start > -1
+              ? log.slice(log.indexOf('\n', start) + 1).split('\n').filter(l => l.trim().startsWith('-')).join('\n')
+              : '（详见 workflow 日志）';
+            const title = '🔴 资源巡检：发现新死链，请复核';
+            const body = [
+              '自动巡检发现以下资源连续失败被机器判死（数据侧尚未标记 dead）：',
+              '',
+              deadSection,
+              '',
+              '---',
+              '- 复核方式：人工访问确认后，修改 `src/data/` 对应条目的 `status` 字段（或加入黑名单）',
+              '- 单次网络抖动不会判死：连续 2 次失败（跨天）才标记，状态文件 `scripts/monitor-state.json`',
+              '- 本 Issue 由 Resource Monitor 工作流自动维护，修复后下一轮巡检会自动关闭条件成熟时请手动关闭',
+            ].join('\n');
+            // 找既有未关闭的同名 Issue 则更新，否则新建（避免每天开新 Issue 刷屏）
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'monitor',
+              per_page: 1,
+            });
+            if (existing.data.length) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['monitor', 'bug'],
+              });
+            }

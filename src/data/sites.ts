@@ -1,4 +1,4 @@
-﻿// 全网 AI 公益站与中转站数据
+// 全网 AI 公益站与中转站数据
 // 调研时间：2026-07，来源：GitHub / LinuxDo / V2EX / 80aj / CSDN / SegmentFault 等交叉比对
 
 export type Category =
@@ -98,18 +98,8 @@ export const CATEGORY_META: Record<Category, { label: string; color: string; des
   blacklist: { label: '黑名单', color: '#ef4444', desc: '已确认失效的站点（域名转卖/SSL 过期/服务关停）' },
 };
 
-export const STATUS_META: Record<Status, { label: string; color: string }> = {
-  ok: { label: '可用', color: '#34d399' },
-  unstable: { label: '不稳定', color: '#ffb020' },
-  unknown: { label: '未验证', color: '#94a3b8' },
-  dead: { label: '已失效', color: '#ef4444' },
-};
-
-export const TYPE_META: Record<SiteType, { label: string; color: string }> = {
-  free: { label: '免费', color: '#34d399' },
-  freemium: { label: '免费增值', color: '#00e5ff' },
-  paid: { label: '付费', color: '#ffb020' },
-};
+// STATUS_META / TYPE_META 已删除：与 src/lib/format.ts 重复且色值漂移，
+// 展示元信息统一从 lib/format 引用（全站唯一来源）。
 
 export const sites: Site[] = [
   // ===== 社区公益站 (linuxdo) =====

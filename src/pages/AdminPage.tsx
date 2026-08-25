@@ -6,6 +6,7 @@ import {
   isAdminEmail,
 } from '@/lib/data';
 import type { Submission } from '@/lib/types';
+import { safeHref } from '@/lib/url';
 import { useToastStore } from '@/store/useToastStore';
 import { fmtDate } from '@/lib/format';
 import { EmptyState } from '@/components/EmptyState';
@@ -77,7 +78,7 @@ export function AdminPage() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-[var(--color-fg)]">{s.name}</p>
                   <a
-                    href={s.url}
+                    href={safeHref(s.url)}
                     target="_blank"
                     rel="noopener noreferrer nofollow"
                     className="block truncate text-xs text-[var(--color-primary)] hover:underline"

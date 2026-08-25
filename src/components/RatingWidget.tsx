@@ -27,7 +27,7 @@ function StarInput({ value, onChange }: { value: number; onChange: (v: number) =
           key={n}
           type="button"
           className="px-0.5 text-base leading-none transition-colors"
-          style={{ color: (hover || value) >= n ? '#f59e0b' : 'var(--color-border)' }}
+          style={{ color: (hover || value) >= n ? 'var(--color-warning)' : 'var(--color-border)' }}
           onMouseEnter={() => setHover(n)}
           onClick={() => onChange(n)}
           aria-label={`${n} 星`}

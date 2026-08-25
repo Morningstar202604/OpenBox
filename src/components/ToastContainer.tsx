@@ -2,16 +2,19 @@ import { useToastStore } from '@/store/useToastStore';
 import { Icon } from './Icon';
 
 const COLORS: Record<string, string> = {
-  info: 'var(--color-primary)',
-  success: '#10b981',
-  error: '#ef4444',
+  info: 'var(--color-info)',
+  success: 'var(--color-success)',
+  error: 'var(--color-danger)',
 };
 
 export function ToastContainer() {
   const toasts = useToastStore((s) => s.toasts);
   const remove = useToastStore((s) => s.remove);
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-4 z-[100] flex flex-col items-center gap-2 px-4">
+    <div
+      className="pointer-events-none fixed inset-x-0 top-4 z-[var(--z-toast)] flex flex-col items-center gap-2 px-4"
+      aria-live="polite"
+    >
       {toasts.map((t) => (
         <div
           key={t.id}

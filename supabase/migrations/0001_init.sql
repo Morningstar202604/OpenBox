@@ -25,7 +25,7 @@ create table if not exists public.categories (
 -- ---------- 资源（云端可编辑来源；当前前端默认仍用本地种子）----------
 create table if not exists public.resources (
   id          text primary key,
-  subType     text not null default '',
+  "subType"   text not null default '',
   scenarios   text[] default '{}',
   name        text not null,
   url         text not null,
@@ -50,7 +50,7 @@ create table if not exists public.resources (
   updated_at  timestamptz default now()
 );
 
-create index if not exists idx_resources_subtype on public.resources(subType);
+create index if not exists idx_resources_subtype on public.resources("subType");
 create index if not exists idx_resources_featured on public.resources(featured);
 
 create or replace function public.set_updated_at()
@@ -69,7 +69,7 @@ create trigger trg_resources_updated
 -- ---------- 社区投稿（核心：游客提交、管理员审核）----------
 create table if not exists public.submissions (
   id          uuid primary key default gen_random_uuid(),
-  subType     text not null,
+  "subType"   text not null,
   name        text not null,
   url         text not null,
   type        text not null default 'free',
@@ -84,9 +84,11 @@ create table if not exists public.submissions (
 create index if not exists idx_submissions_status on public.submissions(status);
 
 -- 修复旧表结构：此前部分执行的残留表可能缺少 subType 列
-alter table public.submissions add column if not exists subType text not null default 'free-api';
+-- 注意：列名必须带引号写成 "subType"——不加引号会被 Postgres 折叠为小写 subtype，
+-- 与前端 Supabase 调用的驼峰字段名不一致（0008 迁移负责把旧库的小写列重命名收编）。
+alter table public.submissions add column if not exists "subType" text not null default 'free-api';
 alter table public.submissions add column if not exists scenarios text[] default '{}';
-alter table public.submissions alter column subType drop default;
+alter table public.submissions alter column "subType" drop default;
 
 -- ---------- 用户资料（未来登录预留）----------
 create table if not exists public.profiles (

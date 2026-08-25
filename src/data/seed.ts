@@ -1,6 +1,7 @@
-﻿// 本地种子数据：作为「未配置 Supabase 时」的兜底数据源，也作为生产库的初始内容。
+// 本地种子数据：作为「未配置 Supabase 时」的兜底数据源，也作为生产库的初始内容。
 // 内容来源：① 既有策展数据（src/data/sites.ts，API/中转类）经映射复用；② 新分类的精选真实条目。
 import type { Resource, ResourceType } from '@/lib/types';
+import { normalizeUrlKey, urlHost } from '@/lib/url';
 import { SUBTYPE_SCENARIOS } from './taxonomy';
 import { sites, deriveFeatures, type Site } from './sites';
 import { curatedResources } from './curated';
@@ -20,12 +21,6 @@ const LEGACY_MAP: Record<string, string> = {
 function mapLegacy(s: Site): Resource | null {
   const category = LEGACY_MAP[s.category];
   if (!category) return null; // blacklist 等不纳入新站
-  const featuredIds = new Set([
-    'anyrouter',
-    'cups-moe',
-    'duckcoding-free',
-    'wzw',
-  ]);
   return {
     id: s.id,
     subType: category,
@@ -44,30 +39,36 @@ function mapLegacy(s: Site): Resource | null {
     cons: s.cons,
     tips: s.tips,
     official: s.category === 'domestic' || s.category === 'overseas',
-    featured: featuredIds.has(s.id),
+    // featured 一律 false：此前的 featuredIds（wzw/duckcoding-free 等）指向已被
+    // 白名单/黑名单过滤掉的条目，是死配置；首页精选由 curated 条目的 featured 标记驱动
+    featured: false,
   };
 }
 
 // ---- 免费中转站存活白名单（2026-08-04 HTTP 实跳验证）----
 // 原 sites.ts 中 160+ 个免费镜像/公益站已不可达（超时/404/关站），
 // 此类站点生命周期极短，仅保留经 curl -L 实测可访问的。
+// 纪律：status='dead' 或实测 5xx 的条目不得入列（aifast/apikeyfun 曾被误收，已移除）。
 const ALIVE_LEGACY_URLS = new Set([
 'https://aierxin.cc', 'https://api.koozhan.com', 'https://runapi.host',
-'https://1.bixin123.com', 'https://1000zhen.com', 'https://4router.net', 'https://80aj.com', 'https://ai.huaibao.top',
-  'https://ai.huan666.de', 'https://ai.wendabao.net', 'https://ai.wisech.com', 'https://aifast.com',
-  'https://aigc2d.com', 'https://aigcbar.com', 'https://aiproxy.best', 'https://aiproxy.io', 'https://anticode.cn',
+'https://1000zhen.com', 'https://4router.net', 'https://80aj.com', 'https://ai.huaibao.top',
+  'https://ai.huan666.de', 'https://ai.wisech.com',
+  'https://aigc2d.com', 'https://aigcbar.com', 'https://aiproxy.best', 'https://anticode.cn',
   'https://api.aizzz.xyz', 'https://api.bltcy.ai', 'https://api.gemai.cc', 'https://api.honglin.asia', 'https://api.lmuai.com',
-  'https://api.rcouyi.com', 'https://api2d.com', 'https://api2gpt.com', 'https://apikeyfun.com',
-  'https://apinav.cc', 'https://apiyi.com', 'https://bailian.console.aliyun.com', 'https://cgs.skybyte.me/', 'https://chat5.aiyunos.top',
-  'https://chatgptplus.cn', 'https://chatz.free2gpt.com', 'https://clawapi.fulitimes.com', 'https://closeai.us', 'https://cloud.tencent.com/product/hunyuan',
+  'https://api.rcouyi.com', 'https://api2d.com', 'https://api2gpt.com',
+  'https://apinav.cc', 'https://apiyi.com', 'https://bailian.console.aliyun.com', 'https://cgs.skybyte.me/',
+  'https://chatgptplus.cn', 'https://chatz.free2gpt.com', 'https://closeai.us', 'https://cloud.tencent.com/product/hunyuan',
   'https://code.wenwen-ai.com', 'https://cubence.com', 'https://developers.cloudflare.com/workers-ai', 'https://duckllm.com', 'https://gemini.chat',
   'https://keylabs.ai', 'https://kimi.ai', 'https://ohmygpt.com', 'https://platform.openai.com', 'https://qwen.ai',
   'https://replicate.com', 'https://siliconflow.cn', 'https://tencentcloud.com', 'https://together.ai', 'https://xfyun.cn',
   'https://zerooneai.com',
 ]);
 
+const legacyAliveHosts = new Set([...ALIVE_LEGACY_URLS].map(urlHost));
+
 const legacyResources: Resource[] = sites
-  .filter((s) => ALIVE_LEGACY_URLS.has(s.url))
+  // host 级匹配：全串精确匹配会因尾斜杠/协议/WWW 差异漏判（如 'https://cgs.skybyte.me/'）
+  .filter((s) => legacyAliveHosts.has(urlHost(s.url)))
   .map(mapLegacy)
   .filter((r): r is Resource => r !== null);
 
@@ -649,20 +650,20 @@ const curated: Resource[] = [
 
 // 编辑人气分（静态、全局、可解释）：用于「热门榜」排序的默认信号。
 // 后续接入后端（Supabase）时，可替换为收藏数/点击量等真实信号，组件无需改动。
-const POPULARITY_BY_NAME: Record<string, number> = {
+// 导出供 data-integrity 测试断言「每个键必须命中一条真实资源名」，
+// 防止改名后键静默失配（DeepSeek API/Dify/Kimi 曾失配，人气分静默归 0）。
+export const POPULARITY_BY_NAME: Record<string, number> = {
   'Google AI Studio (Gemini)': 95,
   OpenRouter: 92,
-  'DeepSeek API': 90,
   Groq: 85,
   Cerebras: 82,
   'Hugging Face Inference': 80,
   ChatGPT: 94,
   Claude: 92,
   Gemini: 88,
-  Kimi: 80,
+  'Kimi 开放平台': 80,
   '豆包': 82,
   Ollama: 88,
-  Dify: 85,
   LangChain: 84,
   NotebookLM: 84,
   'GitHub Copilot': 83,
@@ -713,9 +714,10 @@ export const seedResources: Resource[] = (() => {
   const seenUrl = new Set<string>();
   const seenName = new Set<string>();
   const deduped = merged.filter((r) => {
-    const u = (r.url || '').replace(/\/+$/, '').toLowerCase();
+    // 归一化同站判定（协议/www/端口/尾斜杠差异不再产生双份条目）
+    const u = normalizeUrlKey(r.url || '');
     const n = (r.name || '').toLowerCase().trim();
-    if (seenUrl.has(u) || seenName.has(n)) return false;
+    if (!u || seenUrl.has(u) || seenName.has(n)) return false;
     seenUrl.add(u);
     seenName.add(n);
     return true;

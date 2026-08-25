@@ -42,35 +42,44 @@ export const useAuthStore = create<AuthState>()((set) => ({
     const sb = await getSupabase();
     if (!sb) return;
     set({ error: null, loading: true });
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    set({ loading: false });
-    if (error) { set({ error: error.message }); return; }
-    set({ showAuth: false, error: null });
-    useToastStore.getState().push(authT('auth.loginSuccess'), 'success');
+    try {
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) { set({ loading: false, error: error.message }); return; }
+      set({ loading: false, showAuth: false, error: null });
+      useToastStore.getState().push(authT('auth.loginSuccess'), 'success');
+    } catch {
+      // 网络异常（GoTrue 请求失败会 reject 而非返回 error）：必须解除 loading，否则按钮永久锁死
+      set({ loading: false, error: authT('auth.networkError') });
+    }
   },
 
   signUp: async (email, password) => {
     const sb = await getSupabase();
     if (!sb) return;
     set({ error: null, loading: true });
-    const { data, error } = await sb.auth.signUp({ email, password });
-    set({ loading: false });
-    if (error) { set({ error: error.message }); return; }
-    // Supabase 开启「邮箱确认」时，注册成功但无会话：提示去查收邮件；
-    // 关闭「确认邮箱」时直接返回 session，可立即登录。
-    if (!data.session) {
-      set({ showAuth: false, error: null });
-      useToastStore.getState().push(authT('auth.signupNeedConfirm'), 'success');
-      return;
+    try {
+      const { data, error } = await sb.auth.signUp({ email, password });
+      if (error) { set({ loading: false, error: error.message }); return; }
+      // Supabase 开启「邮箱确认」时，注册成功但无会话：提示去查收邮件；
+      // 关闭「确认邮箱」时直接返回 session，可立即登录。
+      if (!data.session) {
+        set({ loading: false, showAuth: false, error: null });
+        useToastStore.getState().push(authT('auth.signupNeedConfirm'), 'success');
+        return;
+      }
+      set({ loading: false, showAuth: false, error: null });
+      useToastStore.getState().push(authT('auth.signupSuccess'), 'success');
+    } catch {
+      set({ loading: false, error: authT('auth.networkError') });
     }
-    set({ showAuth: false, error: null });
-    useToastStore.getState().push(authT('auth.signupSuccess'), 'success');
   },
 
   signOut: async () => {
     const sb = await getSupabase();
     if (!sb) return;
-    await sb.auth.signOut();
+    try {
+      await sb.auth.signOut();
+    } catch { /* 登出网络失败也照常清本地会话状态 */ }
     set({ user: null });
     useToastStore.getState().push(authT('auth.logoutSuccess'), 'success');
   },
@@ -83,9 +92,14 @@ function applyUser(u: User | null) {
 if (authOn) {
   // init → onAuthStateChange 的初始回调会触发两次 applyUser（getSession + onAuthStateChange），
   // 这不会导致 bug：applyUser 是幂等 setState，且 useFavoritesStore 的 subscribe 用 state.user && !prev.user 去重。
-  void getSupabase().then((sb) => {
-    if (!sb) return;
-    void sb.auth.getSession().then(({ data }) => applyUser(data.session?.user ?? null));
-    void sb.auth.onAuthStateChange((_event, session) => applyUser(session?.user ?? null));
-  });
+  void getSupabase()
+    .then((sb) => {
+      if (!sb) return;
+      void sb.auth.getSession().then(({ data }) => applyUser(data.session?.user ?? null));
+      void sb.auth.onAuthStateChange((_event, session) => applyUser(session?.user ?? null));
+    })
+    .catch(() => {
+      // 动态 import 失败（弱网）：解除全局 loading，登录入口可稍后重试
+      applyUser(null);
+    });
 }

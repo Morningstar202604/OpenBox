@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Resource } from '@/lib/types';
+import { safeHref } from '@/lib/url';
 import { useT, useLocalize } from '@/i18n/useI18n';
+import { useDialog } from '@/hooks/useDialog';
 import { getSubType } from '@/data/taxonomy';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useToastStore } from '@/store/useToastStore';
@@ -14,6 +16,8 @@ import { CommentsWidget } from './CommentsWidget';
 import { RatingWidget } from './RatingWidget';
 import { getVerificationStats } from '@/lib/data';
 import { scoreResource, type ScoreBreakdown } from '@/lib/ranking';
+import { getMachineStatusMap, type MachineStatus } from '@/lib/machineStatus';
+import { fmtDate } from '@/lib/format';
 
 function Field({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
@@ -22,6 +26,40 @@ function Field({ label, value }: { label: string; value?: string }) {
       <span className="text-xs font-medium text-[var(--color-muted)]">{label}</span>
       <span className="text-sm text-[var(--color-fg)]">{value}</span>
     </div>
+  );
+}
+
+/**
+ * 机器巡检行：展示 CI 每日探测的可达性结果（resource-status.json）。
+ * 数据缺失（未部署/请求失败）时返回 null 不占布局；与社区投票互补——
+ * 机器看连通性，人看功能是否还真能用。
+ */
+function MachineCheckLine({ url }: { url: string }) {
+  const t = useT();
+  const [ms, setMs] = useState<MachineStatus | null>(null);
+  useEffect(() => {
+    let m = true;
+    getMachineStatusMap().then((map) => {
+      if (m) setMs(map[url] ?? null);
+    });
+    return () => {
+      m = false;
+    };
+  }, [url]);
+
+  if (!ms) return null;
+  const verdictMeta = {
+    ok: { label: t('machine.ok'), cls: 'text-[var(--color-success)]' },
+    suspect: { label: t('machine.suspect'), cls: 'text-[var(--color-warning)]' },
+    dead: { label: t('machine.dead'), cls: 'text-[var(--color-danger)]' },
+  }[ms.v];
+  return (
+    <p className="mt-2 inline-flex items-center gap-1.5 font-mono text-xs text-[var(--color-muted)]">
+      <Icon name="Radar" size={13} className={verdictMeta.cls} />
+      {t('machine.checked')} {fmtDate(ms.at, true)} · <span className={verdictMeta.cls}>{verdictMeta.label}</span>
+      {ms.v === 'ok' && ms.ms != null && ` · ${ms.ms}ms`}
+      {(ms.v === 'suspect' || ms.v === 'dead') && ` · ×${ms.fails ?? 1}`}
+    </p>
   );
 }
 
@@ -91,6 +129,9 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
         <ResourceFlags resource={resource} />
       </div>
 
+      {/* 机器巡检（CI 每日探测的可达性，与社区投票互补：机器看连通、人看功能） */}
+      <MachineCheckLine url={resource.url} />
+
       {/* 社区验证投票（「还能不能薅」） */}
       <div className="mt-4">
         <VerifyWidget resourceId={resource.id} big />
@@ -102,14 +143,14 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
       {/* 免费 API 专项评分（8 维，区别于通用混合分） */}
       {resource.subType === 'free-api' && <FreeApiScorecard resource={resource} />}
 
-      <p className="mt-4 text-[15px] leading-7 text-[var(--color-fg)]">{resource.description}</p>
+      <p className="mt-4 text-base leading-7 text-[var(--color-fg)]">{resource.description}</p>
 
       {resource.guide && (
         <div className="mt-5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
           <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[var(--color-fg)]">
             <Icon name="Wand2" size={15} /> {t('detail.guide')}
           </p>
-          <p className="whitespace-pre-line font-mono text-[13px] leading-relaxed text-[var(--color-muted)]">{resource.guide}</p>
+          <p className="whitespace-pre-line font-mono text-sm leading-relaxed text-[var(--color-muted)]">{resource.guide}</p>
         </div>
       )}
 
@@ -135,7 +176,7 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {resource.pros?.length ? (
             <div className="rounded-xl border border-[var(--color-border)] p-3">
-              <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[#10b981]">
+              <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[var(--color-success)]">
                 <Icon name="ThumbsUp" size={15} /> {t('detail.pros')}
               </p>
               <ul className="space-y-1 text-sm text-[var(--color-muted)]">
@@ -147,7 +188,7 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
           ) : null}
           {resource.cons?.length ? (
             <div className="rounded-xl border border-[var(--color-border)] p-3">
-              <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[#f59e0b]">
+              <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[var(--color-warning)]">
                 <Icon name="AlertTriangle" size={15} /> {t('detail.cons')}
               </p>
               <ul className="space-y-1 text-sm text-[var(--color-muted)]">
@@ -177,7 +218,7 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        <a className="btn btn-primary" href={resource.url} target="_blank" rel="noreferrer">
+        <a className="btn btn-primary" href={safeHref(resource.url)} target="_blank" rel="noreferrer">
           <Icon name="ExternalLink" size={16} /> {t('common.visit')}
         </a>
         <button className="btn btn-ghost" onClick={copy}>
@@ -197,29 +238,32 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
 
 /** 弹窗包装（列表点击查看详情时使用） */
 export function DetailView({ resource, onClose }: { resource: Resource; onClose: () => void }) {
+  const t = useT();
   const [closing, setClosing] = useState(false);
   const handleClose = useCallback(() => {
     setClosing(true);
     setTimeout(() => onClose(), 280);
   }, [onClose]);
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [handleClose]);
+  // 焦点陷阱 + 滚动锁 + Esc（关闭走 handleClose 保留退场动画）
+  const panelRef = useDialog(handleClose, true);
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 backdrop-blur-sm transition-opacity duration-280 sm:items-center sm:p-4 ${closing ? 'opacity-0' : 'opacity-100'}`}
+      className={`fixed inset-0 z-[var(--z-modal)] flex items-end justify-center bg-black/40 p-0 backdrop-blur-sm transition-opacity duration-280 sm:items-center sm:p-4 ${closing ? 'opacity-0' : 'opacity-100'}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={resource.name}
       onClick={handleClose}
     >
       <div
-        className={`sheet w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] sm:max-h-[85vh] sm:rounded-2xl `}
+        ref={panelRef}
+        tabIndex={-1}
+        className={`sheet w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] outline-none sm:max-h-[85vh] sm:rounded-2xl `}
         onClick={(e) => e.stopPropagation()}
         style={{ animation: closing ? 'sheet-down 0.28s ease-in both' : 'sheet-up 0.3s ease-out both' }}
       >
         <div className="mb-4 flex justify-end">
-          <button className="text-[var(--color-muted)] hover:text-[var(--color-fg)]" onClick={handleClose} aria-label="close">
+          <button className="text-[var(--color-muted)] hover:text-[var(--color-fg)]" onClick={handleClose} aria-label={t('common.close')}>
             <Icon name="X" size={20} />
           </button>
         </div>

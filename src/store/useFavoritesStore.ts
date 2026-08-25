@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getSupabase, hasSupabase, AUTH_ENABLED } from '@/lib/supabase';
+import { readJSON, writeJSON } from '@/lib/storage';
 import { useAuthStore } from './useAuthStore';
 import { useToastStore } from './useToastStore';
 import { useI18nStore } from '@/i18n/useI18n';
@@ -22,12 +23,26 @@ const FAV_MSG = {
 
 const authOn = AUTH_ENABLED && hasSupabase;
 
+// 待删队列：云端删除失败（网络/RLS）时记录，避免下次 syncFromCloud 用并集把
+// 已删项「复活」；登录同步时排除并自动重试。
+const PENDING_DELETE_KEY = 'ob_fav_pending_deletes';
+
+function readPendingDeletes(): string[] {
+  return readJSON<string[]>(PENDING_DELETE_KEY, []);
+}
+
+function writePendingDeletes(ids: string[]) {
+  // 存储不可用时不阻塞（最坏情况是删除被复活，与旧行为一致）
+  if (ids.length) writeJSON(PENDING_DELETE_KEY, ids);
+  else writeJSON(PENDING_DELETE_KEY, []);
+}
+
 interface FavoritesState {
   ids: string[];
   toggle: (id: string) => void;
   has: (id: string) => boolean;
   clear: () => void;
-  /** 登录后从云端合并收藏（本地优先，并集） */
+  /** 登录后从云端合并收藏（本地优先，并集，排除待删项） */
   syncFromCloud: () => Promise<void>;
 }
 
@@ -54,14 +69,25 @@ export const useFavoritesStore = create<FavoritesState>()(
         // 登录态：镜像到云端收藏表（匿名 key + 用户会话，受 RLS 约束只能改自己的行）
         const uid = useAuthStore.getState().user?.id;
         if (authOn && uid) {
-          void getSupabase().then((sb) => {
-            if (!sb) return;
-            if (added) {
-              void sb.from('favorites').upsert({ user_id: uid, resource_id: id });
-            } else {
-              void sb.from('favorites').delete().eq('user_id', uid).eq('resource_id', id);
-            }
-          });
+          void getSupabase()
+            .then((sb) => {
+              if (!sb) return;
+              if (added) {
+                return sb.from('favorites').upsert({ user_id: uid, resource_id: id });
+              }
+              return sb.from('favorites').delete().eq('user_id', uid).eq('resource_id', id);
+            })
+            .then((res) => {
+              const failed = !res || res.error;
+              const pending = readPendingDeletes().filter((x) => x !== id);
+              if (failed && !added) pending.push(id); // 删除失败 → 记入待删队列
+              writePendingDeletes(pending);
+            })
+            .catch(() => {
+              const pending = readPendingDeletes().filter((x) => x !== id);
+              if (!added) pending.push(id);
+              writePendingDeletes(pending);
+            });
         }
       },
       has: (id) => get().ids.includes(id),
@@ -74,8 +100,27 @@ export const useFavoritesStore = create<FavoritesState>()(
         const { data, error } = await sb.from('favorites').select('resource_id').eq('user_id', uid);
         if (error || !data) return;
         const cloudIds = (data as { resource_id: string }[]).map((r) => r.resource_id);
-        // 并集：本地已有项优先保留，云端补充
-        const merged = Array.from(new Set([...get().ids, ...cloudIds]));
+        const pending = readPendingDeletes();
+        // 重试上次失败的云端删除
+        const stillPending: string[] = [];
+        for (const id of pending) {
+          try {
+            const { error: delErr } = await sb
+              .from('favorites')
+              .delete()
+              .eq('user_id', uid)
+              .eq('resource_id', id);
+            if (delErr) stillPending.push(id);
+          } catch {
+            stillPending.push(id);
+          }
+        }
+        writePendingDeletes(stillPending);
+        // 并集：本地已有项优先保留，云端补充；但待删项（删除未成功的）不复活
+        const pendingSet = new Set(stillPending);
+        const merged = Array.from(
+          new Set([...get().ids, ...cloudIds.filter((id) => !pendingSet.has(id))]),
+        );
         set({ ids: merged });
       },
     }),

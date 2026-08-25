@@ -1,4 +1,4 @@
-﻿// 语言包：日本語（按语言独立分包，useI18n 按需动态加载）
+// 语言包：日本語（按语言独立分包，useI18n 按需动态加载）
 export const messages: Record<string, string> = {
     'nav.home': 'ホーム',
     'nav.categories': 'カテゴリ',
@@ -103,6 +103,13 @@ export const messages: Record<string, string> = {
     'common.free': '無料',
     'common.paid': '有料',
     'common.loading': '読み込み中…',
+    'common.close': '閉じる',
+    'notfound.title': 'ページが見つかりません',
+    'notfound.desc': 'リンクが無効になったか、アドレスが誤っている可能性があります。ホームに戻って探索を続けましょう。',
+    'machine.checked': '自動検査',
+    'machine.ok': '到達可能',
+    'machine.suspect': '要確認',
+    'machine.dead': '到達不能',
     'common.loadMore': 'さらに読み込む',
     'search.try': '人気の検索：',
     'common.empty': 'まだありません',
@@ -253,4 +260,5 @@ export const messages: Record<string, string> = {
     'auth.signupSuccess': '登録しました。メール確認が有効な場合はご確認ください',
     'auth.logoutSuccess': 'ログアウトしました',
     'auth.signupNeedConfirm': '登録しました。メール確認後にログインしてください',
+    'auth.networkError': 'ネットワークエラーです。後でもう一度お試しください',
 };

@@ -7,8 +7,6 @@ import { Icon } from './Icon';
 import { scoreResource } from '@/lib/ranking';
 import { getVerificationStatsBatch } from '@/lib/data';
 
-const MEDALS = ['🥇', '🥈', '🥉'];
-
 interface BoardRow {
   r: Resource;
   total: number;
@@ -20,9 +18,9 @@ interface BoardRow {
  * 多榜单切换（网易云式）：横向子类型 tab，每个 tab 是一个竖向榜单。
  * - 榜单按「混合多维评分」(scoreResource) 排序，官方内容一并参与、以徽标区分（排行榜 ≠ 精选推荐，不排除官方）。
  * - 默认展示前 5，可「展开全部 / 收起」查看完整榜单。
- * - 首页与排行榜页复用同一组件（home 模式默认折叠，page 模式默认展开）。
+ * - 首页与排行榜页复用同一组件（home 模式默认折叠，page 模式默认展开 + hideHeader 去重复页头）。
  */
-export function RankingBoard({ resources, expanded = false }: { resources: Resource[]; expanded?: boolean }) {
+export function RankingBoard({ resources, expanded = false, hideHeader = false }: { resources: Resource[]; expanded?: boolean; hideHeader?: boolean }) {
   const t = useT();
   const localize = useLocalize();
 
@@ -80,24 +78,29 @@ export function RankingBoard({ resources, expanded = false }: { resources: Resou
 
   return (
     <section>
-      <div className="mb-4 flex items-center gap-2">
-        <Icon name="BarChart3" size={18} className="text-[var(--color-primary)]" />
-        <h2 className="text-lg font-semibold text-[var(--color-fg)]">{t('ranking.boardTitle')}</h2>
-        <span className="text-xs text-[var(--color-muted)]">{t('ranking.boardHint')}</span>
-      </div>
+      {!hideHeader && (
+        <div className="mb-4 flex items-center gap-2">
+          <Icon name="BarChart3" size={18} className="text-[var(--color-primary)]" />
+          <h2 className="text-lg font-semibold text-[var(--color-fg)]">{t('ranking.boardTitle')}</h2>
+          <span className="text-xs text-[var(--color-muted)]">{t('ranking.boardHint')}</span>
+        </div>
+      )}
 
-      {/* 横向子类型 tab（可滚动切换） */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1.5 [scrollbar-width:thin]">
+      {/* 横向子类型 tab（可滚动切换；激活态用标准主色填充保证对比度，
+          分类色只用于未激活态的描边与文字，不做白字压浅色底） */}
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-1.5 [scrollbar-width:thin]" role="tablist" aria-label={t('ranking.boardTitle')}>
         {groups.map((g) => {
           const st = g.subType;
           const on = g.subType.slug === activeSlug;
           return (
             <button
               key={st.slug}
+              role="tab"
+              aria-selected={on}
               onClick={() => { setActive(st.slug); setExpanded(expanded); }}
               className="chip shrink-0 transition-colors"
               data-active={on}
-              style={on ? { background: st.color, color: '#fff', borderColor: st.color } : { borderColor: st.color + '55', color: st.color }}
+              style={on ? undefined : { borderColor: st.color + '55', color: st.color }}
             >
               {localize(st.name)}
               <span className="ml-1 text-[11px] opacity-70">{g.items.length}</span>
@@ -117,15 +120,16 @@ export function RankingBoard({ resources, expanded = false }: { resources: Resou
               onClick={() => navigate(`/resource/${row.r.id}`)}
               className="card card-hover flex w-full items-center gap-3 p-3 text-left sm:p-4"
             >
+              {/* 序号徽章：前三名主色高亮（emoji 奖牌跨平台渲染不可控，弃用） */}
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold"
                 style={{ background: i < 3 ? 'var(--color-primary-soft)' : 'var(--color-border)', color: i < 3 ? 'var(--color-primary)' : 'var(--color-muted)' }}
               >
-                {MEDALS[i] ?? i + 1}
+                {i + 1}
               </span>
-              {i < 3 && <Icon name="Flame" size={15} className="shrink-0 text-orange-500" />}
+              {i < 3 && <Icon name="Flame" size={15} className="shrink-0 text-[var(--color-warning)]" />}
               <span className="min-w-0 flex-1 font-medium leading-snug text-[var(--color-fg)]">{row.r.name}</span>
-              {st && <span className="chip shrink-0" data-active={false}>{localize(st.name)}</span>}
+              {st && <span className="tag shrink-0">{localize(st.name)}</span>}
               {verified && (
                 <span className="hidden shrink-0 items-center gap-1 text-xs text-[var(--color-muted)] sm:inline-flex">
                   <Icon name="Users" size={12} /> {row.ok + row.dead}

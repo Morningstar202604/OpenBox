@@ -51,9 +51,10 @@ alter table public.submissions
 
 alter table public.submissions
   drop constraint if exists submissions_subtype_len_check;
+-- 列名带引号 "subType"：不加引号会被折叠为小写 subtype，与 0001/0008 的驼峰列名冲突
 alter table public.submissions
   add constraint submissions_subtype_len_check
-  check (char_length(subType) between 1 and 50);
+  check (char_length("subType") between 1 and 50);
 
 -- ---------- 2) reports：反馈内容长度 ----------
 alter table public.reports

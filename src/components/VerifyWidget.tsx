@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useT } from '@/i18n/useI18n';
-import { getVerificationStats, submitVerification, type VerificationStats } from '@/lib/data';
+import { getVerificationStats, getLocalVote, submitVerification, type VerificationStats } from '@/lib/data';
 import { useToastStore } from '@/store/useToastStore';
 import { fmtDate } from '@/lib/format';
 import { Icon } from './Icon';
@@ -16,22 +16,16 @@ export function VerifyWidget({ resourceId, big = false }: { resourceId: string; 
   const [stats, setStats] = useState<VerificationStats>({ ok: 0, dead: 0, total: 0, lastAt: null });
   const [voted, setVoted] = useState<'ok' | 'dead' | null>(null);
   const [loading, setLoading] = useState(true);
+  // 双击竞态锁：voted 异步更新前的第二次点击不再放行（乐观统计不再双加）
+  const votingRef = useRef(false);
 
   useEffect(() => {
     let m = true;
     getVerificationStats(resourceId).then((s) => {
       if (m) {
         setStats(s);
-        // 本设备已投标记（防重复）：读 localStorage
-        try {
-          const map = JSON.parse(localStorage.getItem('ob_verifications') ?? '{}') as Record<
-            string,
-            { result: 'ok' | 'dead'; at: string }
-          >;
-          setVoted(map[resourceId]?.result ?? null);
-        } catch {
-          /* ignore */
-        }
+        // 本设备已投标记（防重复）：统一走数据层的 getLocalVote，不再自行解析 localStorage
+        setVoted(getLocalVote(resourceId)?.result ?? null);
         setLoading(false);
       }
     });
@@ -41,28 +35,44 @@ export function VerifyWidget({ resourceId, big = false }: { resourceId: string; 
   }, [resourceId]);
 
   const vote = async (r: 'ok' | 'dead') => {
-    if (voted) return;
+    if (voted || votingRef.current) return;
+    votingRef.current = true;
+    // 先占位再提交：UI 即时反馈，服务端 23505 兜底真实去重
+    setVoted(r);
     const res = await submitVerification(resourceId, r);
+    votingRef.current = false;
     if (!res.ok) {
+      setVoted(null);
       push(res.message ?? 'error', 'error');
       return;
     }
-    setVoted(r);
-    // 乐观更新统计
-    setStats((s) => ({
-      ok: s.ok + (r === 'ok' ? 1 : 0),
-      dead: s.dead + (r === 'dead' ? 1 : 0),
-      total: s.total + 1,
-      lastAt: new Date().toISOString(),
-    }));
-    push(t('verify.thanks'), 'success');
+    // 服务端去重命中（该设备此前已投过）：不计乐观增量，统计以云端为准
+    if (!res.duplicate) {
+      setStats((s) => ({
+        ok: s.ok + (r === 'ok' ? 1 : 0),
+        dead: s.dead + (r === 'dead' ? 1 : 0),
+        total: s.total + 1,
+        lastAt: new Date().toISOString(),
+      }));
+    }
+    push(res.duplicate ? res.message ?? t('verify.thanks') : t('verify.thanks'), 'success');
   };
 
-  if (loading) return null;
+  // loading 渲染占位骨架（固定高度）：统计异步返回时卡片不再集体跳动（CLS）
+  if (loading) {
+    return <div className={big ? 'h-[62px]' : 'h-[30px]'} aria-hidden="true" />;
+  }
 
-  const btnBase = 'inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50';
-  const btnOk = voted === 'ok' ? 'border-[#10b981] bg-[#10b9811a] text-[#10b981]' : 'border-[var(--color-border)] text-[var(--color-muted)] hover:border-[#10b981] hover:text-[#10b981]';
-  const btnDead = voted === 'dead' ? 'border-[#ef4444] bg-[#ef44441a] text-[#ef4444]' : 'border-[var(--color-border)] text-[var(--color-muted)] hover:border-[#ef4444] hover:text-[#ef4444]';
+  const btnBase =
+    'inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 max-sm:min-h-[36px]';
+  const btnOk =
+    voted === 'ok'
+      ? 'border-[var(--color-success)] bg-[var(--color-success-soft)] text-[var(--color-success)]'
+      : 'border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-success)] hover:text-[var(--color-success)]';
+  const btnDead =
+    voted === 'dead'
+      ? 'border-[var(--color-danger)] bg-[var(--color-danger-soft)] text-[var(--color-danger)]'
+      : 'border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-danger)] hover:text-[var(--color-danger)]';
 
   return (
     <div className={big ? 'rounded-xl border border-[var(--color-border)] p-3' : ''}>
@@ -73,10 +83,22 @@ export function VerifyWidget({ resourceId, big = false }: { resourceId: string; 
         </p>
       )}
       <div className="flex flex-wrap items-center gap-2">
-        <button className={`${btnBase} ${btnOk}`} disabled={!!voted} onClick={() => vote('ok')} aria-label={t('verify.ok')}>
+        <button
+          className={`${btnBase} ${btnOk}`}
+          disabled={!!voted}
+          onClick={() => vote('ok')}
+          aria-pressed={voted === 'ok'}
+          aria-label={t('verify.ok')}
+        >
           <Icon name="ThumbsUp" size={13} /> {t('verify.ok')}
         </button>
-        <button className={`${btnBase} ${btnDead}`} disabled={!!voted} onClick={() => vote('dead')} aria-label={t('verify.dead')}>
+        <button
+          className={`${btnBase} ${btnDead}`}
+          disabled={!!voted}
+          onClick={() => vote('dead')}
+          aria-pressed={voted === 'dead'}
+          aria-label={t('verify.dead')}
+        >
           <Icon name="AlertTriangle" size={13} /> {t('verify.dead')}
         </button>
         {stats.total > 0 && (

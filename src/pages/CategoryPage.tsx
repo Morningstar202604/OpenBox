@@ -30,7 +30,7 @@ export function CategoryPage() {
       }
       nonFreeHint={
         <p className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xs text-[var(--color-muted)]">
-          <Icon name="AlertTriangle" size={14} className="shrink-0 text-[#f59e0b]" />
+          <Icon name="AlertTriangle" size={14} className="shrink-0 text-[var(--color-warning)]" />
           {t('category.nonFreeHint')}
         </p>
       }

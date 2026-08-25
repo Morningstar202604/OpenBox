@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+﻿import type { SVGProps } from 'react';
 import {
   Server,
   Network,
@@ -27,6 +27,7 @@ import {
   Info,
   Loader2,
   Microscope,
+  Radar,
   Palette,
   TrendingUp,
   Flame,
@@ -89,6 +90,7 @@ const MAP: Record<string, LucideIcon> = {
   Info,
   Loader: Loader2,
   Microscope,
+  Radar,
   Palette,
   TrendingUp,
   Flame,

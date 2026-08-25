@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { readRaw } from '@/lib/storage';
 
 export type Theme = 'light' | 'dark';
 
@@ -16,8 +17,19 @@ function apply(theme: Theme) {
 
 function initial(): Theme {
   if (typeof window === 'undefined') return 'light';
-  const saved = localStorage.getItem('ob_theme');
-  if (saved === 'light' || saved === 'dark') return saved;
+  // persist 写入的是 { state: { theme }, version } JSON——直接读裸值永远匹配不上，
+  // 导致暗色用户每次首帧闪白后再被 onRehydrateStorage 掰回
+  const raw = readRaw('ob_theme');
+  if (raw === 'light' || raw === 'dark') return raw; // 兼容历史裸值写法
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as { state?: { theme?: Theme } } | null;
+      const t = parsed?.state?.theme;
+      if (t === 'light' || t === 'dark') return t;
+    } catch {
+      /* JSON 损坏按默认处理 */
+    }
+  }
   // 默认亮色：不跟随系统偏好，暗色仅由用户手动切换（ob_theme 持久化）
   return 'light';
 }

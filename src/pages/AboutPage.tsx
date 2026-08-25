@@ -1,5 +1,6 @@
 import { useT } from '@/i18n/useI18n';
 import { Icon } from '@/components/Icon';
+import { PageHeader } from '@/components/PageHeader';
 
 const GITHUB = 'https://github.com/weed33834/OpenBox';
 
@@ -19,10 +20,7 @@ export function AboutPage() {
   ];
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div className="card p-6">
-        <h1 className="text-2xl font-bold text-[var(--color-fg)]">{t('about.title')}</h1>
-        <p className="mt-3 leading-relaxed text-[var(--color-muted)]">{t('about.desc')}</p>
-      </div>
+      <PageHeader title={t('about.title')} desc={t('about.desc')} />
 
       {/* 联系站长 / 去 GitHub 反馈（社区化开源项目入口） */}
       <div className="card p-6">

@@ -4,7 +4,7 @@ import { slogans } from '@/i18n/slogans';
 
 /**
  * 页面跳转过渡加载层：圆形旋转光环 + 中心 Logo（品牌露出）+ 随机语录。
- * 时长由 App 控制（引导页→主站 1.5s，页面间 500ms）。
+ * 仅在「引导页 → 主站」首次进入时展示（1.5s，由 App 控制）。
  */
 export function PageLoader() {
   const lang = useI18nStore((s) => s.lang);
@@ -18,10 +18,9 @@ export function PageLoader() {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-8"
+      className="fixed inset-0 z-[var(--z-loader)] flex flex-col items-center justify-center gap-8"
       style={{ background: 'var(--color-bg)' }}
       role="status"
-      aria-label="loading"
     >
       {/* 圆形光环 + 中心 Logo */}
       <div className="relative flex h-28 w-28 items-center justify-center">

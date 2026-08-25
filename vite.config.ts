@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   // 默认 /OpenBox/ 用于 GitHub Pages 子路径部署；
   // Cloudflare Pages 走自定义根域名时设置 VITE_BASE_URL=/ 即可切换，二者互不影响。
   base: process.env.VITE_BASE_URL ?? '/OpenBox/',
@@ -41,10 +41,9 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        plugins: [
-          'react-dev-locator',
-        ],
+        // dev-locator 仅开发期注入：生产构建零转换开销与产物膨胀
+        plugins: mode === 'development' ? ['react-dev-locator'] : [],
       },
     }),
   ],
-})
+}))

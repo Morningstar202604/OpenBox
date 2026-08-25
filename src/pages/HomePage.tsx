@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
 import { getResourcesByIds } from '@/lib/data';
+import { fmtDate } from '@/lib/format';
 import { buildScenarioTree } from '@/data/taxonomy';
 import { useResources } from '@/hooks/useResources';
 import { ResourceRow } from '@/components/ResourceRow';
@@ -10,7 +11,6 @@ import { useRecentStore } from '@/store/useRecentStore';
 import { scoreResource } from '@/lib/ranking';
 import { RankingBoard } from '@/components/RankingBoard';
 import { TagCloud } from '@/components/TagCloud';
-import { StatusMonitor } from '@/components/StatusMonitor';
 import { WeeklyUpdates } from '@/components/WeeklyUpdates';
 import { FeaturedCard } from '@/components/FeaturedCard';
 import { CategoryNavBar } from '@/components/CategoryNavBar';
@@ -63,8 +63,11 @@ export function HomePage() {
     return m;
   }, [resources]);
 
-  // 状态占比（健康度条形图）
-  const pct = (n?: number) => (resources.length ? Math.round(((n ?? 0) / resources.length) * 100) : 0);
+  // 全库最近更新时间（原 StatusMonitor 卡片的独有信息，并入 hero 统计行）
+  const lastUpdated = useMemo(
+    () => resources.reduce((max, r) => (r.updatedAt && r.updatedAt > max ? r.updatedAt : max), ''),
+    [resources],
+  );
 
   return (
     <div className="space-y-10 sm:space-y-14">
@@ -76,7 +79,7 @@ export function HomePage() {
         />
         <h1 className="font-display text-3xl font-black tracking-tight text-[var(--color-fg)] sm:text-4xl">{t('home.title')}</h1>
         <p className="mx-auto mt-3 max-w-xl text-[var(--color-muted)]">{t('home.subtitle')}</p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 text-[15px] text-[var(--color-muted)]">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 text-sm text-[var(--color-muted)]">
           <span className="term-prompt" />
           <span className="font-mono">{t('home.stats')}：</span>
           <span className="font-mono font-semibold text-[var(--color-primary)]">{loading ? '—' : resources.length}</span>
@@ -84,23 +87,23 @@ export function HomePage() {
           <span className="font-mono">
             {tree.length} {t('nav.categories')}
           </span>
+          {lastUpdated && (
+            <>
+              <span>·</span>
+              <span className="font-mono">
+                {t('status.lastUpdated')} {fmtDate(lastUpdated)}
+              </span>
+            </>
+          )}
         </div>
 
-        {/* 状态聚合条：信号灯式「现在还能不能薅」（全站健康度） */}
-        {/* 加载中显示 — 而非误导性的 0（冷启动时云端合并未完成，种子数据尚未返回） */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[15px]">
+        {/* 状态聚合：全站唯一健康度展示（信号灯式「现在还能不能薅」）。
+            此前的健康度条形与 StatusMonitor 卡片重复展示同一份计数，已收敛删除。 */}
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm">
           <span className="signal" data-status="ok">{loading ? '—' : statusCounts.ok ?? 0} {t('status.ok')}</span>
           <span className="signal" data-status="unstable">{loading ? '—' : statusCounts.unstable ?? 0} {t('status.unstable')}</span>
           <span className="signal" data-status="dead">{loading ? '—' : statusCounts.dead ?? 0} {t('status.dead')}</span>
           <span className="signal" data-status="unknown">{loading ? '—' : statusCounts.unknown ?? 0} {t('status.unknown')}</span>
-        </div>
-
-        {/* 状态分布健康度条形（各状态占比，一眼看全局） */}
-        <div className="mx-auto mt-5 flex h-2 w-full max-w-md overflow-hidden rounded-full bg-[var(--color-border)]">
-          <span className="h-full transition-all" style={{ width: `${pct(statusCounts.ok)}%`, background: '#10b981' }} />
-          <span className="h-full transition-all" style={{ width: `${pct(statusCounts.unstable)}%`, background: '#f59e0b' }} />
-          <span className="h-full transition-all" style={{ width: `${pct(statusCounts.dead)}%`, background: '#ef4444' }} />
-          <span className="h-full transition-all" style={{ width: `${pct(statusCounts.unknown)}%`, background: '#94a3b8' }} />
         </div>
       </section>
 
@@ -139,8 +142,7 @@ export function HomePage() {
         </section>
       )}
 
-      {/* 增强模块 */}
-      <StatusMonitor resources={resources} />
+      {/* 增强模块（状态监测已并入 hero，不再重复展示） */}
       <TagCloud resources={resources} />
       <WeeklyUpdates />
 

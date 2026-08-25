@@ -1,4 +1,5 @@
 import type { Resource } from '@/lib/types';
+import { safeHref } from '@/lib/url';
 import { useT, useLocalize } from '@/i18n/useI18n';
 import { navigate } from '@/hooks/useHashRoute';
 import { getSubType } from '@/data/taxonomy';
@@ -18,25 +19,18 @@ export function FeaturedCard({ resource }: { resource: Resource }) {
   const cat = getSubType(resource.subType);
 
   return (
-    <div
-      className="card relative overflow-hidden p-5 sm:p-6"
-      style={{ borderColor: 'transparent', boxShadow: 'var(--shadow-card)' }}
-    >
+    <div className="card relative overflow-hidden p-5 sm:p-6">
       {/* 顶部分类色条（差异化视觉锚点） */}
-      <span className="absolute inset-x-0 top-0 h-1" style={{ background: cat?.color ?? '#888' }} />
+      <span className="absolute inset-x-0 top-0 h-1" style={{ background: cat?.color ?? 'var(--color-muted)' }} />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <SoftIcon icon={cat?.icon} color={cat?.color} size={28} className="h-14 w-14 sm:h-16 sm:w-16" rounded="rounded-2xl" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-lg font-bold text-[var(--color-fg)]">{resource.name}</h3>
-            {resource.official && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-[var(--color-primary-soft)] px-1.5 py-0.5 text-xs font-medium text-[var(--color-primary)]">
-                <Icon name="Check" size={12} /> {t('common.official')}
-              </span>
-            )}
+            {/* 官方/非免费/需代理标记由 ResourceFlags 统一输出（此前与专属官方徽章重复渲染两遍） */}
+            <ResourceFlags resource={resource} />
             <StatusBadge status={resource.status} />
             <TypeBadge type={resource.type} />
-            <ResourceFlags resource={resource} />
           </div>
           <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-[var(--color-muted)]">
             {resource.summary || resource.description}
@@ -55,7 +49,7 @@ export function FeaturedCard({ resource }: { resource: Resource }) {
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2 max-sm:w-full sm:flex-col">
-          <a className="btn btn-primary btn-sm flex-1 sm:flex-none" href={resource.url} target="_blank" rel="noreferrer">
+          <a className="btn btn-primary btn-sm flex-1 sm:flex-none" href={safeHref(resource.url)} target="_blank" rel="noreferrer">
             <Icon name="ExternalLink" size={15} /> {t('common.visit')}
           </a>
           <button className="btn btn-ghost btn-sm flex-1 sm:flex-none" onClick={() => navigate(`/resource/${resource.id}`)}>

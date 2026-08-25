@@ -19,10 +19,8 @@ export function NotFoundPage() {
       </div>
 
       <div className="space-y-2">
-        <h2 className="text-xl font-bold text-[var(--color-fg)]">页面不存在</h2>
-        <p className="text-sm text-[var(--color-muted)]">
-          你访问的链接可能已失效或输入有误，返回首页继续探索吧。
-        </p>
+        <h2 className="text-xl font-bold text-[var(--color-fg)]">{t('notfound.title')}</h2>
+        <p className="text-sm text-[var(--color-muted)]">{t('notfound.desc')}</p>
       </div>
 
       <button

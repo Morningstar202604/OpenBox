@@ -28,7 +28,13 @@ const BASE = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
 /** 把带基路径的 pathname 归一化为路由内部路径（'/OpenBox/resource/x' → '/resource/x'） */
 export function stripBase(pathname: string): string {
-  const p = decodeURI(pathname);
+  // 畸形百分号（如 ?ghpath=/resource/100%）会让 decodeURI 抛 URIError——路由层绝不能崩
+  let p: string;
+  try {
+    p = decodeURI(pathname);
+  } catch {
+    p = pathname;
+  }
   if (BASE && (p === BASE || p.startsWith(`${BASE}/`))) return p.slice(BASE.length) || '/';
   return p;
 }
@@ -82,6 +88,15 @@ export function splitPath(raw: string): { pathPart: string; queryPart: string } 
     : { pathPart: raw.slice(0, i), queryPart: raw.slice(i + 1) };
 }
 
+/** 安全 decode（畸形百分号不抛异常），hash 路径与 pathname 行为保持一致 */
+function decodeSafe(s: string): string {
+  try {
+    return decodeURI(s);
+  } catch {
+    return s;
+  }
+}
+
 /**
  * 从当前地址解析路由。
  * 兼容层（按序）：
@@ -99,7 +114,7 @@ export function parseLocation(): Route {
   const rawHash = window.location.hash.replace(/^#/, '');
   if (rawHash.startsWith('/')) {
     const { pathPart, queryPart } = splitPath(rawHash);
-    return routeFromPath(pathPart, queryPart);
+    return routeFromPath(decodeSafe(pathPart), queryPart);
   }
   return routeFromPath(stripBase(window.location.pathname), window.location.search.replace(/^\?/, ''));
 }

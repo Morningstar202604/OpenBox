@@ -17,7 +17,7 @@ export function CategoryCard({ subType, count }: { subType: SubType; count?: num
       <SoftIcon icon={subType.icon} color={subType.color} size={20} className="h-10 w-10 sm:h-11 sm:w-11" rounded="rounded-lg sm:rounded-xl" />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <h3 className="text-[15px] font-semibold leading-snug text-[var(--color-fg)]">{localize(subType.name)}</h3>
+          <h3 className="text-sm font-semibold leading-snug text-[var(--color-fg)]">{localize(subType.name)}</h3>
           {count !== undefined && count > 0 && (
             <span
               className="shrink-0 rounded-md px-1.5 py-0.5 text-xs font-semibold"

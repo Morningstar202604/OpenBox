@@ -27,9 +27,11 @@ function loadView(): ViewMode {
 export function ResourceList({ resources, loading = false, allowViewSwitch = true, emptyHint }: { resources: Resource[]; loading?: boolean; allowViewSwitch?: boolean; emptyHint?: ReactNode }) {
   const t = useT();
   const [view, setView] = useState<ViewMode>(loadView);
-  // 派生分页：记录页码对应的列表长度，列表变化（搜索/筛选）时自动回到第 1 页，无需 effect 重置
-  const [pager, setPager] = useState<{ key: number; page: number }>({ key: resources.length, page: 1 });
-  const page = pager.key === resources.length ? pager.page : 1;
+  // 派生分页：列表标识变化（搜索/筛选/排序）时自动回到第 1 页，无需 effect 重置。
+  // 标识 = 首条 id + 长度：仅用长度时，新旧筛选结果恰好等长就不会重置（漏网 bug）
+  const listKey = `${resources[0]?.id ?? ''}:${resources.length}`;
+  const [pager, setPager] = useState<{ key: string; page: number }>({ key: listKey, page: 1 });
+  const page = pager.key === listKey ? pager.page : 1;
 
   const switchView = (v: ViewMode) => {
     setView(v);
@@ -61,8 +63,8 @@ export function ResourceList({ resources, loading = false, allowViewSwitch = tru
   const sliced = resources.slice(0, page * PAGE_SIZE);
   const hasMore = resources.length > page * PAGE_SIZE;
   const LoadMore = hasMore ? (
-    <button className="btn btn-ghost mx-auto mt-4 block" onClick={() => setPager({ key: resources.length, page: page + 1 })}>
-      {t('common.loadMore') ?? '加载更多'} ({resources.length - page * PAGE_SIZE} 条)
+    <button className="btn btn-ghost mx-auto mt-4 block" onClick={() => setPager({ key: listKey, page: page + 1 })}>
+      {t('common.loadMore')} ({resources.length - page * PAGE_SIZE})
     </button>
   ) : null;
 
