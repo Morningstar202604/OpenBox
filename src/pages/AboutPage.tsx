@@ -2,7 +2,7 @@ import { useT } from '@/i18n/useI18n';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 
-const GITHUB = 'https://github.com/weed33834/OpenBox';
+const GITHUB = 'https://github.com/Morningstar202604/OpenBox';
 
 export function AboutPage() {
   const t = useT();

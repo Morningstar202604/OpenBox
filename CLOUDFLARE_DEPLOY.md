@@ -9,7 +9,7 @@
 
 ## 0. 前置条件
 
-- 一个 Git 仓库（OpenBox 主仓库：`gitcode.com/badhope/OpenBox`；镜像 `gitee.com/badhope/OpenBox` 与 `github.com/Morningstar202604/OpenBox`）
+- 一个 Git 仓库（OpenBox 主仓库：`github.com/Morningstar202604/OpenBox`；镜像 `gitee.com/badhope/OpenBox` 与 `github.com/Morningstar202604/OpenBox`）
 - 一个 Cloudflare 账号（免费版即可，注册免绑卡）
 - 一个能收验证邮件的邮箱
 - Node.js 20（本地预览用，非必须——也可纯控制台部署）
