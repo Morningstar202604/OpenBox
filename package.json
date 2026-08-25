@@ -5,7 +5,7 @@
   "description": "OpenBox · 开源 AI 资源导航 — 聚合免费 API、中转站、代理节点、AI 应用、工具与学习资料。14 大分类 280+ 精选资源，社区投稿 + 集体验证，三语界面，登录云同步。主站：openbox-nav.pages.dev",
   "license": "Apache-2.0",
   "type": "module",
-  "author": "weed33834",
+  "author": "Morningstar202604",
   "keywords": [
     "AI资源",
     "免费API",
@@ -20,11 +20,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://gitcode.com/badhope/OpenBox.git"
+    "url": "https://github.com/Morningstar202604/OpenBox.git"
   },
   "homepage": "https://openbox-nav.pages.dev",
   "bugs": {
-    "url": "https://gitcode.com/badhope/OpenBox/issues"
+    "url": "https://github.com/Morningstar202604/OpenBox/issues"
   },
   "scripts": {
     "dev": "vite",

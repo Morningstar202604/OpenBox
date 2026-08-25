@@ -1,8 +1,8 @@
 # OpenBox 运维交接（2026-08-22 会话总结，新会话先读本文件）
 
 ## 项目状态
-- 仓库：origin=`gitcode.com/badhope/OpenBox`（主）；镜像 `gitee.com/badhope/OpenBox` + `github.com/Morningstar202604/OpenBox`；**线上：https://openbox-nav.pages.dev**（自建 CF 账号）
-- ⚠️ 远程账号：早期记载 `github.com/weed33834`，当前 `.git/config` 实际 github 远程为 `Morningstar202604/OpenBox`（三远程均带推送 token）。推送以 `.git/config` 为准。
+- 仓库：origin=`github.com/Morningstar202604/OpenBox`（主）；镜像 `gitcode.com/badhope/OpenBox` + `gitee.com/badhope/OpenBox`；**线上：https://openbox-nav.pages.dev**（自建 CF 账号）
+- ⚠️ 远程账号：早期记载 `github.com/Morningstar202604`，当前 `.git/config` 实际 github 远程为 `Morningstar202604/OpenBox`（三远程均带推送 token）。推送以 `.git/config` 为准。
 - 部署：GitHub Actions（deploy.yml）push main 自动构建直传，凭据在仓库 Secrets（CLOUDFLARE_API_TOKEN/ACCOUNT_ID）
 - 云端功能已激活：Supabase 凭据走 Actions Secrets 构建注入；**数据库迁移 0001–0008 已就绪**（0001–0007 此前已应用；0008 = 契约收编与 RLS 收口，幂等可重跑），
   九表全健康（resources/submissions/verifications/comments/reports/favorites/profiles/ratings/admin_emails）

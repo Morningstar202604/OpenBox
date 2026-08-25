@@ -8,7 +8,7 @@ import { Icon } from './Icon';
 import { AUTH_ENABLED, hasSupabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/useAuthStore';
 
-const GITHUB = 'https://github.com/weed33834/OpenBox';
+const GITHUB = 'https://github.com/Morningstar202604/OpenBox';
 
 export function NavBar() {
   const t = useT();

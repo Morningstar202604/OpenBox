@@ -146,10 +146,10 @@ screenshots/           # README 演示截图
 
 OpenBox 是社区项目，**任何人都可以贡献，不需要会写代码**。详细规范见 [`CONTRIBUTING.md`](./CONTRIBUTING.md)。
 
-- 📤 **投稿资源** — 站内「投稿」页或 [新建议题](https://gitcode.com/badhope/OpenBox/issues/new?template=feature_request.md)
+- 📤 **投稿资源** — 站内「投稿」页或 [新建议题](https://github.com/Morningstar202604/OpenBox/issues/new?template=feature_request.md)
 - 🗳️ **验证资源** — 薅到了投「还能用」、踩坑了投「已失效」——你的票直接更新社区状态
 - 💬 **留言避坑** — 资源详情页评论区分享你的使用经验
-- ⚠️ **报告问题** — 资源失效 / 链接错误 → [Bug 报告](https://gitcode.com/badhope/OpenBox/issues/new?template=bug_report.md)
+- ⚠️ **报告问题** — 资源失效 / 链接错误 → [Bug 报告](https://github.com/Morningstar202604/OpenBox/issues/new?template=bug_report.md)
 - 🌍 **翻译** — 三语界面，欢迎补充改进 zh / en / ja 文案
 - 🧑‍💻 **代码** — Fork → 分支 → PR（参考 [PR 模板](.github/PULL_REQUEST_TEMPLATE.md)）
 - 💡 **反馈建议** — 任何想法都可以开 Issue 讨论
@@ -163,10 +163,10 @@ OpenBox 是社区项目，**任何人都可以贡献，不需要会写代码**�
 
 ## 📄 许可
 
-[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) © weed33834 — 允许商业使用、修改和分发，需保留版权与许可声明。
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) © Morningstar202604 — 允许商业使用、修改和分发，需保留版权与许可声明。
 
 ---
 
 <p align="center">
-  <sub>Built with care by <a href="https://github.com/weed33834">@weed33834</a> & <a href="https://github.com/jaychouchannel">@jaychouchannel</a> · Mirrored on <a href="https://gitcode.com/badhope/OpenBox">GitCode</a> & <a href="https://gitee.com/badhope/OpenBox">Gitee</a> · 如果觉得有帮助，欢迎 ⭐ Star 与 PR 🎉</sub>
+  <sub>Built with care by <a href="https://github.com/Morningstar202604">@Morningstar202604</a> & <a href="https://github.com/Morningstar202604">@Morningstar202604</a> · Mirrored on <a href="https://gitcode.com/badhope/OpenBox">GitCode</a> & <a href="https://gitee.com/badhope/OpenBox">Gitee</a> · 如果觉得有帮助，欢迎 ⭐ Star 与 PR 🎉</sub>
 </p>
