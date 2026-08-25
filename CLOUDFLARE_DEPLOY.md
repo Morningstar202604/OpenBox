@@ -1,5 +1,10 @@
 # OpenBox × Cloudflare Pages 部署手册
 
+> **2026-08 现状提示**：`pages.dev` 域名在大陆长期不可达，且 deploy.yml 自动触发已暂禁用（commit `25c40b7`）。
+> 本方案现定位为**海外镜像/备份**，不再新增投入。主力与推荐部署请改用：
+> 校内网部署 [`DEPLOY-SCHOOL.md`](./DEPLOY-SCHOOL.md)（校园场景首选）·
+> 腾讯 EdgeOne Pages [`EDGEONE_DEPLOY.md`](./EDGEONE_DEPLOY.md)（公网门面，大陆可达）。
+
 > 目标：用网站「免费服务器」分类里收录的 **Cloudflare Pages**（免绑卡、全球 CDN）托管 OpenBox，
 > 再用「免费域名」分类里的 **eu.org / us.kg / is-a.dev** 等二级域名挂上自定义根域名。
 > 全程免费。当前以 **Cloudflare Pages 为唯一生产部署**：push `main` 触发 `.github/workflows/deploy.yml`

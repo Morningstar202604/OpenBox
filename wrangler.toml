@@ -1,9 +1,11 @@
-# Cloudflare Pages 项目配置（自建项目 openbox-nav，GitHub Actions 自动部署）
+# Cloudflare Pages 项目配置（自建项目 openbox-nav）
 # 用法：
 #   本地预览构建：npm run build && npx wrangler pages dev docs
-#   命令行部署：VITE_BASE_URL=/ npm run build && npx wrangler pages deploy docs --project-name openbox-nav
-# 生产部署由 .github/workflows/deploy.yml 在 push main 时自动完成，无需手动跑命令。
+#   命令行部署：VITE_BASE_URL=/ VITE_BUILD_DIR=dist npm run build && npx wrangler pages deploy dist --project-name openbox-nav
+# 部署现状（2026-08）：deploy.yml 的 push 自动触发已暂禁用（仅手动 dispatch）。
+# 推荐部署轨：校内网 DEPLOY-SCHOOL.md / 腾讯 EdgeOne EDGEONE_DEPLOY.md；
+# 本文件保留为海外镜像（CLOUDFLARE_DEPLOY.md）的直传口径，产物目录统一为 dist。
 
 name = "openbox-nav"
-pages_build_output_dir = "docs"
+pages_build_output_dir = "dist"
 compatibility_date = "2024-09-23"

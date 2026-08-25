@@ -5,8 +5,10 @@ import { useT } from '@/i18n/useI18n';
 import { navigate } from '@/hooks/useHashRoute';
 import { getSubType } from '@/data/taxonomy';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
+import { useToastStore } from '@/store/useToastStore';
 import { displayTags } from '@/lib/tags';
 import { fmtDate } from '@/lib/format';
+import { copyText } from '@/lib/clipboard';
 import { useReport } from '@/hooks/useReport';
 import { Icon } from './Icon';
 import { SoftIcon } from './SoftIcon';
@@ -27,6 +29,12 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
   const fav = useFavoritesStore((s) => s.ids.includes(resource.id));
   const toggleFav = useFavoritesStore((s) => s.toggle);
   const report = useReport(resource);
+  const push = useToastStore((s) => s.push);
+
+  const copyUrl = async () => {
+    if (await copyText(resource.url)) push(t('detail.copied'), 'success');
+    else push(resource.url, 'info');
+  };
 
   return (
     <div className="card card-hover card-in p-4" style={{ ['--i' as string]: index } as CSSProperties}>
@@ -84,6 +92,15 @@ export const ResourceRow = memo(function ResourceRow({ resource, index = 0 }: { 
               >
                 <Icon name="AlertTriangle" size={13} />
                 {t('report.button')}
+              </button>
+              <button
+                onClick={copyUrl}
+                className="inline-flex min-h-[36px] items-center gap-1 transition-colors hover:text-[var(--color-primary)]"
+                aria-label={t('detail.copy')}
+                title={t('detail.copy')}
+              >
+                <Icon name="Copy" size={13} />
+                {t('detail.copy')}
               </button>
             </span>
           </div>

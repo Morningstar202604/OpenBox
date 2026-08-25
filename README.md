@@ -90,7 +90,8 @@ OpenBox 是一个**社区化的内容型资源导航平台**——把 AI 时代*
 | 构建 | Vite 8（本地 `base: /OpenBox/` 产 `docs/` 供 GitHub Pages 预览；CI 经 GitHub Actions 以 `base=/` 构建 `dist/` 直传 Cloudflare Pages 根域 `openbox-nav.pages.dev`） |
 | 样式 | Tailwind CSS v4（`@theme` 语义令牌 + `.dark` 覆写） |
 | 状态 | Zustand + `persist`（主题 / 收藏 / 提示 / 语言 / 会话） |
-| 路由 | 原生 Hash 路由（无需服务端） |
+| 路由 | History API 路由（旧 hash 外链兼容层保留；构建期为每个路由预生成实体 index.html，深链真 200） |
+| PWA | vite-plugin-pwa（Service Worker precache 应用外壳，离线可浏览已缓存内容；manifest 随 base 自适应） |
 | 后端 | Supabase BaaS（**可选**，默认本地种子兜底） |
 | 图标 | lucide-react |
 
@@ -106,6 +107,17 @@ npm run preview    # 本地预览
 ```
 
 > ⚠️ 项目 `base` 为 `/OpenBox/`，开发 / 预览均需通过 `/OpenBox/` 路径访问。
+
+### 🚀 部署方案（三轨并行，全部 ¥0）
+
+| 场景 | 方案 | 文档 |
+|---|---|---|
+| 🏫 **部署到学校（推荐）** | 校内网机器 + Caddy/Nginx 托管静态产物，校园网秒开、免备案、零后端 | [`DEPLOY-SCHOOL.md`](./DEPLOY-SCHOOL.md) |
+| 🌐 公网门面（大陆可达） | 腾讯 EdgeOne Pages 免费计划：流量/请求不限量，Git 推送自动构建 | [`EDGEONE_DEPLOY.md`](./EDGEONE_DEPLOY.md) |
+| 🪞 海外镜像/备份 | Cloudflare Pages + 免费自定义域名 | [`CLOUDFLARE_DEPLOY.md`](./CLOUDFLARE_DEPLOY.md) |
+
+> 🏫 校园版支持构建期隐藏敏感分类：`VITE_HIDDEN_CATEGORIES=proxy-nodes,relays npm run build`
+> （合规优先；公网版不设置即全量）。详见 `DEPLOY-SCHOOL.md` 与 `.env.example`。
 
 ## 🗂️ 项目结构
 
@@ -127,7 +139,9 @@ src/
    ├─ sites.ts / seed.ts    # 旧数据映射 + 存活白名单
    └─ weekly.ts             # 每周更新
 supabase/migrations/        # RLS 安全的 SQL（0001 基础表 / 0002 验证投票表 / 0003 评论表 / … / 0008 契约收编与 RLS 收口，共 0001–0008）
-.github/                    # Issue / PR 模板
+.github/workflows/          # CI：每日资源巡检（monitor.yml）；deploy.yml 暂为手动触发
+DEPLOY-SCHOOL.md            # 校园网部署手册（¥0，推荐）
+EDGEONE_DEPLOY.md           # 腾讯 EdgeOne Pages 公网部署手册（¥0）
 screenshots/           # README 演示截图
 ```
 

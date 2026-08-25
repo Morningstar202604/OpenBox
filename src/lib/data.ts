@@ -8,7 +8,7 @@
 import { getSupabase, hasSupabase } from './supabase';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useAuthStore } from '@/store/useAuthStore';
-import { subTypes, scenarios, resolveScenarios } from '@/data/taxonomy';
+import { subTypes, scenarios, resolveScenarios, isSlugVisible } from '@/data/taxonomy';
 import { seedResources } from '@/data/seed';
 import { isValidUrl } from './format';
 import { readJSON, writeJSON, readRaw, writeRaw } from './storage';
@@ -217,7 +217,8 @@ export async function getResources(query: ResourceQuery = {}): Promise<Resource[
         },
       );
     });
-    const result = [...local, ...filterResources(community, query)];
+    // 社区投稿同样过构建期隐藏分类闸门（校园版隐藏分类的投稿审核通过也不展示）
+    const result = [...local, ...filterResources(community, query).filter((r) => isSlugVisible(r.subType))];
     cacheSet(cacheKey, result, degraded ? CACHE_TTL_DEGRADED : CACHE_TTL);
     return result;
   } catch {
@@ -239,7 +240,11 @@ export async function getResource(id: string): Promise<Resource | null> {
       .eq('id', subId)
       .eq('status', 'approved')
       .maybeSingle();
-    if (!error && data) return submissionToResource(normalizeSubmissionRow(data as SubmissionRow));
+    if (!error && data) {
+      const r = submissionToResource(normalizeSubmissionRow(data as SubmissionRow));
+      // 与列表同一闸门：隐藏分类的投稿详情也不可达
+      return isSlugVisible(r.subType) ? r : null;
+    }
     return null;
   });
 }

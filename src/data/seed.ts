@@ -2,7 +2,7 @@
 // 内容来源：① 既有策展数据（src/data/sites.ts，API/中转类）经映射复用；② 新分类的精选真实条目。
 import type { Resource, ResourceType } from '@/lib/types';
 import { normalizeUrlKey, urlHost } from '@/lib/url';
-import { SUBTYPE_SCENARIOS } from './taxonomy';
+import { SUBTYPE_SCENARIOS, isSlugVisible } from './taxonomy';
 import { sites, deriveFeatures, type Site } from './sites';
 import { curatedResources } from './curated';
 import { isBlacklisted } from './blacklist';
@@ -724,6 +724,7 @@ export const seedResources: Resource[] = (() => {
   });
   return deduped
     .filter((r) => !isBlacklisted(r.url))
+    .filter((r) => isSlugVisible(r.subType))
     .map(dedupe);
 })();
 

@@ -49,3 +49,18 @@
 ## 待执行任务（新会话按序）
 1. Turnstile 接入（等 key）：VerifyWidget 已演化为社区验证投票组件，拿到 key 后在投票/评论/投稿表单接入
 2. ~~可选深化：描述文本质量审计、audit:data 纳入 CI 门禁~~ ✅ 均已完成（审计 2026-08-23 上线，门禁此前已入 CI）
+
+---
+
+## 增补（2026-08-26 校园版/部署解困改造）
+
+- **部署现状修正**：deploy.yml 自动触发已于 `25c40b7` 暂禁用，本文件第 6 行「push main 自动构建直传」已不成立。
+  当前推荐的部署三轨：**校内网部署**（`DEPLOY-SCHOOL.md`，主力）、**腾讯 EdgeOne Pages**（`EDGEONE_DEPLOY.md`，
+  公网门面，大陆可达性优于 pages.dev）、Cloudflare Pages（海外镜像，维持现状不再投入）。
+- **新增构建变量 `VITE_HIDDEN_CATEGORIES`**：逗号分隔分类 slug，构建期整体剔除（导航/资源/SPA 路径/sitemap），
+  校园版默认建议 `proxy-nodes,relays`；公网版不设置即全量。见 `.env.example` 与 `src/data/taxonomy.ts`。
+- **PWA 离线已兑现**：接入 vite-plugin-pwa 1.3（precache 应用外壳 + navigateFallback），
+  manifest 由插件生成（原 `public/manifest.json` 删除），start_url/scope 随 VITE_BASE_URL 自适应。
+- **远程口径修正**：本机 `.git/config` 当前仅 origin(gitee) + gitcode 两远程，与上文「三远程」描述不符；
+  GitHub 远程未配置，推送前需补。
+- 新生工具包场景包（freshman）已加入 taxonomy；ResourceRow 补复制按钮；useFavoritesStore 待删队列已有单测。

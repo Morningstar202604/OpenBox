@@ -59,6 +59,7 @@ import {
   Wand2,
   Rocket,
   HelpCircle,
+  Backpack,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -122,6 +123,7 @@ const MAP: Record<string, LucideIcon> = {
   Wand2,
   Rocket,
   HelpCircle,
+  Backpack,
 };
 
 export function Icon({ name, size, ...props }: { name: string; size?: number } & SVGProps<SVGSVGElement>) {

@@ -5,8 +5,30 @@ import type { Resource, Scenario, SubType } from '@/lib/types';
 // 路由、导航、首页场景树、投稿表单会自动适配 —— 纯配置驱动，不写业务代码。
 // ============================================================================
 
+// ---- 构建期分类过滤（校园版/合规版） ----
+// VITE_HIDDEN_CATEGORIES=proxy-nodes,relays （逗号分隔 slug）时，被点名的分类
+// 在构建产物中整体消失：导航/页面/种子资源/社区投稿合并/SPA 路径/sitemap 全链路生效。
+// 典型用途：校内网部署默认隐藏「代理节点」等敏感分类，公网版不受影响（不设置即全量）。
+// Node 脚本（gen-spa-paths / gen-sitemap 打包执行）里 import.meta.env 为 undefined，用 ?. 兜底。
+export function parseHiddenSlugs(raw: string | undefined | null): string[] {
+  if (!raw) return [];
+  const seen = new Set<string>();
+  for (const part of raw.split(',')) {
+    const slug = part.trim();
+    if (slug) seen.add(slug);
+  }
+  return [...seen];
+}
+
+const HIDDEN_SLUGS = new Set(parseHiddenSlugs(import.meta.env?.VITE_HIDDEN_CATEGORIES));
+
+/** 分类是否对当前构建可见（种子资源与社区投稿合并处共用同一判定） */
+export function isSlugVisible(slug: string): boolean {
+  return !HIDDEN_SLUGS.has(slug);
+}
+
 // ---- 子类型（分类树叶子，对应 #/category/:slug） ----
-export const subTypes: SubType[] = [
+const ALL_SUBTYPES: SubType[] = [
   {
     slug: 'free-api',
     name: { zh: '免费 API', en: 'Free APIs', ja: '無料API' },
@@ -214,8 +236,11 @@ export const subTypes: SubType[] = [
   },
 ];
 
+/** 对外暴露的子类型 = 全集 − 构建期隐藏分类（未设置 VITE_HIDDEN_CATEGORIES 时等于全集） */
+export const subTypes: SubType[] = ALL_SUBTYPES.filter((s) => isSlugVisible(s.slug));
+
 // ---- 场景（分类树一级，例如 小白白嫖 / 开发者 / 研究者 / 创作者） ----
-export const scenarios: Scenario[] = [
+const ALL_SCENARIOS: Scenario[] = [
   {
     slug: 'newbie',
     name: { zh: '小白白嫖', en: 'For Beginners', ja: '初心者向け' },
@@ -264,6 +289,18 @@ export const scenarios: Scenario[] = [
     },
     sort: 4,
   },
+  {
+    slug: 'freshman',
+    name: { zh: '新生工具包', en: 'Freshman Kit', ja: '新入生キット' },
+    icon: 'Backpack',
+    color: '#f97316',
+    description: {
+      zh: '开学季一站式合集：学习资源、实用工具、开箱即用的 AI，新生必备。',
+      en: 'A one-stop kit for the new semester: learning, tools and ready-to-use AI.',
+      ja: '新学期向けの学習・ツール・すぐ使えるAIをまとめたキット。',
+    },
+    sort: 5,
+  },
   // ---- 邀请码/激活码场景（hidden：首页分类树不展示，仅页脚低调入口直达） ----
   {
     slug: 'invite-codes',
@@ -275,10 +312,13 @@ export const scenarios: Scenario[] = [
       en: 'Invite codes & activation keys for software, games, and platforms, updated daily.',
       ja: 'ソフトウェア・ゲーム・プラットフォームの招待コードとアクティベーションキー。',
     },
-    sort: 5,
+    sort: 6,
     hidden: true,
   },
 ];
+
+/** 对外暴露的场景 = 全集 − 构建期隐藏分类（hidden 标记的页脚低调场景不受此影响） */
+export const scenarios: Scenario[] = ALL_SCENARIOS.filter((s) => isSlugVisible(s.slug));
 
 // ---- 子类型 → 默认归属场景（资源未显式声明 scenarios 时的回退） ----
 // 注意：场景与子类型是交叉关系，资源可在 scenarios 字段里覆盖此默认值。
@@ -286,9 +326,9 @@ export const SUBTYPE_SCENARIOS: Record<string, string[]> = {
   'free-api': ['newbie', 'developer', 'researcher', 'creator'],
   relays: ['developer', 'researcher'],
   'proxy-nodes': ['newbie', 'developer'],
-  'ai-apps': ['newbie', 'creator', 'researcher'],
-  tools: ['developer', 'researcher', 'creator'],
-  learn: ['newbie', 'developer', 'researcher', 'creator'],
+  'ai-apps': ['newbie', 'creator', 'researcher', 'freshman'],
+  tools: ['developer', 'researcher', 'creator', 'freshman'],
+  learn: ['newbie', 'developer', 'researcher', 'creator', 'freshman'],
   'free-server': ['newbie', 'developer'],
   'free-domain': ['newbie', 'developer'],
   charity: ['newbie', 'developer'],
@@ -300,7 +340,7 @@ export const SUBTYPE_SCENARIOS: Record<string, string[]> = {
   'invite-platform': ['invite-codes'],
   'ai-agent': ['developer', 'creator', 'researcher'],
   'open-models': ['developer', 'researcher'],
-  freechat: ['newbie', 'developer'],
+  freechat: ['newbie', 'developer', 'freshman'],
 };
 
 // ---- 快捷映射 ----

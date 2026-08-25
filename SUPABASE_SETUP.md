@@ -91,11 +91,10 @@ VITE_SUPABASE_ANON_KEY=你的-anon-key
 4. `supabase/migrations/0007_ratings.sql` —— 评分表（评分功能依赖）
 5. `supabase/migrations/0008_contract_and_rls.sql` —— 列名收编（`subtype`→`"subType"`）+ RLS 收口 + IP 滑动窗口限流
 
-### 开通审核后台（#/admin）
+### 开通审核后台（/admin）
 
-``sql
+```sql
 insert into admin_emails values ('你的登录邮箱');
-``
+```
 
-再在 Cloudflare Pages 环境变量加 `
-VITE_ADMIN_EMAILS=你的邮箱`，重新部署后访问 /#/admin 审核投稿。
+再在部署平台环境变量加 `VITE_ADMIN_EMAILS=你的邮箱`，重新部署后访问 `/admin` 审核投稿。
