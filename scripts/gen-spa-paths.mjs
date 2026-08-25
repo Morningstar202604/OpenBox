@@ -6,7 +6,7 @@
  * 背景：history 路由（issue #15）后深链如 /resource/xxx 需要服务器端回退到 index.html。
  * Cloudflare Pages 新项目的 _redirects splat 规则行为不稳定（实测部分边缘不生效，
  * 精确路径规则还会被规范化成 308），因此改为在产物里预生成真实文件：
- * 深链直接命中 docs/resource/<id>/index.html，任何静态托管都返回真 200，SEO 友好。
+ * 深链直接命中 <outDir>/resource/<id>/index.html，任何静态托管都返回真 200，SEO 友好。
  *
  * 路由清单来源：public/sitemap.xml（与线上数据同源）+ 固定静态页集合。
  */
@@ -15,7 +15,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const DOCS = join(ROOT, 'docs');
+const OUT_DIR = process.env.VITE_BUILD_DIR ?? 'docs';
+const DOCS = join(ROOT, OUT_DIR);
 
 // history 路由的固定静态页（不在 sitemap 中）
 const STATIC_ROUTES = ['home', 'search', 'submit', 'about', 'favorites', 'my', 'ranking', 'help', 'admin'];
