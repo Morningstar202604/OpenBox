@@ -18,13 +18,22 @@ const LEGACY_MAP: Record<string, string> = {
   freechat: 'freechat',
 };
 
+// 逐条改道表（按 id）：真公益站被旧分类映射压在 free-api/relays 下，归位 charity。
+// 注意：ggboom/v-api/bmapi/helpcoder 虽名带「公益」，但 2026-08-22 审计已定性为商业网关
+// （见各自 tips），维持 relays 不改——此处只收经核实的社区公益站。
+const LEGACY_SUBTYPE_OVERRIDE: Record<string, string> = {
+  huainova: 'charity', // Huainova公益站：Linux.do 社区免费 Claude/GPT，真公益
+};
+
 function mapLegacy(s: Site): Resource | null {
   const category = LEGACY_MAP[s.category];
   if (!category) return null; // blacklist 等不纳入新站
+  // 逐条改道：真公益站被旧分类压在 free-api 下的，归位 charity（审计记录见各自 tips）
+  const subType = LEGACY_SUBTYPE_OVERRIDE[s.id] ?? category;
   return {
     id: s.id,
-    subType: category,
-    scenarios: SUBTYPE_SCENARIOS[category] ?? [],
+    subType,
+    scenarios: SUBTYPE_SCENARIOS[subType] ?? [],
     name: s.name,
     url: s.url,
     type: s.type,

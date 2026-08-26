@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useT } from '@/i18n/useI18n';
-import { navigate } from '@/hooks/useHashRoute';
+import { navigate, useHashRoute } from '@/hooks/useHashRoute';
 import { Modal } from './Modal';
 import { readRaw, writeRaw } from '@/lib/storage';
 import { Icon } from './Icon';
@@ -18,11 +18,13 @@ export function OnboardingModal() {
   const t = useT();
   // 直接在惰性初始化器读 localStorage：首次渲染即定结果，无需 effect 二次 setState
   const [show, setShow] = useState(() => !readRaw(FLAG));
+  // 首访时引导弹窗叠在封面页之上：「开始使用」只关弹窗，不替用户跳过封面页的「进入」
+  const route = useHashRoute();
 
   const finish = (goHome: boolean) => {
     writeRaw(FLAG, '1'); // 存储不可用时写失败，下次仍弹（可接受）
     setShow(false);
-    if (goHome) navigate('/home');
+    if (goHome && route.name !== 'landing') navigate('/home');
   };
 
   return (

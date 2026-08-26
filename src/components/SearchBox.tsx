@@ -14,6 +14,11 @@ export function SearchBox({
 }) {
   const t = useT();
   const [q, setQ] = useState(initial);
+  // 移动端（粗指针设备）不自动聚焦：否则一进搜索页键盘就弹出，遮住半个结果区。
+  // 桌面精确指针（鼠标/触控板）保留自动聚焦的顺手体验。
+  const [canAutoFocus] = useState(
+    () => typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: fine)').matches,
+  );
 
   const submit = () => {
     const term = q.trim();
@@ -40,7 +45,7 @@ export function SearchBox({
           className={big ? 'input pl-9' : 'input pl-9'}
           placeholder={t('home.searchPlaceholder')}
           value={q}
-          autoFocus={autoFocus}
+          autoFocus={autoFocus && canAutoFocus}
           onChange={(e) => setQ(e.target.value)}
         />
       </div>

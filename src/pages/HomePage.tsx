@@ -9,6 +9,7 @@ import { ResourceRow } from '@/components/ResourceRow';
 import { Icon } from '@/components/Icon';
 import { useRecentStore } from '@/store/useRecentStore';
 import { scoreResource } from '@/lib/ranking';
+import { needsOverseas } from '@/lib/resourceFlags';
 import { RankingBoard } from '@/components/RankingBoard';
 import { TagCloud } from '@/components/TagCloud';
 import { WeeklyUpdates } from '@/components/WeeklyUpdates';
@@ -25,14 +26,20 @@ export function HomePage() {
 
   const tree = useMemo(() => buildScenarioTree(resources), [resources]);
 
-  // 精选推荐：非官方，优先中转站/免费API/免费资源类；编辑精选不足时按热度补位（仍排除官方）
+  // 精选推荐：非官方；公益站 > 国内可直连 > 评分，官方内容一律不进精选
   const featured = useMemo(() => {
     const flagged = resources.filter((r) => r.featured && !r.official);
     const pool = resources
       .filter((r) => !r.official && FEATURED_SUBTYPES.includes(r.subType));
     // 评分只算一次存 Map；此前在 sort 比较器里重复计算，O(n log n) 次全量评分浪费明显
     const scoreById = new Map(pool.map((r) => [r.id, scoreResource(r).total]));
-    const pool2 = [...pool].sort((a, b) => (scoreById.get(b.id) ?? 0) - (scoreById.get(a.id) ?? 0));
+    // 站长口径：精选尽量推公益站（社区维护、签到领额度），其次国内可直连的，再按评分
+    const pri = (r: Resource) =>
+      Number(r.subType !== 'charity') * 2 + Number(needsOverseas(r));
+    const pool2 = [...pool].sort(
+      (a, b) =>
+        pri(a) - pri(b) || (scoreById.get(b.id) ?? 0) - (scoreById.get(a.id) ?? 0),
+    );
     const merged: Resource[] = [];
     for (const r of [...flagged, ...pool2]) {
       if (!merged.find((x) => x.id === r.id)) merged.push(r);

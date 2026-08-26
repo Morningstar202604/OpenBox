@@ -92,6 +92,8 @@ export const messages: Record<string, string> = {
     'card.freemium': '一部無料',
     'card.nonFree': '有料',
     'card.overseas': 'プロキシ/海外',
+    'filter.domestic': '国内直接アクセス可',
+    'filter.community': 'コミュニティ（非公式）',
     'category.nonFreeHint': '有料・一部無料の項目を「有料 / 一部無料」と表示しています。',
     'nav.github': 'ソース',
 

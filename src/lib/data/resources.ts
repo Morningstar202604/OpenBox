@@ -4,6 +4,7 @@ import { hasSupabase } from '../supabase';
 import { subTypes, scenarios, resolveScenarios, isSlugVisible } from '@/data/taxonomy';
 import { seedResources } from '@/data/seed';
 import type { Resource, ResourceStatus, ResourceType, Scenario, SubType } from '../types';
+import { needsOverseas } from '../resourceFlags';
 import { withSupabase, SubmissionRow, normalizeSubmissionRow } from './shared';
 
 export interface ResourceQuery {
@@ -12,6 +13,10 @@ export interface ResourceQuery {
   q?: string;
   type?: ResourceType | 'all';
   status?: ResourceStatus | 'all';
+  /** 只看国内可直连（排除需海外网络/代理的资源） */
+  domestic?: boolean;
+  /** 只看社区公益资源（排除官方出品） */
+  communityOnly?: boolean;
   sort?: 'default' | 'name' | 'updated';
 }
 
@@ -42,6 +47,8 @@ function filterResources(list: Resource[], query: ResourceQuery): Resource[] {
   }
   if (query.type && query.type !== 'all') out = out.filter((r) => r.type === query.type);
   if (query.status && query.status !== 'all') out = out.filter((r) => r.status === query.status);
+  if (query.domestic) out = out.filter((r) => !needsOverseas(r));
+  if (query.communityOnly) out = out.filter((r) => !r.official);
 
   switch (query.sort) {
     case 'name':
@@ -51,8 +58,13 @@ function filterResources(list: Resource[], query: ResourceQuery): Resource[] {
       out.sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''));
       break;
     default:
-      // 精选优先，其余按名称
-      out.sort((a, b) => Number(b.featured ?? false) - Number(a.featured ?? false) || a.name.localeCompare(b.name));
+      // 国内可直连优先（需海外/代理的下沉），组内精选优先，再按名称稳定排序
+      out.sort(
+        (a, b) =>
+          Number(needsOverseas(a)) - Number(needsOverseas(b)) ||
+          Number(b.featured ?? false) - Number(a.featured ?? false) ||
+          a.name.localeCompare(b.name),
+      );
   }
   return out;
 }

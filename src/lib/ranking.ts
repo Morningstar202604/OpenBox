@@ -1,6 +1,7 @@
 // 通用混合评分体系（覆盖全部子类型，替代原 RankingList 中简陋的 hotScore）
 // 设计目标：透明、可解释、不「奇怪」。
 import type { Resource } from '@/lib/types';
+import { needsOverseas } from '@/lib/resourceFlags';
 //   总分 = 静态基线(0-80) + 真实信号(0-30)，满分 100。
 //   静态基线：与子类型无关的通用维度（免费度/官方可信/稳定性/新鲜度/功能丰富/人气）。
 //   真实信号：来自社区验证投票、讨论数、收藏数、分维度均分（需 Supabase，缺省为 0）。
@@ -37,6 +38,9 @@ function staticScore(r: Resource): { score: number; parts: ScorePart[] } {
   const fresh = Math.max(0, Math.min(12, 12 - days / 30)); // 近一月满分，逐月衰减
   const rich = Math.min(10, (r.tags?.length ?? 0) + (r.models?.length ?? 0) + (r.protocols?.length ?? 0));
   const pop = Math.round(((r.popularity ?? 0) / 100) * 10);
+  // 国内可达（满分 8）：需海外网络/代理的资源对大陆用户是硬门槛，排序必须体现——
+  // 可直连给满，需海外给 0，让「国内能用」天然排在「需要梯子」之前。
+  const reachable = needsOverseas(r) ? 0 : 8;
   const parts: ScorePart[] = [
     { label: '免费度', score: freeDegree, max: 25 },
     { label: '官方可信', score: officialTrust, max: 8 },
@@ -44,6 +48,7 @@ function staticScore(r: Resource): { score: number; parts: ScorePart[] } {
     { label: '新鲜度', score: Math.round(fresh), max: 12 },
     { label: '功能丰富', score: rich, max: 10 },
     { label: '人气', score: pop, max: 10 },
+    { label: '国内可达', score: reachable, max: 8 },
   ];
   const score = parts.reduce((a, p) => a + p.score, 0);
   return { score: Math.min(80, score), parts };

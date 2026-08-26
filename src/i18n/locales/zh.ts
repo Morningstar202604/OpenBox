@@ -92,6 +92,8 @@ export const messages: Record<string, string> = {
     'card.freemium': '部分免费',
     'card.nonFree': '非免费',
     'card.overseas': '需代理/海外',
+    'filter.domestic': '国内可直连',
+    'filter.community': '社区公益（非官方）',
     'category.nonFreeHint': '本类含付费或部分免费项目，已标注「非免费 / 部分免费」，请按需甄别。',
     'nav.github': '源码',
 

@@ -92,6 +92,8 @@ export const messages: Record<string, string> = {
     'card.freemium': 'Partially Free',
     'card.nonFree': 'Not Free',
     'card.overseas': 'Proxy/Overseas',
+    'filter.domestic': 'CN direct access',
+    'filter.community': 'Community (non-official)',
     'category.nonFreeHint': 'Includes paid or partially-free items, marked "Not Free / Partially Free" for clarity.',
     'nav.github': 'Source',
 

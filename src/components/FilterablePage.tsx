@@ -2,7 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import type { ResourceStatus, ResourceType } from '@/lib/types';
 import { useResources } from '@/hooks/useResources';
 import type { ResourceQuery } from '@/lib/data';
-import { isNonFree } from '@/lib/resourceFlags';
+import { isNonFree, needsOverseas } from '@/lib/resourceFlags';
 import { FilterBar } from './FilterBar';
 import { ResourceList } from './ResourceList';
 
@@ -28,10 +28,19 @@ export function FilterablePage({
   const { resources: all, loading } = useResources(query);
   const [type, setType] = useState<ResourceType | 'all'>('all');
   const [status, setStatus] = useState<ResourceStatus | 'all'>('all');
+  const [domestic, setDomestic] = useState(false);
+  const [communityOnly, setCommunityOnly] = useState(false);
 
   const filtered = useMemo(
-    () => all.filter((r) => (type === 'all' || r.type === type) && (status === 'all' || r.status === status)),
-    [all, type, status],
+    () =>
+      all.filter(
+        (r) =>
+          (type === 'all' || r.type === type) &&
+          (status === 'all' || r.status === status) &&
+          (!domestic || !needsOverseas(r)) &&
+          (!communityOnly || !r.official),
+      ),
+    [all, type, status, domestic, communityOnly],
   );
   const hasNonFree = all.some((r) => isNonFree(r));
 
@@ -39,7 +48,16 @@ export function FilterablePage({
     <div className="space-y-5">
       {header}
       {nonFreeHint && hasNonFree && nonFreeHint}
-      <FilterBar type={type} status={status} onType={setType} onStatus={setStatus} />
+      <FilterBar
+        type={type}
+        status={status}
+        domestic={domestic}
+        communityOnly={communityOnly}
+        onType={setType}
+        onStatus={setStatus}
+        onDomestic={setDomestic}
+        onCommunityOnly={setCommunityOnly}
+      />
       <p className="text-sm text-[var(--color-muted)]">
         {filtered.length} {countLabel}
       </p>
