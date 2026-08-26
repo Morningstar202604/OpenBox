@@ -1,7 +1,8 @@
 # OpenBox 资源自动巡检
 # 每天定时运行 scripts/monitor.mjs（HTTP 探测 + DNS 检查 + 连续失败防抖 + 数据交叉比对）：
-#   1. 巡检结果写入 public/resource-status.json 并自动提交回 main 分支，
-#      该提交会触发 deploy.yml 自动构建部署到 Cloudflare Pages（状态实时上线）
+#   1. 巡检结果写入 public/resource-status.json 并自动提交回 main 分支；
+#      注意 GITHUB_TOKEN 的推送不会触发其它工作流（GitHub 防递归），
+#      因此提交后由本工作流显式 dispatch deploy.yml 把最新状态部署上线
 #   2. 出现「新判死」资源（机器判死且数据未标 dead）时自动开/更新 Issue 通知站长
 # 双档定时：GitHub Actions 的 schedule 是尽力而为（高峰期可能延迟数小时甚至整次丢弃，
 # 2026-08-26 实测丢过一次），第二档作兜底；两档都触发时由 concurrency 串行去重，无副作用。
@@ -17,6 +18,7 @@ on:
 permissions:
   contents: write # 提交巡检产物
   issues: write # 死链告警 Issue
+  actions: write # 显式触发 deploy.yml（GITHUB_TOKEN 推送不触发工作流，见上）
 
 concurrency:
   group: resource-monitor
@@ -58,6 +60,15 @@ jobs:
             git push
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # GITHUB_TOKEN 的 push 不会触发 deploy.yml（GitHub 防递归），
+      # 状态有变化时在这里显式 dispatch 部署，保证巡检结果当天上线
+      - name: Trigger site redeploy
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          gh api -X POST "repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches" -f ref="${{ github.ref_name }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Open/update issue for newly dead resources
         if: steps.monitor.outcome == 'failure'
