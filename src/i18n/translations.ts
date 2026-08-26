@@ -21,10 +21,25 @@ const localeLoaders: Record<Lang, () => Promise<{ messages: Record<string, strin
   ja: () => import('./locales/ja').then((m) => ({ messages: m.messages })),
 };
 
-/** 加载语言包并合入 dict（幂等：已加载直接返回） */
-export async function loadLocale(lang: Lang): Promise<void> {
-  const loaded = Object.keys(dict[lang]).length > 0;
-  if (loaded) return;
-  const { messages } = await localeLoaders[lang]();
-  dict[lang] = messages;
+// 并发去重：同一语言的加载中 Promise 被缓存。
+// 此前两个并发 loadLocale('en') 会各自动态 import 并先后覆盖 dict[lang]——
+// 动态 import 本身有模块缓存所以通常无害，但若加载失败一次，后续调用会
+// 因 dict 仍为空而反复重试网络；缓存失败的 Promise 一段时间内直接复用结果。
+const pendingLoads = new Map<Lang, Promise<void>>();
+
+/** 加载语言包并合入 dict（幂等：已加载或加载中直接返回同一 Promise） */
+export function loadLocale(lang: Lang): Promise<void> {
+  if (Object.keys(dict[lang]).length > 0) return Promise.resolve();
+  const inflight = pendingLoads.get(lang);
+  if (inflight) return inflight;
+  const p = localeLoaders[lang]()
+    .then(({ messages }) => {
+      dict[lang] = messages;
+    })
+    .finally(() => {
+      // 成功后清槽让幂等短路接管；失败也清槽允许下次进入站点时重试
+      pendingLoads.delete(lang);
+    });
+  pendingLoads.set(lang, p);
+  return p;
 }

@@ -36,6 +36,7 @@
     "gen:sitemap": "node scripts/gen-sitemap.mjs",
     "check:links": "node scripts/check-links.mjs",
     "audit:data": "node scripts/audit-data.mjs",
+    "verify:deep": "node scripts/deep-verify.mjs",
     "monitor": "node scripts/monitor.mjs"
   },
   "dependencies": {
