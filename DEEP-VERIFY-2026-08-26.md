@@ -1,7 +1,7 @@
 # 深度资源验证报告（2026-08-26）
 
 工具：`scripts/deep-verify.mjs`（`npm run verify:deep`），本轮覆盖 **255 条** status≠dead 资源。
-原始数据：`deep-report.json` / 二遍精查 `deep-pass2.json`（本轮运行产物，未入库）。
+原始数据：二遍精查明细随本报告入库于 `deep-pass2.json`（54 条精查记录）；首轮全量 JSON 体积大未入库，可用 `npm run verify:deep -- --out deep-report.json` 复现。
 
 ## 一、真实性保障机制（如何确保不是"看一眼就走"）
 
