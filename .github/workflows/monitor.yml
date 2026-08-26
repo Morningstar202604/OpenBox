@@ -1,15 +1,17 @@
 # OpenBox 资源自动巡检
 # 每天定时运行 scripts/monitor.mjs（HTTP 探测 + DNS 检查 + 连续失败防抖 + 数据交叉比对）：
-#   1. 巡检结果写入 public/resource-status.json 并自动提交回 main 分支
-#      （注意：deploy.yml 自动触发已暂禁用，巡检提交不再自动上线；
-#       重新上线请手动 Run deploy workflow，或改用 EdgeOne Pages / Cloudflare 控制台 Git 集成）
+#   1. 巡检结果写入 public/resource-status.json 并自动提交回 main 分支，
+#      该提交会触发 deploy.yml 自动构建部署到 Cloudflare Pages（状态实时上线）
 #   2. 出现「新判死」资源（机器判死且数据未标 dead）时自动开/更新 Issue 通知站长
+# 双档定时：GitHub Actions 的 schedule 是尽力而为（高峰期可能延迟数小时甚至整次丢弃，
+# 2026-08-26 实测丢过一次），第二档作兜底；两档都触发时由 concurrency 串行去重，无副作用。
 # 手动触发：Actions 页 Run workflow（支持 dispatch）
 name: Resource Monitor
 
 on:
   schedule:
-    - cron: '0 3 * * *' # 每天 UTC 03:00（北京时间 11:00）
+    - cron: '0 3 * * *' # 主档：每天 UTC 03:00（北京时间 11:00）
+    - cron: '30 3 * * *' # 备档：UTC 03:30，主档被 GitHub 丢弃时兜底
   workflow_dispatch:
 
 permissions:
