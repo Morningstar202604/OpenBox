@@ -11,7 +11,7 @@
 
 ### 收尾：Cloudflare Pages CI 部署 + 构建链路固化
 
-- GitHub Actions `deploy.yml`：push main 自动 `npm ci` → `VITE_BASE_URL=/ VITE_BUILD_DIR=dist npm run build` → 直传 Cloudflare Pages 根域 `openbox-nav.pages.dev`
+- GitHub Actions `deploy.yml`：push main 自动 `npm ci` → `VITE_BASE_URL=/ VITE_BUILD_DIR=dist npm run build` → 直传 Cloudflare Pages 根域 `openbox-nav-5ke.pages.dev`
 - 修复构建输出目录：`VITE_BUILD_DIR=dist` 切换 Cloudflare 根域产物，厘清与旧 `docs/`（GitHub Pages 子路径）的混淆
 - `scripts/gen-spa-paths.mjs`：CI 构建后自动生成 304 条 SPA 深链 `index.html`，路由直出 200（替代旧 `#/` 深链兜底）
 - 文档一致性：README「在线体验」指向线上根域、GitHub 链接指向实际远程、Supabase 迁移说明补全至 0001–0008（含 0008 契约收编与 RLS 收口）

@@ -73,6 +73,21 @@ export const weeklyUpdates: WeeklyUpdate[] = [
     },
   },
   {
+    id: 'domain-2026-08-26',
+    date: '2026-08-26',
+    kind: 'notice',
+    title: {
+      zh: '主域名迁移至 openbox-nav-5ke.pages.dev，CI 自动部署恢复',
+      en: 'Primary domain moved to openbox-nav-5ke.pages.dev; CI auto-deploy restored',
+      ja: 'メインドメインが openbox-nav-5ke.pages.dev に。CI自動デプロイ復活',
+    },
+    desc: {
+      zh: 'Cloudflare 账号迁移完成：canonical/sitemap/OG 全站指向新地址，push main 即自动构建直传。',
+      en: 'Cloudflare account migrated: canonical, sitemap and OG tags now point to the new address; every push to main auto-deploys.',
+      ja: 'Cloudflare アカウント移行完了：canonical・sitemap・OG すべて新アドレスへ。main への push で自動デプロイ。',
+    },
+  },
+  {
     id: 'open',
     date: '2026-08-04',
     kind: 'notice',

@@ -67,12 +67,12 @@ export function VerifyWidget({ resourceId, big = false }: { resourceId: string; 
     'inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 max-sm:min-h-[36px]';
   const btnOk =
     voted === 'ok'
-      ? 'border-[var(--color-success)] bg-[var(--color-success-soft)] text-[var(--color-success)]'
-      : 'border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-success)] hover:text-[var(--color-success)]';
+      ? 'border-[var(--color-success)] bg-[var(--color-success-soft)] text-[var(--color-success)] vote-pop'
+      : 'border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-success)] hover:text-[var(--color-success)] hover:-translate-y-px';
   const btnDead =
     voted === 'dead'
-      ? 'border-[var(--color-danger)] bg-[var(--color-danger-soft)] text-[var(--color-danger)]'
-      : 'border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-danger)] hover:text-[var(--color-danger)]';
+      ? 'border-[var(--color-danger)] bg-[var(--color-danger-soft)] text-[var(--color-danger)] vote-pop'
+      : 'border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-danger)] hover:text-[var(--color-danger)] hover:-translate-y-px';
 
   return (
     <div className={big ? 'rounded-xl border border-[var(--color-border)] p-3' : ''}>
@@ -91,6 +91,7 @@ export function VerifyWidget({ resourceId, big = false }: { resourceId: string; 
           aria-label={t('verify.ok')}
         >
           <Icon name="ThumbsUp" size={13} /> {t('verify.ok')}
+          {stats.ok > 0 && <span className="tabular-nums opacity-75">{stats.ok}</span>}
         </button>
         <button
           className={`${btnBase} ${btnDead}`}
@@ -100,9 +101,10 @@ export function VerifyWidget({ resourceId, big = false }: { resourceId: string; 
           aria-label={t('verify.dead')}
         >
           <Icon name="AlertTriangle" size={13} /> {t('verify.dead')}
+          {stats.dead > 0 && <span className="tabular-nums opacity-75">{stats.dead}</span>}
         </button>
         {stats.total > 0 && (
-          <span className="inline-flex items-center gap-1 text-xs text-[var(--color-muted)]">
+          <span className="inline-flex items-center gap-1 text-xs text-[var(--color-muted)]" aria-live="polite">
             <Icon name="Users" size={13} />
             {stats.total} {t('verify.people')}
             {stats.lastAt && (

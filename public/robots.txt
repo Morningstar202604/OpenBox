@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin
 
-Sitemap: https://openbox-nav.pages.dev/sitemap.xml
+Sitemap: https://openbox-nav-5ke.pages.dev/sitemap.xml

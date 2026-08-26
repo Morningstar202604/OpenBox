@@ -10,7 +10,7 @@
 
 280+ curated listings across 14 categories: free model APIs, relay gateways, chat mirrors, free hosting and domains, AI apps, developer tools, study material. Every listing is kept honest by an automated link patrol plus community votes — when a free tier dies, you see it on the card, not after you signed up.
 
-Live site: [openbox-nav.pages.dev](https://openbox-nav.pages.dev)
+Live site: [openbox-nav-5ke.pages.dev](https://openbox-nav-5ke.pages.dev)
 
 ## Why this exists
 

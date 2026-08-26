@@ -1,7 +1,7 @@
 # OpenBox 运维交接（2026-08-22 会话总结，新会话先读本文件）
 
 ## 项目状态
-- 仓库：origin=`github.com/Morningstar202604/OpenBox`（主）；镜像 `gitcode.com/badhope/OpenBox` + `gitee.com/badhope/OpenBox`；**线上：https://openbox-nav.pages.dev**（自建 CF 账号）
+- 仓库：origin=`github.com/Morningstar202604/OpenBox`（主）；镜像 `gitcode.com/badhope/OpenBox` + `gitee.com/badhope/OpenBox`；**线上：https://openbox-nav-5ke.pages.dev**（自建 CF 账号）
 - ⚠️ 远程账号：早期记载 `github.com/Morningstar202604`，当前 `.git/config` 实际 github 远程为 `Morningstar202604/OpenBox`（三远程均带推送 token）。推送以 `.git/config` 为准。
 - 部署：GitHub Actions（deploy.yml）push main 自动构建直传，凭据在仓库 Secrets（CLOUDFLARE_API_TOKEN/ACCOUNT_ID）
 - 云端功能已激活：Supabase 凭据走 Actions Secrets 构建注入；**数据库迁移 0001–0008 已就绪**（0001–0007 此前已应用；0008 = 契约收编与 RLS 收口，幂等可重跑），
@@ -41,7 +41,7 @@
   可持续的真相源=社区验证投票（详情页还能用/已失效），运营上应引导用户投票
 
 ## 站长手动项（仅剩）
-1. Search Console 提交 https://openbox-nav.pages.dev/sitemap.xml（旧 hash 收录会由客户端重写引导过渡）
+1. Search Console 提交 https://openbox-nav-5ke.pages.dev/sitemap.xml（旧 hash 收录会由客户端重写引导过渡）
 2. Turnstile 注册拿 site key/secret（issue #11，拿到后我接入）
 3. 旧站 openbox-13o.pages.dev 在对方 CF 账号侧，处置随意
 4. /admin 审核：用 33383432254@qq.com 登录后访问 /admin（admin_emails 已登记）
