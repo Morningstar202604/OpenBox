@@ -206,4 +206,4 @@ rsync -a --delete dist/ user@campus-server:/srv/openbox/dist/
 
 ---
 
-*配套文档：[`EDGEONE_DEPLOY.md`](./EDGEONE_DEPLOY.md)（公网门面）、[`CLOUDFLARE_DEPLOY.md`](./CLOUDFLARE_DEPLOY.md)（海外镜像）、评估总纲 [`EXPERT-EVALUATION-2026-08.md`](./EXPERT-EVALUATION-2026-08.md)*
+*配套文档：[`EDGEONE_DEPLOY.md`](./EDGEONE_DEPLOY.md)（公网门面）、[`CLOUDFLARE_DEPLOY.md`](./CLOUDFLARE_DEPLOY.md)（海外镜像）、[`SUPABASE_SETUP.md`](./SUPABASE_SETUP.md)*
