@@ -59,14 +59,13 @@ function mapLegacy(s: Site): Resource | null {
 // 此类站点生命周期极短，仅保留经 curl -L 实测可访问的。
 // 纪律：status='dead' 或实测 5xx 的条目不得入列（aifast/apikeyfun 曾被误收，已移除）。
 const ALIVE_LEGACY_URLS = new Set([
-'https://aierxin.cc', 'https://api.koozhan.com', 'https://runapi.host',
-'https://1000zhen.com', 'https://4router.net', 'https://80aj.com', 'https://ai.huaibao.top',
-  'https://ai.huan666.de', 'https://ai.wisech.com',
+'https://aierxin.cc', 'https://1000zhen.com', 'https://4router.net', 'https://80aj.com', 'https://ai.huaibao.top',
+  'https://ai.huan666.de',
   'https://aigc2d.com', 'https://aigcbar.com', 'https://aiproxy.best', 'https://anticode.cn',
   'https://api.aizzz.xyz', 'https://api.bltcy.ai', 'https://api.gemai.cc', 'https://api.honglin.asia', 'https://api.lmuai.com',
   'https://api.rcouyi.com', 'https://api2d.com', 'https://api2gpt.com',
   'https://apinav.cc', 'https://apiyi.com', 'https://bailian.console.aliyun.com', 'https://cgs.skybyte.me/',
-  'https://chatgptplus.cn', 'https://chatz.free2gpt.com', 'https://closeai.us', 'https://cloud.tencent.com/product/hunyuan',
+  'https://chatgptplus.cn', 'https://chatz.free2gpt.com', 'https://cloud.tencent.com/product/hunyuan',
   'https://code.wenwen-ai.com', 'https://cubence.com', 'https://developers.cloudflare.com/workers-ai', 'https://duckllm.com', 'https://gemini.chat',
   'https://keylabs.ai', 'https://kimi.ai', 'https://ohmygpt.com', 'https://platform.openai.com', 'https://qwen.ai',
   'https://replicate.com', 'https://siliconflow.cn', 'https://tencentcloud.com', 'https://together.ai', 'https://xfyun.cn',
@@ -360,9 +359,10 @@ const curated: Resource[] = [
     tags: ['对话', '国产'], pros: ['生态全', '有API'], cons: ['限额'],
   }),
   mk('ai-apps', '文心助手（原文心一言）', 'https://wenxin.baidu.com', {
-    type: 'freemium', status: 'unstable', official: true,
+    type: 'freemium', status: 'dead', official: true,
     summary: '文心一言｜国产对话大模型',
     description: '文心助手（原文心一言）是百度 AI 对话产品，产品已更名，定位办公/学习/查资料。国产对话大模型，中文理解扎实，覆盖对话与创作。适合中文用户，当前服务不稳定、可能间歇不可用。',
+    tips: '2026-08 巡检：wenxin.baidu.com 返回 404（产品更名迁移，旧链失效），新入口见 yiyan.baidu.com，恢复收录前暂标 dead',
     tags: ['对话', '国产'], pros: ['中文强'], cons: ['限额', '服务迁移中'],
   }),
   mk('ai-apps', '智谱清言', 'https://chatglm.cn', {

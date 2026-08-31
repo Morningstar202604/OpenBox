@@ -28,6 +28,14 @@ const STATE_FILE = join(ROOT, 'scripts/monitor-state.json');
 const STATUS_JSON = join(ROOT, 'public/resource-status.json');
 const CONSECUTIVE_FAILS_TO_DEAD = 2;
 
+// 机房/数据中心网络无法可靠判定的站点（境外节点、地域封锁、反爬严格）：
+// 这些站点在 GitHub Runner 环境几乎必然"探测失败"，但对真实用户可达，
+// 加入豁免清单后不再参与判死与矛盾清单，避免误报死链。
+const IGNORED_URLS = new Set([
+  'https://gemini.google.com', // Geo 限制 + 数据中心 IP 常被拦；旗舰官方产品，人工判定存活
+  'https://api.ziyunkji.cn',   // 境外节点，数据内已注明"用户侧网络可正常访问"
+]);
+
 const args = process.argv.slice(2);
 const failOnDead = args.includes('--fail-on-dead');
 const limitIdx = args.indexOf('--limit');
@@ -71,6 +79,12 @@ async function main() {
     while (cursor < targets.length) {
       const i = cursor++;
       const [url, meta] = targets[i];
+      // 豁免站点直接按 ok 计，不探测、不改状态文件（人工判定，见 IGNORED_URLS 注释）
+      if (IGNORED_URLS.has(url)) {
+        results[i] = { url, id: meta.id, name: meta.name, seedStatus: meta.status, http: 'ignored', verdict: 'ok', machine: 'ok', fails: 0, ms: 0, reason: 'ignored' };
+        err(`[monitor] ${i + 1}/${targets.length} (ignored)`);
+        continue;
+      }
       const started = Date.now();
       const status = await probe(url);
       const ms = Date.now() - started;

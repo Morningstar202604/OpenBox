@@ -1,0 +1,30 @@
+name: CI
+
+# PR 与 main 推送统一门禁：lint / 类型检查 / 单测 / 数据完整性审计。
+# 只有全绿才允许合入 main（配合分支保护的必检项）。
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci --legacy-peer-deps
+      - name: Lint
+        run: npm run lint
+      - name: Type check
+        run: npm run check
+      - name: Unit tests
+        run: npm run test
+      - name: Data integrity audit
+        run: npm run audit:data
