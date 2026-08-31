@@ -538,6 +538,7 @@ const curated: Resource[] = [
     summary: 'Roo Code (已迁至 roomote)｜已正式关停',
     description: 'Roo Code (已迁至 roomote) 是原 VS Code AI Agent 扩展，官方于 2026 年 5 月 15 日起停止服务。已关停，域名迁至 roomote.dev。',
     tags: ['编程', '开源', '已关停'], pros: [], cons: ['已关停'],
+    tips: '官方于 2026 年 5 月 15 日起停止服务，原 VS Code 扩展已不可用，域名迁至 roomote.dev',
   }),
   mk('ai-agent', 'CrewAI', 'https://crewai.com', {
     type: 'free', status: 'ok',
