@@ -29,16 +29,19 @@ describe('parseHiddenSlugs（VITE_HIDDEN_CATEGORIES 解析）', () => {
 });
 
 describe('默认构建（未设置隐藏变量）的分类可见性不变量', () => {
-  it('全部子类型可见：包含 proxy-nodes 等 17 个分类', () => {
+  it('全部子类型可见：叶子分类都有场景映射', () => {
     const slugs = subTypes.map((s) => s.slug);
     expect(slugs).toContain('proxy-nodes');
-    expect(subTypes.length).toBe(Object.keys(SUBTYPE_SCENARIOS).length);
+    // 一级分类（level=1）是容器，不需要场景映射；blacklist 是特殊分类也不需要
+    const leaves = subTypes.filter((s) => s.level > 1 && s.slug !== 'blacklist');
+    const missing = leaves.filter((s) => !SUBTYPE_SCENARIOS[s.slug]);
+    expect(missing.map((s) => s.slug)).toEqual([]);
   });
 
   it('非 hidden 场景全部可见，且含新增的 freshman 新生工具包', () => {
     const visible = scenarios.map((s) => s.slug);
     expect(visible).toContain('freshman');
-    // invite-codes 为页脚低调入口（hidden 标记），不在首页场景树展示集合中由 UI 过滤
+    // invite-codes-scene 为页脚低调入口（hidden 标记），不在首页场景树展示集合中由 UI 过滤
     expect(scenarios.find((s) => s.slug === 'invite-codes')?.hidden).toBe(true);
   });
 

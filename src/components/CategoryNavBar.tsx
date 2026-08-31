@@ -11,7 +11,7 @@ import { Icon } from './Icon';
 export function CategoryNavBar() {
   const t = useT();
   const localize = useLocalize();
-  const subs = getAllSubTypes();
+  const subs = getAllSubTypes().filter((s) => s.level > 1 && s.slug !== 'blacklist');
   return (
     <section>
       <div className="section-head mb-3">

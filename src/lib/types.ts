@@ -19,8 +19,9 @@ export type ResourceType = 'free' | 'freemium' | 'trial' | 'paid';
 export type ResourceStatus = 'ok' | 'unstable' | 'unknown' | 'dead';
 
 /**
- * 子类型（分类树的叶子，对应路由 #/category/:slug）。
- * 全站唯一，例如 免费API / 中转站 / 代理节点 / AI应用 / 工具 / 学习。
+ * 子类型（分类树节点，支持多级）。
+ * 一级分类 parent=null，二级分类 parent=一级slug，三级分类 parent=二级slug。
+ * 路由 #/category/:slug 可访问任意层级，前端按层级展开导航。
  */
 export interface SubType {
   slug: string;
@@ -34,6 +35,10 @@ export interface SubType {
   description: LocalizedText;
   /** 排序权重，越小越靠前 */
   sort: number;
+  /** 父分类 slug（一级分类为 null/undefined） */
+  parent?: string;
+  /** 分类层级（1=一级，2=二级，3=三级） */
+  level: 1 | 2 | 3;
 }
 
 /**
