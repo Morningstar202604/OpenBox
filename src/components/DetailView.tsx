@@ -3,6 +3,7 @@ import type { Resource } from '@/lib/types';
 import { safeHref } from '@/lib/url';
 import { useT, useLocalize } from '@/i18n/useI18n';
 import { useDialog } from '@/hooks/useDialog';
+import { navigate } from '@/hooks/useHashRoute';
 import { getSubType } from '@/data/taxonomy';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useToastStore } from '@/store/useToastStore';
@@ -14,6 +15,7 @@ import { ResourceFlags } from './ResourceFlags';
 import { VerifyWidget } from './VerifyWidget';
 import { CommentsWidget } from './CommentsWidget';
 import { RatingWidget } from './RatingWidget';
+import { ApiExample } from './ApiExample';
 import { getVerificationStats } from '@/lib/data';
 import { scoreResource, type ScoreBreakdown } from '@/lib/ranking';
 import { getMachineStatusMap, type MachineStatus } from '@/lib/machineStatus';
@@ -111,6 +113,14 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
     if (await copyText(resource.url)) push(t('detail.copied'), 'success');
     else push(resource.url, 'info');
   };
+  const share = async () => {
+    const shareText = `【${resource.name}】${resource.summary}\n${resource.url}`;
+    if (await copyText(shareText)) push('分享内容已复制', 'success');
+    else push(shareText, 'info');
+  };
+  // 判断是否为 API 类资源（展示调用示例）
+  const isApiResource = ['free-api', 'relay', 'api-gateway'].includes(resource.subType) ||
+    resource.subType.includes('api') || resource.subType.includes('relay');
 
   return (
     <>
@@ -154,18 +164,31 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
         </div>
       )}
 
+      {/* API 调用示例（仅 API 类资源展示） */}
+      {isApiResource && <ApiExample resource={resource} />}
+
       {resource.steps?.length ? (
-        <div className="mt-5 rounded-xl border border-[var(--color-border)] p-3">
-          <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[var(--color-fg)]">
+        <div className="mt-5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <p className="mb-4 flex items-center gap-1.5 text-sm font-semibold text-[var(--color-fg)]">
             <Icon name="ListOrdered" size={15} /> {t('detail.steps')}
           </p>
-          <ol className="space-y-1.5 text-sm text-[var(--color-muted)]">
+          <ol className="relative space-y-4 pl-2">
+            {/* 时间线竖线 */}
+            <span className="absolute left-[11px] top-2 bottom-2 w-px bg-[var(--color-border)]" />
             {resource.steps.map((s, i) => (
-              <li key={i} className="flex gap-2">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-soft)] text-xs font-semibold text-[var(--color-primary)]">
+              <li key={i} className="relative flex gap-3">
+                <span
+                  className={`z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                    i === 0
+                      ? 'bg-[var(--color-primary)] text-[var(--color-primary-fg)] ring-4 ring-[var(--color-primary-soft)]'
+                      : 'bg-[var(--color-primary-soft)] text-[var(--color-primary)]'
+                  }`}
+                >
                   {i + 1}
                 </span>
-                <span>{s}</span>
+                <span className={`pt-0.5 text-sm leading-relaxed ${i === 0 ? 'font-medium text-[var(--color-fg)]' : 'text-[var(--color-muted)]'}`}>
+                  {s}
+                </span>
               </li>
             ))}
           </ol>
@@ -217,6 +240,22 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
         <Field label={t('detail.updated')} value={resource.updatedAt} />
       </div>
 
+      {/* 可点击标签：点击跳转到搜索页 */}
+      {resource.tags?.length > 0 && (
+        <div className="mt-4 flex flex-wrap items-center gap-1.5">
+          <span className="text-xs font-medium text-[var(--color-muted)]">标签：</span>
+          {resource.tags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => navigate(`/search?q=${encodeURIComponent(tag)}`)}
+              className="rounded-full border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-muted)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="mt-6 flex flex-wrap gap-2">
         <a className="btn btn-primary" href={safeHref(resource.url)} target="_blank" rel="noreferrer">
           <Icon name="ExternalLink" size={16} /> {t('common.visit')}
@@ -227,6 +266,9 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
         <button className="btn btn-ghost" onClick={() => toggleFav(resource.id)}>
           <Icon name="Heart" size={16} fill={fav ? 'var(--color-primary)' : 'none'} color={fav ? 'var(--color-primary)' : undefined} />
           {fav ? t('detail.unfavorite') : t('detail.favorite')}
+        </button>
+        <button className="btn btn-ghost" onClick={share}>
+          <Icon name="Share2" size={16} /> 分享
         </button>
       </div>
 

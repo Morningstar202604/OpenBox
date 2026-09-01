@@ -61,6 +61,8 @@ import {
   Rocket,
   HelpCircle,
   Backpack,
+  Terminal,
+  Share2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -126,6 +128,8 @@ const MAP: Record<string, LucideIcon> = {
   Rocket,
   HelpCircle,
   Backpack,
+  Terminal,
+  Share2,
 };
 
 export function Icon({ name, size, ...props }: { name: string; size?: number } & SVGProps<SVGSVGElement>) {
