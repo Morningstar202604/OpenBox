@@ -17,6 +17,7 @@ export type RouteName =
   | 'speedtest'
   | 'compare'
   | 'weekly-picks'
+  | 'api-keys'
   | 'notfound';
 
 export interface Route {
@@ -80,6 +81,8 @@ export function routeFromPath(pathPart: string, queryPart = ''): Route {
       return { name: 'admin' };
     case 'weekly-picks':
       return { name: 'weekly-picks' };
+    case 'api-keys':
+      return { name: 'api-keys' };
     default:
       return { name: 'notfound' };
   }

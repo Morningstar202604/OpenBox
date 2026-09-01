@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Icon } from '@/components/Icon';
+import { ApiKeySelector } from '@/components/ApiKeySelector';
 import { readJSON, writeJSON } from '@/lib/storage';
 
 interface SpeedTestResult {
@@ -163,6 +164,18 @@ export function SpeedTestPage() {
 
       {/* 输入表单 */}
       <div className="card space-y-4 p-4">
+        {/* API Key 快速选择 */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium">快速选择已保存的 Key</label>
+          <ApiKeySelector
+            onSelect={(key, url) => {
+              setApiKey(key);
+              setBaseUrl(url);
+            }}
+            currentBaseUrl={baseUrl}
+            currentKey={apiKey}
+          />
+        </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">Base URL</label>
           <input

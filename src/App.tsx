@@ -28,6 +28,7 @@ const AdminPage = lazy(() => import('@/pages/AdminPage').then(m => ({ default: m
 const SpeedTestPage = lazy(() => import('@/pages/SpeedTestPage').then(m => ({ default: m.SpeedTestPage })));
 const ComparePage = lazy(() => import('@/pages/ComparePage').then(m => ({ default: m.ComparePage })));
 const WeeklyPicksPage = lazy(() => import('@/pages/WeeklyPicksPage').then(m => ({ default: m.WeeklyPicksPage })));
+const ApiKeysPage = lazy(() => import('@/pages/ApiKeysPage').then(m => ({ default: m.ApiKeysPage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 function Router() {
@@ -52,6 +53,7 @@ function Router() {
           case 'speedtest': return <SpeedTestPage />;
           case 'compare': return <ComparePage />;
           case 'weekly-picks': return <WeeklyPicksPage />;
+          case 'api-keys': return <ApiKeysPage />;
           case 'notfound': return <NotFoundPage />;
           default: return <HomePage />;
         }

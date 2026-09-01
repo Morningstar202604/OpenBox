@@ -13,6 +13,7 @@ import {
   Heart,
   ExternalLink,
   ChevronRight,
+  ChevronDown,
   ArrowLeft,
   Star,
   Copy,
@@ -65,6 +66,10 @@ import {
   Share2,
   Quote,
   Calendar,
+  Eye,
+  EyeOff,
+  Edit,
+  Trash2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -82,6 +87,7 @@ const MAP: Record<string, LucideIcon> = {
   Heart,
   ExternalLink,
   ChevronRight,
+  ChevronDown,
   ArrowLeft,
   Star,
   Copy,
@@ -134,6 +140,10 @@ const MAP: Record<string, LucideIcon> = {
   Share2,
   Quote,
   Calendar,
+  Eye,
+  EyeOff,
+  Edit,
+  Trash2,
 };
 
 export function Icon({ name, size, ...props }: { name: string; size?: number } & SVGProps<SVGSVGElement>) {
