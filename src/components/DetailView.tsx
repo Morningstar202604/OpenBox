@@ -19,6 +19,8 @@ import { ApiExample } from './ApiExample';
 import { getVerificationStats } from '@/lib/data';
 import { scoreResource, type ScoreBreakdown } from '@/lib/ranking';
 import { getMachineStatusMap, type MachineStatus } from '@/lib/machineStatus';
+import { getResourceHistory } from '@/lib/statusHistory';
+import { StatusChart, type StatusPoint } from './StatusChart';
 import { fmtDate } from '@/lib/format';
 
 function Field({ label, value }: { label: string; value?: string }) {
@@ -62,6 +64,36 @@ function MachineCheckLine({ url }: { url: string }) {
       {ms.v === 'ok' && ms.ms != null && ` · ${ms.ms}ms`}
       {(ms.v === 'suspect' || ms.v === 'dead') && ` · ×${ms.fails ?? 1}`}
     </p>
+  );
+}
+
+/** 机器巡检历史趋势图：展示近30天可用率变化 */
+function MachineHistoryChart({ url }: { url: string }) {
+  const [history, setHistory] = useState<StatusPoint[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let m = true;
+    getResourceHistory(url).then((data) => {
+      if (m) {
+        setHistory(data);
+        setLoading(false);
+      }
+    });
+    return () => {
+      m = false;
+    };
+  }, [url]);
+
+  if (loading || history.length === 0) return null;
+
+  return (
+    <div className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-[var(--color-fg)]">
+        <Icon name="Activity" size={15} /> 近30天可用率趋势
+      </p>
+      <StatusChart data={history} height={160} />
+    </div>
   );
 }
 
@@ -141,6 +173,8 @@ export function ResourceDetail({ resource }: { resource: Resource }) {
 
       {/* 机器巡检（CI 每日探测的可达性，与社区投票互补：机器看连通、人看功能） */}
       <MachineCheckLine url={resource.url} />
+      {/* 机器巡检历史趋势图 */}
+      <MachineHistoryChart url={resource.url} />
 
       {/* 社区验证投票（「还能不能薅」） */}
       <div className="mt-4">
