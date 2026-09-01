@@ -29,6 +29,7 @@ export function NavBar() {
 
   const links: { name: RouteName; label: string; href: string }[] = [
     { name: 'home', label: t('nav.home'), href: '/home' },
+    { name: 'weekly-picks', label: '每周精选', href: '/weekly-picks' },
     { name: 'ranking', label: t('nav.ranking'), href: '/ranking' },
     { name: 'speedtest', label: '测速', href: '/speedtest' },
     { name: 'compare', label: '模型对比', href: '/compare' },

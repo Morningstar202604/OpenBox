@@ -63,6 +63,8 @@ import {
   Backpack,
   Terminal,
   Share2,
+  Quote,
+  Calendar,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -130,6 +132,8 @@ const MAP: Record<string, LucideIcon> = {
   Backpack,
   Terminal,
   Share2,
+  Quote,
+  Calendar,
 };
 
 export function Icon({ name, size, ...props }: { name: string; size?: number } & SVGProps<SVGSVGElement>) {
