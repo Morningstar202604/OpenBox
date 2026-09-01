@@ -35,14 +35,25 @@ function filterResources(list: Resource[], query: ResourceQuery): Resource[] {
   if (query.q) {
     const q = query.q.trim().toLowerCase();
     if (q) {
-      out = out.filter(
-        (r) =>
-          r.name.toLowerCase().includes(q) ||
-          r.summary.toLowerCase().includes(q) ||
-          r.description.toLowerCase().includes(q) ||
-          (r.tags ?? []).some((t) => t.toLowerCase().includes(q)) ||
-          (r.models ?? []).some((m) => m.toLowerCase().includes(q)),
-      );
+      // 匹配度评分：名称前缀 > 名称包含 > 标签 > 模型 > 摘要 > 描述
+      // dead 资源额外减分置底
+      const scored = out
+        .map((r) => {
+          let score = 0;
+          const name = r.name.toLowerCase();
+          if (name.startsWith(q)) score += 100;
+          else if (name.includes(q)) score += 80;
+          if ((r.tags ?? []).some((t) => t.toLowerCase().includes(q))) score += 60;
+          if ((r.models ?? []).some((m) => m.toLowerCase().includes(q))) score += 50;
+          if (r.summary.toLowerCase().includes(q)) score += 40;
+          if (r.description.toLowerCase().includes(q)) score += 20;
+          // dead 资源置底
+          if (r.status === 'dead') score -= 1000;
+          return { r, score };
+        })
+        .filter((x) => x.score > -1000) // 完全不匹配的过滤掉
+        .sort((a, b) => b.score - a.score || a.r.name.localeCompare(b.r.name));
+      out = scored.map((x) => x.r);
     }
   }
   if (query.type && query.type !== 'all') out = out.filter((r) => r.type === query.type);
