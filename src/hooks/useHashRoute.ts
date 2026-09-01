@@ -14,6 +14,8 @@ export type RouteName =
   | 'ranking'
   | 'help'
   | 'admin'
+  | 'speedtest'
+  | 'compare'
   | 'notfound';
 
 export interface Route {

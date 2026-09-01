@@ -4,7 +4,11 @@ import { STATUS_META, TYPE_META } from '@/lib/format';
 export function StatusBadge({ status }: { status: ResourceStatus }) {
   const m = STATUS_META[status];
   return (
-    <span className="signal" data-status={status}>
+    <span className="signal inline-flex items-center gap-1.5" data-status={status}>
+      <span
+        className={`inline-block h-1.5 w-1.5 rounded-full ${status === 'ok' ? 'animate-pulse' : ''}`}
+        style={{ backgroundColor: m.color }}
+      />
       {m.label}
     </span>
   );

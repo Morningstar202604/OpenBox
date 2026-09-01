@@ -37,11 +37,24 @@ function writePendingDeletes(ids: string[]) {
   else writeJSON(PENDING_DELETE_KEY, []);
 }
 
+interface FavoritesGroup {
+  id: string;
+  name: string;
+  color: string;
+}
+
 interface FavoritesState {
   ids: string[];
+  groups: FavoritesGroup[];
+  groupAssignments: Record<string, string>; // resourceId -> groupId
   toggle: (id: string) => void;
   has: (id: string) => boolean;
   clear: () => void;
+  createGroup: (name: string, color?: string) => string;
+  deleteGroup: (groupId: string) => void;
+  renameGroup: (groupId: string, name: string) => void;
+  moveToGroup: (resourceId: string, groupId: string | null) => void;
+  getGroupIds: (groupId: string | null) => string[];
   /** 登录后从云端合并收藏（本地优先，并集，排除待删项） */
   syncFromCloud: () => Promise<void>;
 }
@@ -50,6 +63,8 @@ export const useFavoritesStore = create<FavoritesState>()(
   persist(
     (set, get) => ({
       ids: [],
+      groups: [],
+      groupAssignments: {},
       toggle: (id) => {
         const ids = get().ids;
         const added = !ids.includes(id);
@@ -91,7 +106,39 @@ export const useFavoritesStore = create<FavoritesState>()(
         }
       },
       has: (id) => get().ids.includes(id),
-      clear: () => set({ ids: [] }),
+      clear: () => set({ ids: [], groups: [], groupAssignments: {} }),
+      createGroup: (name, color = '#6366f1') => {
+        const id = `g_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+        set((s) => ({ groups: [...s.groups, { id, name, color }] }));
+        return id;
+      },
+      deleteGroup: (groupId) => {
+        set((s) => {
+          const nextAssignments = { ...s.groupAssignments };
+          for (const [rid, gid] of Object.entries(nextAssignments)) {
+            if (gid === groupId) delete nextAssignments[rid];
+          }
+          return { groups: s.groups.filter((g) => g.id !== groupId), groupAssignments: nextAssignments };
+        });
+      },
+      renameGroup: (groupId, name) => {
+        set((s) => ({
+          groups: s.groups.map((g) => (g.id === groupId ? { ...g, name } : g)),
+        }));
+      },
+      moveToGroup: (resourceId, groupId) => {
+        set((s) => {
+          const next = { ...s.groupAssignments };
+          if (groupId === null) delete next[resourceId];
+          else next[resourceId] = groupId;
+          return { groupAssignments: next };
+        });
+      },
+      getGroupIds: (groupId) => {
+        const { ids, groupAssignments } = get();
+        if (groupId === null) return ids.filter((id) => !groupAssignments[id]);
+        return ids.filter((id) => groupAssignments[id] === groupId);
+      },
       syncFromCloud: async () => {
         const uid = useAuthStore.getState().user?.id;
         if (!authOn || !uid) return;
