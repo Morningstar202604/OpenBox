@@ -1,8 +1,8 @@
 # OpenBox 资源自动巡检
 # 每天定时运行 scripts/monitor.mjs（HTTP 探测 + DNS 检查 + 连续失败防抖 + 数据交叉比对）：
-#   1. 巡检结果写入 public/resource-status.json 并自动提交回 main 分支；
-#      注意 GITHUB_TOKEN 的推送不会触发其它工作流（GitHub 防递归），
-#      因此提交后由本工作流显式 dispatch deploy.yml 把最新状态部署上线
+#   1. 巡检结果写入 public/resource-status.json 并提交到 monitor/status-update 分支，
+#      开 PR 并在 CI 通过后自动 squash 合入 main（main 有分支保护，禁止直接 push）；
+#      合入 main 触发 push 事件 → deploy.yml 自动构建部署最新状态
 #   2. 出现「新判死」资源（机器判死且数据未标 dead）时自动开/更新 Issue 通知站长
 # 双档定时：GitHub Actions 的 schedule 是尽力而为（高峰期可能延迟数小时甚至整次丢弃，
 # 2026-08-26 实测丢过一次），第二档作兜底；两档都触发时由 concurrency 串行去重，无副作用。
@@ -46,27 +46,40 @@ jobs:
           node scripts/monitor.mjs --fail-on-dead 2>&1 | tee monitor-output.log
         continue-on-error: true # 判死不中断，后续步骤仍需提交状态与开 Issue
 
-      - name: Commit monitor artifacts
+      - name: Commit monitor artifacts to branch
         id: commit
         run: |
           git config user.name "openbox-monitor[bot]"
           git config user.email "openbox-monitor[bot]@users.noreply.github.com"
+          git checkout -B monitor/status-update
           git add public/resource-status.json scripts/monitor-state.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "[monitor] 状态无变化，跳过提交"
           else
             git commit -m "chore(monitor): 每日资源巡检 $(date -u +%F)"
-            git push
+            git push -u origin monitor/status-update --force
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # GITHUB_TOKEN 的 push 不会触发 deploy.yml（GitHub 防递归），
-      # 状态有变化时在这里显式 dispatch 部署，保证巡检结果当天上线
-      - name: Trigger site redeploy
+      # main 有分支保护（仅允许 PR 合并），巡检产物改走「固定分支 + PR + 自动合入」：
+      # 1) 已有同主题 PR 时直接复用（force push 更新其内容，synchronize 触发 ci 重跑）
+      # 2) gh pr merge --auto 等 ci 通过后由 GitHub 自动 squash 合入 main
+      # 3) 合入 main 触发 push 事件 → deploy.yml 自动构建部署
+      - name: Open PR for status update and enable auto-merge
         if: steps.commit.outputs.changed == 'true'
         run: |
-          gh api -X POST "repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches" -f ref="${{ github.ref_name }}"
+          PR_URL="$(gh pr create --base main --head monitor/status-update \
+            --title "chore(monitor): 每日资源巡检 $(date -u +%F)" \
+            --body "自动巡检状态更新：\`public/resource-status.json\` 与巡检状态文件。CI 通过后自动合入。" 2>&1 || true)"
+          # 已存在同主题 PR（title 相同因历史日期不同不会重复创建；此处兜底取 open PR）
+          if [ -z "${PR_URL##*error*}" ] || [ -z "$PR_URL" ]; then
+            PR_URL="$(gh pr list --base main --head monitor/status-update --state open --json url --jq '.[0].url')"
+          fi
+          echo "PR: $PR_URL"
+          if [ -n "$PR_URL" ] && [ "$PR_URL" != "null" ]; then
+            gh pr merge "$PR_URL" --squash --auto
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
