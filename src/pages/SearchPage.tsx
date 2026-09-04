@@ -27,12 +27,14 @@ export function SearchPage() {
   );
 
   return (
-    <FilterablePage
-      query={{ q }}
-      countLabel={t('common.results')}
-      header={<SearchBox initial={q} autoFocus big />}
-      emptyHint={emptyHint}
-    />
+    <div className="space-y-5">
+      <FilterablePage
+        query={{ q }}
+        countLabel={t('common.results')}
+        header={<SearchBox initial={q} autoFocus big />}
+        emptyHint={emptyHint}
+        overseasOnly
+      />
+    </div>
   );
 }
-

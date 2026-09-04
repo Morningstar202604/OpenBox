@@ -16,6 +16,7 @@ export function FilterablePage({
   header,
   nonFreeHint,
   emptyHint,
+  overseasOnly: overseasOnlyProp,
 }: {
   query: ResourceQuery;
   countLabel: string;
@@ -24,12 +25,27 @@ export function FilterablePage({
   nonFreeHint?: ReactNode;
   /** 空结果时的引导内容（如搜索页热门关键词） */
   emptyHint?: ReactNode;
+  /** 是否显示「需代理/海外」过滤按钮（default: false，仅在 free-api 等需要多级导航的分类开启） */
+  overseasOnly?: boolean;
 }) {
-  const { resources: all, loading } = useResources(query);
   const [type, setType] = useState<ResourceType | 'all'>('all');
   const [status, setStatus] = useState<ResourceStatus | 'all'>('all');
   const [domestic, setDomestic] = useState(false);
   const [communityOnly, setCommunityOnly] = useState(false);
+  const [overseasOnly, setOverseasOnly] = useState(false);
+  const [sort, setSort] = useState<string>(query.sort ?? 'default');
+
+  const filteredQuery = {
+    ...query,
+    type: type === 'all' ? undefined : type,
+    status: status === 'all' ? undefined : status,
+    domestic,
+    communityOnly,
+    overseasOnly: overseasOnlyProp || overseasOnly,
+    sort: sort as ResourceQuery['sort'],
+  };
+
+  const { resources: all, loading } = useResources(filteredQuery);
 
   const filtered = useMemo(
     () =>
@@ -53,10 +69,14 @@ export function FilterablePage({
         status={status}
         domestic={domestic}
         communityOnly={communityOnly}
+        overseasOnly={overseasOnly}
+        sort={sort}
         onType={setType}
         onStatus={setStatus}
         onDomestic={setDomestic}
         onCommunityOnly={setCommunityOnly}
+        onOverseasOnly={overseasOnlyProp ? setOverseasOnly : undefined}
+        onSort={setSort}
       />
       <p className="text-sm text-[var(--color-muted)]">
         {filtered.length} {countLabel}
