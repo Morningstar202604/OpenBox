@@ -31,8 +31,8 @@
 
 #### 品牌一致性
 - `index.html` 静态 SEO / OG / JSON-LD 统一为「免费 AI 资源导航」与生产域名 `openbox-nav-5ke.pages.dev`
-- 部署目标明确为 `openbox-nav-5ke` 项目；PWA manifest、`package.json` homepage、README 在线链接一致
-  （旧项目 `openbox-nav` 已停更，不再作为部署目标）
+- PWA manifest、`package.json` homepage、README 在线链接一致指向生产域名；部署目标保持
+  `--project-name=openbox-nav`（实测 wrangler 部署落在 `openbox-nav-5ke` 项目，旧 `openbox-nav` 域名不参与访问）
 
 ## [0.0.8] - 2026-08-25
 
