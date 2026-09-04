@@ -24,7 +24,7 @@ Curated lists of free AI stuff go stale within weeks. Half the links 404, the ot
 
 - **Categories:** free APIs, chat mirrors, relays, proxy nodes, free servers/VPS, free domains, AI apps, agents, open models, tools, learning resources, charity/community gateways, invite & activation codes
 - **Scenario filters:** beginner, developer, researcher, creator, freshman starter kit
-- Bilingual search across names, summaries, tags and supported models
+- Trilingual search (中文 / English / 日本語) across names, summaries, tags and supported models
 - Grid / dense-list views, dark mode, mobile bottom-tab layout
 - Optional Supabase backend for submissions, comments, ratings and cloud favorites; fully usable without any backend
 - PWA: installable, offline-friendly after first visit

@@ -154,11 +154,11 @@ const curated: Resource[] = [
     description: 'Mistral Platform是免费模型API，提供 Mistral、Codestral 开放模型含免费档。适合开发者，官方 OpenAI 兼容。',
     tags: ['大模型', '免费', '官方', '海外', 'OpenAI兼容'], models: ['Mistral', 'Codestral'], pros: ['欧洲合规', '免费档'],
   }),
-  mk('free-api', 'SiliconFlow (硅基流动)', 'https://siliconflow.cn', {
-    type: 'freemium', status: 'ok', official: true,
-    summary: '国内可用的多模型 API，注册送免费额度，OpenAI 兼容。',
-    description: 'SiliconFlow 聚合 Qwen、DeepSeek、GLM 等开源模型，提供国内直连 API 与免费额度，兼容 OpenAI 接口。',
-    tags: ['国产', 'OpenAI兼容'], models: ['Qwen', 'DeepSeek', 'GLM'], pros: ['国内直连', '免费额度'],
+  mk('relays', 'SiliconFlow (硅基流动)', 'https://siliconflow.cn', {
+    type: 'freemium', status: 'ok',
+    summary: '国内可用的多模型中转，注册送免费额度，OpenAI 兼容。',
+    description: 'SiliconFlow 聚合 Qwen、DeepSeek、GLM 等开源模型，提供国内直连中转接口与免费额度，兼容 OpenAI 接口。适合开发者，官方免费档可用。',
+    tags: ['中转', '国产', 'OpenAI兼容'], models: ['Qwen', 'DeepSeek', 'GLM'], pros: ['国内直连', '免费额度'],
   }),
   mk('relays', 'Together AI', 'https://www.together.ai', {
     type: 'freemium', status: 'ok', official: true,
@@ -191,11 +191,11 @@ const curated: Resource[] = [
     tags: ['大模型', '免费', '官方', '海外', 'OpenAI兼容'], models: ['Llama 3.1 405B', 'Llama 3.1 70B'],
     pros: ['超大模型', '速度极快'], cons: ['需绑卡', '额度有限'],
   }),
-  mk('free-api', '阶跃星辰 StepFun', 'https://platform.stepfun.com', {
+  mk('ai-apps', '阶跃星辰 StepFun', 'https://platform.stepfun.com', {
     type: 'freemium', status: 'ok', official: true,
-    summary: '阶跃星辰 StepFun｜国产官方模型免费档',
-    description: '阶跃星辰 StepFun是免费模型API，国产官方提供 Step-2 与 Step-3.5-Flash 等模型含免费档。适合国内开发者，OpenAI 兼容。',
-    tags: ['大模型', '免费', '官方', '国产', 'OpenAI兼容'], models: ['Step-2', 'Step-3.5-Flash'],
+    summary: '阶跃星辰｜国产官方大模型平台',
+    description: '阶跃星辰是国产大模型平台，提供 Step-2、Step-3.5-Flash 等模型接口与对话产品。适合国内开发者，有免费额度。',
+    tags: ['大模型', '官方', '国产', 'OpenAI兼容'], models: ['Step-2', 'Step-3.5-Flash'],
     pros: ['编码优化', '国内直连'], cons: ['额度有限'],
   }),
   mk('free-api', 'OVHcloud AI Endpoints', 'https://endpoints.ai.cloud.ovh.net', {
@@ -216,7 +216,7 @@ const curated: Resource[] = [
   }),
 
   // ===== 代理节点：以客户端/核心/聚合项目为主（节点订阅时效性极强，故只列稳定项目） =====
-  mk('proxy-nodes', 'v2rayN', 'https://github.com/2dust/v2rayN', {
+  mk('tools', 'v2rayN', 'https://github.com/2dust/v2rayN', {
     type: 'free', status: 'ok',
     summary: 'v2rayN｜Windows 开源 V2Ray 客户端',
     description: 'v2rayN 是 Windows 平台的开源 V2Ray 图形客户端，支持 VMess/VLESS/Trojan/SS 全协议与订阅管理。适合 Windows 用户，开源免费、协议覆盖全。',
@@ -224,14 +224,14 @@ const curated: Resource[] = [
     pros: ['协议最全', '社区活跃', '订阅方便'], cons: ['仅 Windows 原生'],
     tips: '搭配节点订阅地址使用，注意及时更新核心版本。',
   }),
-  mk('proxy-nodes', 'v2rayNG', 'https://github.com/2dust/v2rayNG', {
+  mk('tools', 'v2rayNG', 'https://github.com/2dust/v2rayNG', {
     type: 'free', status: 'ok',
     summary: 'v2rayNG｜Android 开源 V2Ray 客户端',
     description: 'v2rayNG 是 Android 平台的开源 V2Ray 客户端，支持扫码与订阅导入。适合手机用户，界面简洁、开源免费、上手快。',
     tags: ['客户端', 'Android', '开源'], protocols: ['vmess', 'vless', 'trojan', 'ss'],
     pros: ['免费开源', '轻量'], cons: ['仅 Android'],
   }),
-  mk('proxy-nodes', 'mihomo (Clash Meta)', 'https://github.com/MetaCubeX/mihomo', {
+  mk('tools', 'mihomo (Clash Meta)', 'https://github.com/MetaCubeX/mihomo', {
     type: 'free', status: 'ok',
     summary: 'mihomo (Clash Meta)｜活跃 Clash 分支核心',
     description: 'mihomo（原 Clash Meta）是当前最活跃的 Clash 开源核心，支持真规则、TUN 全局代理与多协议。适合进阶用户，跨平台、规则分流强。',
@@ -239,41 +239,39 @@ const curated: Resource[] = [
     pros: ['规则引擎强', '跨平台'], cons: ['需自行配置前端'],
     tips: '可配合 Clash Verge Rev 等 GUI 使用。注意：GitHub 主页现为其他项目（崩铁数据解析库），Clash 内核安装包见 Releases 或使用 Clash Verge Rev 内置版本。',
   }),
-  mk('proxy-nodes', 'Clash Verge Rev', 'https://github.com/clash-verge-rev/clash-verge-rev', {
+  mk('tools', 'Clash Verge Rev', 'https://github.com/clash-verge-rev/clash-verge-rev', {
     type: 'free', status: 'ok',
     summary: 'Clash Verge Rev｜基于 mihomo 的跨平台 GUI',
     description: 'Clash Verge Rev 是社区维护的 Clash Verge 增强版，内置 mihomo 核心，支持系统代理与 TUN。适合桌面用户，开源免费、体验顺滑。',
     tags: ['客户端', '跨平台', '开源'], protocols: ['vmess', 'vless', 'trojan', 'ss'],
     pros: ['开箱即用', '界面现代'], cons: ['依赖核心更新'],
   }),
-  mk('proxy-nodes', 'sing-box', 'https://github.com/SagerNet/sing-box', {
+  mk('tools', 'sing-box', 'https://github.com/SagerNet/sing-box', {
     type: 'free', status: 'ok',
     summary: 'sing-box｜灵活的下一代代理核心',
     description: 'sing-box 是 SagerNet 团队开发的开源代理核心，统一支持多种入站/出站协议、配置灵活。适合进阶用户，跨平台、路由能力强。',
     tags: ['核心', '开源', '跨平台'], protocols: ['vmess', 'vless', 'trojan', 'ss', 'hysteria', 'tuic'],
     pros: ['协议新', '性能高'], cons: ['配置门槛较高'],
   }),
-  mk('proxy-nodes', 'NekoBox', 'https://github.com/MatsuriDayo/NekoBoxForAndroid', {
+  mk('tools', 'NekoBox', 'https://github.com/MatsuriDayo/NekoBoxForAndroid', {
     type: 'free', status: 'ok',
     summary: 'NekoBox｜移动端 sing-box 图形客户端',
     description: 'NekoBox 是基于 sing-box 的开源图形客户端，提供移动端友好的订阅与分流体验。适合手机用户，开源免费、支持 Android/iOS。',
     tags: ['客户端', '移动端', '开源'], protocols: ['vmess', 'vless', 'trojan', 'ss'],
     pros: ['移动端友好'], cons: ['iOS 需自签'],
   }),
-  mk('proxy-nodes', 'hiddify', 'https://github.com/hiddify/hiddify-app', {
+  mk('tools', 'hiddify', 'https://github.com/hiddify/hiddify-app', {
     type: 'free', status: 'ok',
     summary: 'hiddify｜多平台开源代理客户端',
     description: 'hiddify 是跨平台的开源代理客户端，内置智能路由与订阅管理。适合各端用户，开源免费、强调易用与抗封锁。',
     tags: ['客户端', '跨平台', '开源'], protocols: ['vmess', 'vless', 'trojan', 'ss'],
     pros: ['多端一致', '易用'], cons: ['体积偏大'],
   }),
-  mk('proxy-nodes', 'freefq/freefq', 'https://github.com/freefq/freefq', {
-    type: 'free', status: 'dead',
-    summary: 'freefq/freefq｜已失效的节点聚合仓库',
-    description: 'freefq 曾是 GitHub 免费节点聚合仓库，目前仓库已不可访问（404）下线。已失效，寻找替代请改用其他仍在维护的节点项目。',
-    tags: ['订阅聚合', '已失效'], protocols: ['vmess', 'vless', 'trojan', 'ss'],
-    pros: [], cons: ['仓库已删', '不可用'],
-    tips: '建议移步其他仍在更新的节点聚合源。',
+  mk('tools', 'V2Ray 官网', 'https://www.v2ray.com', {
+    type: 'free', status: 'ok',
+    summary: 'V2Ray 官网｜核心文档与下载',
+    description: 'V2Ray 是主流开源代理核心，官网提供项目文档与版本说明、核心下载。适合使用者与开发者，权威官方入口、完全免费。',
+    tags: ['文档', '代理'], protocols: ['vmess', 'vless'], pros: ['权威'], cons: ['偏技术'],
   }),
 
   // ===== AI 应用 =====
@@ -340,11 +338,11 @@ const curated: Resource[] = [
     description: 'HuggingChat 是开源模型对话助手，直接调用 Llama、Mistral 等开源模型，无需密钥。适合注重开源的用户，完全免费。',
     tags: ['对话', '开源', '海外'], models: ['Llama', 'Mistral'], pros: ['真免费', '开源'],
   }),
-  mk('free-api', 'Kimi 开放平台', 'https://platform.kimi.com', {
+  mk('ai-apps', 'Kimi 开放平台', 'https://platform.kimi.com', {
     type: 'freemium', status: 'ok', official: true,
-    summary: 'Kimi 开放平台｜国产长上下文 API',
+    summary: 'Kimi 开放平台｜月之暗面官方大模型平台',
     description: 'Kimi 开放平台是月之暗面官方 API 开放平台，提供 K 系列大模型接口，长上下文、中文友好。适合开发者，新用户有免费额度。',
-    tags: ['大模型', '免费', 'OpenAI兼容', '国产', '官方'], pros: ['长上下文', '中文好'], cons: ['高峰限速'],
+    tags: ['大模型', '官方', '国产', '海外', 'OpenAI兼容'], models: ['Kimi'], pros: ['长上下文', '中文好'], cons: ['高峰限速'],
   }),
   mk('ai-apps', '豆包', 'https://www.doubao.com', {
     type: 'freemium', status: 'ok', official: true,
@@ -464,12 +462,6 @@ const curated: Resource[] = [
     summary: 'LiteLLM｜统一调用上百种 LLM 的网关',
     description: 'LiteLLM 是统一调用上百种 LLM 的代理网关，提供 OpenAI 兼容接口。适合统一鉴权与计费，便于切换模型。',
     tags: ['网关', '开源'], pros: ['统一接口'], cons: ['需自部署'],
-  }),
-  mk('proxy-nodes', 'V2Ray 官网', 'https://www.v2ray.com', {
-    type: 'free', status: 'ok',
-    summary: 'V2Ray 官网｜核心文档与下载',
-    description: 'V2Ray 是主流开源代理核心，官网提供项目文档与版本说明、核心下载。适合使用者与开发者，权威官方入口、完全免费。',
-    tags: ['文档', '代理'], protocols: ['vmess', 'vless'], pros: ['权威'], cons: ['偏技术'],
   }),
   mk('tools', 'Google Antigravity', 'https://antigravity.google', {
     type: 'free', status: 'ok', official: true,

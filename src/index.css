@@ -454,12 +454,12 @@
 
   /* 路由内容淡入（较长，配合过渡图案） */
   .route-fade {
-    animation: fade-in 0.6s ease-out both;
+    animation: fade-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  /* 路由切换过渡图案：极简快速淡入淡出（去 AI 脉冲炫技） */
+  /* 路由切换过渡图案：柔和淡入淡出（去 AI 脉冲炫技） */
   .transition-overlay {
-    animation: fade-in 0.1s ease-out both, fade-out 0.22s ease-in 0.22s forwards;
+    animation: fade-in 0.15s ease-out both, fade-out 0.35s ease-in 0.4s forwards;
     pointer-events: none;
   }
 

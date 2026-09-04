@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Resource } from '@/lib/types';
 import { useT } from '@/i18n/useI18n';
 import { ResourceCard } from './ResourceCard';
@@ -7,7 +7,7 @@ import { ResourceCardSkeleton } from './Skeleton';
 import { EmptyState } from './EmptyState';
 import { Icon } from './Icon';
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 48;
 
 type ViewMode = 'grid' | 'list';
 
@@ -20,9 +20,30 @@ function loadView(): ViewMode {
   }
 }
 
+/** IntersectionObserver 自动加载下一页：当哨兵元素进入视口时触发 onIntersect */
+function useAutoLoad(onIntersect: () => void) {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) onIntersect();
+      },
+      { rootMargin: '200px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onIntersect]);
+
+  return sentinelRef;
+}
+
 /**
  * 资源列表：支持「网格卡 / 信息密集列表行」两种形态（差异化），
  * 视图偏好本地记忆；移动端网格单列、列表行自然纵向，不做强制压缩。
+ * 性能优化：IntersectionObserver 自动加载 + 增大分页到 48 条。
  */
 export function ResourceList({ resources, loading = false, allowViewSwitch = true, emptyHint }: { resources: Resource[]; loading?: boolean; allowViewSwitch?: boolean; emptyHint?: ReactNode }) {
   const t = useT();
@@ -62,10 +83,18 @@ export function ResourceList({ resources, loading = false, allowViewSwitch = tru
 
   const sliced = resources.slice(0, page * PAGE_SIZE);
   const hasMore = resources.length > page * PAGE_SIZE;
+
+  const loadMoreRef = useAutoLoad(
+    () => setPager({ key: listKey, page: page + 1 }),
+  );
+
   const LoadMore = hasMore ? (
-    <button className="btn btn-ghost mx-auto mt-4 block" onClick={() => setPager({ key: listKey, page: page + 1 })}>
-      {t('common.loadMore')} ({resources.length - page * PAGE_SIZE})
-    </button>
+    <>
+      <div ref={loadMoreRef} className="h-1" aria-hidden="true" />
+      <p className="text-center text-xs text-[var(--color-muted)] mt-2">
+        {t('common.loadingMore')}
+      </p>
+    </>
   ) : null;
 
   if (loading) {

@@ -1,10 +1,10 @@
 // 动态 SEO：路由切换时同步 title / meta description / OG / canonical。
 // history 路由迁移（issue #15）后 URL 为真实路径，canonical/sitemap 与之保持一致。
 
-const SITE = 'https://openbox-nav-5ke.pages.dev';
-const DEFAULT_TITLE = 'OpenBox · 开源 AI 资源导航';
+const SITE = typeof window !== 'undefined' ? window.location.origin : (import.meta.env.VITE_SITE_URL || 'https://openbox-nav.pages.dev');
+const DEFAULT_TITLE = 'OpenBox · 免费 AI 资源导航';
 const DEFAULT_DESC =
-  'OpenBox · 开源 AI 资源导航 — 聚合免费 API、中转站、代理节点、AI 应用、工具与学习资料。14 大分类 270+ 精选资源，社区投稿 + 实时验证 + 人工精选，三语界面，登录云同步。';
+  'OpenBox · 免费 AI 资源导航 — 聚合免费 API、中转站、节点订阅、AI 应用、AI Agent、开源模型、实用工具、学习资源、免费服务器与域名。280+ 精选资源，社区投稿 + 集体验证 + 人工精选，三语界面。';
 
 function upsertMeta(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(selector);
