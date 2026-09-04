@@ -1,67 +1,68 @@
 {
   "https://api.gemai.cc": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://code.wenwen-ai.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://cgs.skybyte.me/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://chatgptplus.cn": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api2d.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://chatz.free2gpt.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://aigcbar.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://aigc2d.com": {
-    "fails": 0,
+    "fails": 1,
     "lastOk": "2026-08-31T03:04:46.735Z",
-    "lastFail": null
+    "lastFail": "2026-09-04T12:53:38.176Z",
+    "lastReason": "dns"
   },
   "https://api.lmuai.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://1000zhen.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://cubence.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://siliconflow.cn": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://apiyi.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://closeai.us": {
@@ -72,47 +73,47 @@
   },
   "https://bailian.console.aliyun.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api2gpt.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://duckllm.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://cloud.tencent.com/product/hunyuan": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://aiproxy.best": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://anticode.cn": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://apinav.cc": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://ai.huan666.de": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://4router.net": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://ai.wisech.com": {
@@ -123,47 +124,47 @@
   },
   "https://api.aizzz.xyz": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://ai.huaibao.top": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.bltcy.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.rcouyi.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://80aj.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://aierxin.cc": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://api.honglin.asia": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://github.com/marketplace/models": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://developers.cloudflare.com/workers-ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://runapi.host": {
@@ -174,17 +175,17 @@
   },
   "https://groq.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://huggingface.co/inference-api": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://build.nvidia.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.koozhan.com": {
@@ -195,52 +196,52 @@
   },
   "https://platform.stepfun.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-26T04:17:51.761Z"
   },
   "https://pollinations.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://cerebras.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://github.com/2dust/v2rayN": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/2dust/v2rayNG": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/MetaCubeX/mihomo": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/clash-verge-rev/clash-verge-rev": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/SagerNet/sing-box": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/MatsuriDayo/NekoBoxForAndroid": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/hiddify/hiddify-app": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/freefq/freefq": {
@@ -251,108 +252,108 @@
   },
   "https://openrouter.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.together.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://sambanova.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://endpoints.ai.cloud.ovh.net": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.ohmygpt.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://cursor.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://v0.app": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.midjourney.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://mistral.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://aistudio.google.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://huggingface.co/chat": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://platform.kimi.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://chat.qwen.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://wenxin.baidu.com": {
-    "fails": 11,
+    "fails": 12,
     "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "dead"
   },
   "https://chatglm.cn": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://xinghuo.xfyun.cn": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.doubao.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://jimeng.jianying.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://klingai.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://chatgpt.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://runway.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://gemini.google.com": {
@@ -363,684 +364,681 @@
   },
   "https://ollama.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://github.com/langchain-ai/langchain": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/run-llama/llama_index": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/open-webui/open-webui": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/Comfy-Org/ComfyUI": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/FlowiseAI/Flowise": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://perplexity.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://poe.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/BerriAI/litellm": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://n8n.io": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://github.com/features/copilot": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://devin.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://devin.ai/desktop": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://genspark.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://claude.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://lovable.dev": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://bolt.new": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://continue.dev": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://anythingllm.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://aider.chat": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://replit.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://roomote.dev": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://crewai.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://lmstudio.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://github.com/openai/openai-cookbook": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/datawhalechina/llm-cookbook": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://huggingface.co/learn": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://learnprompting.org": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.deeplearning.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://suno.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/microsoft/generative-ai-for-beginners": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://openai.com/academy": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://coddy.tech": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://freeacademy.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://notebooklm.google.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://www.coursera.org/learn/prompt-engineering": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.simplilearn.com/skillup-free-online-courses/prompt-engineering": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://leonardo.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://scrimba.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://yangmao.ai/en/free-map": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://github.com/tashfeenahmed/freellmapi": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://aifreeplan.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://liangxin.xyz": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.v2ray.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://antigravity.google": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://dy11.baipiaoyes.com/ckt3kzjcmfcbx300/dztkbmehjv2pw869/17aa5294d27847652747a069029a955a": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://app.mitce.net": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://portal.mofeiyun.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://β.nyc.mn": {
-    "fails": 11,
+    "fails": 12,
     "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "unreachable"
   },
   "https://aws.amazon.com/free/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://freefrp.net/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.oracle.com/cloud/free/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://flowgpt.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://promptperfect.jina.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/features/codespaces": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://www.cloudflare.com/plans/free/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://manager.adkynet.com/store/bot-discord": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://render.com/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://wispbyte.com/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.cloud.google.com/training": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://tiiny.host/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://nekoweb.org/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://sound.jp/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://my.dnshe.com/index.php?m=domain_hub&view=tools&invite_code=JYTB495RVW9U": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://manage.ndjp.net/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://my.dataonline.vn/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://ymj.netsince.com/g/nl2026070901": {
-    "fails": 1,
-    "lastOk": "2026-08-30T03:34:03.364Z",
-    "lastFail": "2026-08-31T03:04:46.735Z",
-    "lastReason": "unreachable"
+    "fails": 0,
+    "lastOk": "2026-09-04T12:53:38.176Z",
+    "lastFail": "2026-08-31T03:04:46.735Z"
   },
   "https://nic.eu.org/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://domain.digitalplat.org/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://js.org/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.duckdns.org/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://nic.076666.xyz": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.micuapi.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.is-a.dev/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://omniakey.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://kapibala.asia": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://co.yes.vg": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://www.cctq.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://timicc.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.bytecatcode.org": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://zenmux.ai/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://api.ikuncode.cc": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://xboard.kaoqy.me": {
-    "fails": 11,
+    "fails": 12,
     "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "dns"
   },
   "https://unlimited.surf/": {
-    "fails": 11,
+    "fails": 12,
     "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "unreachable"
   },
   "https://api.aixiaobai.pro": {
-    "fails": 11,
+    "fails": 12,
     "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "dns"
   },
   "https://cloud.google.com/free": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://blackaicoding.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://hongmacc.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://us.cowxapi.com": {
-    "fails": 3,
+    "fails": 4,
     "lastOk": "2026-08-29T03:34:22.899Z",
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "unreachable"
   },
   "https://muyuan.do": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://vip.undyingapi.com": {
-    "fails": 11,
+    "fails": 12,
     "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "unreachable"
   },
   "https://ai.hybgzs.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.hlool.top": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://ai.qaq.al/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.chatanywhere.tech/v1/oauth/free/render": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://gancaopu.com/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.sssaicode.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://www.packyapi.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://huainova.com": {
-    "fails": 11,
-    "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
-    "lastReason": "dns"
+    "fails": 0,
+    "lastOk": "2026-09-04T12:53:38.176Z",
+    "lastFail": "2026-08-31T03:04:46.735Z"
   },
   "https://x666.me/register": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://free.v36.cm/github": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.futureppo.top/register": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.78code.cc": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://maoyulin.xyz/": {
-    "fails": 3,
+    "fails": 4,
     "lastOk": "2026-08-29T03:34:22.899Z",
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "server-error"
   },
   "https://api.chengtx.vip/": {
-    "fails": 1,
-    "lastOk": "2026-08-30T03:34:03.364Z",
-    "lastFail": "2026-08-31T03:04:46.735Z",
-    "lastReason": "unreachable"
+    "fails": 0,
+    "lastOk": "2026-09-04T12:53:38.176Z",
+    "lastFail": "2026-08-31T03:04:46.735Z"
   },
   "https://right.codes": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://vsllm.com/register": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.66o.uk/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://aiyiwei.vip/register": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://cavoti.com/register": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://docode.cc/register": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://nekocode.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://yunwu.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://free-llm.cups.moe": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://api.rua.chat/sign-up": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.7r.fit/": {
-    "fails": 11,
+    "fails": 12,
     "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "unreachable"
   },
   "https://api456.me/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://v-api.de5.net/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://api.iamhc.cn/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://bmapi.020212.xyz/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.juziai.cc/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://helpcoder.cc/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://new.xinjianya.top/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://freeapi.dgbmc.top/register": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://modeloc.com/i/3WPJEY7W": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://88888.qzz.io/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://sub.100xlabs.space/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://anyrouter.top": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://free.supxh.xin/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://gorouter.app/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://moyuu.cc": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://newapi.makelove.cloud/sign-up": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://52mx.net/sign-up": {
-    "fails": 11,
+    "fails": 12,
     "lastOk": null,
-    "lastFail": "2026-08-31T03:04:46.735Z",
+    "lastFail": "2026-09-04T12:53:38.176Z",
     "lastReason": "unreachable"
   },
   "https://cohere.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://chat.deepseek.com": {
@@ -1050,12 +1048,12 @@
   },
   "https://fireworks.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://new.sharedchat.cc/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://kimi.moonshot.cn": {
@@ -1065,7 +1063,7 @@
   },
   "https://tokeness.io/sign-up": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://stability.ai": {
@@ -1075,262 +1073,264 @@
   },
   "https://vercel.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.promptingguide.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://netlify.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://railway.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://huggingface.co/docs": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://platform.openai.com/docs": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://huggingface.co/papers": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://gpt4all.io": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.coze.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://github.com/Significant-Gravitas/AutoGPT": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://dify.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://github.com/geekan/MetaGPT": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://github.com/microsoft/autogen": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://langchain-ai.github.io/langgraph": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://huggingface.co": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://fast.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://modelscope.cn": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://cloud.siliconflow.cn/i/llRZxsmK": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://platform.minimaxi.com/subscribe/token-plan?code=3FATRwA0vx&source=link": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://platform.xiaomimimo.com/?ref=X7GSNZ": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://volcengine.com/L/xNhKqE62OBE/": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://z.ai/subscribe?ic=A1NY8LEBYN": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://ol.3dmgame.com/gl/349102.html": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.taptap.cn/app/157905": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://workers.cloudflare.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.linegames.org/ch/炉石传说-礼包码": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T05:01:05.770Z"
   },
   "https://code.visualstudio.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://bitwarden.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.gimp.org": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.libreoffice.org": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://api.aisz.mom/sign-up": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://www.blackmagicdesign.com/products/davinciresolve": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.figma.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://obsidian.md": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.notion.so": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://agentrouter.org/register": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://www.postman.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://7x.hk": {
-    "fails": 0,
+    "fails": 1,
     "lastOk": "2026-08-31T03:04:46.735Z",
-    "lastFail": null
+    "lastFail": "2026-09-04T12:53:38.176Z",
+    "lastReason": "unreachable"
   },
   "https://www.achai.cc": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://free.lyclaude.site": {
-    "fails": 0,
+    "fails": 1,
     "lastOk": "2026-08-31T03:04:46.735Z",
-    "lastFail": null
+    "lastFail": "2026-09-04T12:53:38.176Z",
+    "lastReason": "server-error"
   },
   "https://xkiro.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.aionlabs.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.qiniu.com/products/ai-token-api": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://llm7.io": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://html2web.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://anyapi.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://kilo.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.infinityfree.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://www.cloudns.net": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://evomap.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://beizhi.sylu.cc": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://register.us.kg": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": null
   },
   "https://grok.com": {
@@ -1340,22 +1340,22 @@
   },
   "https://agentgpt.reworkd.ai": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://docs.anthropic.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://civitai.com": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://f-droid.org": {
     "fails": 0,
-    "lastOk": "2026-08-31T03:04:46.735Z",
+    "lastOk": "2026-09-04T12:53:38.176Z",
     "lastFail": "2026-08-25T01:36:56.820Z"
   },
   "https://api.ziyunkji.cn": {
