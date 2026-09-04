@@ -55,40 +55,44 @@ jobs:
           # 显式拉取 main：判断「相对 main 是否有状态差异」而非相对分支 HEAD，
           # 避免上一次 run 已提交但未合入时误判为「无变化」导致状态永久滞留分支
           git fetch origin main --quiet
-          git checkout -B monitor/status-update
+          # 分支名按日期唯一：REST 无法对同一 head 分支重复建 PR（含已关闭的旧 PR 也 422）
+          BRANCH="monitor/status-update-$(date -u +%Y%m%d)"
+          git checkout -B "$BRANCH"
           git add public/resource-status.json scripts/monitor-state.json
           if git diff --cached --quiet origin/main -- public/resource-status.json scripts/monitor-state.json; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "[monitor] 状态相对 main 无变化，跳过提交"
           else
             git commit -m "chore(monitor): 每日资源巡检 $(date -u +%F)"
-            git push -u origin monitor/status-update --force
+            git push -u origin "$BRANCH" --force
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # main 有分支保护（仅允许 PR 合并），巡检产物改走「固定分支 + PR + 自动合入」：
+      # main 有分支保护（仅允许 PR 合并），巡检产物改走「按日分支 + PR + 自动合入」：
       # 1) 用 REST API 建 PR（GITHUB_TOKEN 走 GraphQL 的 createPullRequest 会被拒，
       #    报 Resource not accessible by integration；REST POST /pulls 可用，2026-09-04 实测）
-      # 2) 已存在同主题 open PR 时直接复用（force push 更新其内容，synchronize 触发 ci 重跑）
+      # 2) 同日期同主题 open PR 已存在时直接复用（fallback 查询）
       # 3) gh pr merge --auto 等 ci 通过后由 GitHub 自动 squash 合入 main
       # 4) 合入 main 触发 push 事件 → deploy.yml 自动构建部署
       - name: Open PR for status update and enable auto-merge
         if: steps.commit.outputs.changed == 'true'
         run: |
+          BRANCH="$(git branch --show-current)"
           TITLE="chore(monitor): 每日资源巡检 $(date -u +%F)"
+          # || true 抑制 set -e：gh api 失败时保留错误输出供下方诊断
           PR_JSON="$(gh api -X POST "repos/$GITHUB_REPOSITORY/pulls" \
-            -f base=main -f head=monitor/status-update -f title="$TITLE" \
-            -f body="自动巡检状态更新，CI 通过后自动合入。" 2>&1)"
+            -f base=main -f head="$BRANCH" -f title="$TITLE" \
+            -f body="自动巡检状态更新，CI 通过后自动合入。" 2>&1 || true)"
           PR_URL="$(printf '%s' "$PR_JSON" | jq -r '.html_url // empty')"
           if [ -z "$PR_URL" ]; then
             echo "[monitor] REST 创建 PR 失败：$PR_JSON"
-            PR_URL="$(gh pr list --base main --head monitor/status-update --state open --json url --jq '.[0].url // empty')"
+            PR_URL="$(gh pr list --base main --head "$BRANCH" --state open --json url --jq '.[0].url // empty')"
           fi
           echo "PR: $PR_URL"
           if [ -n "$PR_URL" ]; then
             gh pr merge "$PR_URL" --squash --auto
           else
-            echo "[monitor] 未找到或无法创建状态 PR，请手动检查 monitor/status-update 分支"
+            echo "[monitor] 未找到或无法创建状态 PR，请手动检查分支 $BRANCH"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
