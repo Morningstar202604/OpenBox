@@ -59,10 +59,10 @@ export default defineConfig(({ mode }) => ({
             includeAssets: ['favicon.svg'],
             manifest: {
               id: process.env.VITE_BASE_URL ? `${process.env.VITE_BASE_URL}` : '/',
-              name: 'OpenBox · 开源 AI 资源导航',
+              name: 'OpenBox · 免费 AI 资源导航',
               short_name: 'OpenBox',
               description:
-                '聚合 AI 时代免费、可白嫖的开源资源导航：免费 API、中转站、AI 应用、工具与学习资料。',
+                '聚合 AI 时代免费资源导航：免费 API、中转站、节点订阅、AI 应用、工具与学习资料。',
               start_url: process.env.VITE_BASE_URL ?? '/',
               scope: process.env.VITE_BASE_URL ?? '/',
               display: 'standalone',
