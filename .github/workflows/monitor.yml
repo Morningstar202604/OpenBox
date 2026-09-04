@@ -67,18 +67,25 @@ jobs:
           fi
 
       # main 有分支保护（仅允许 PR 合并），巡检产物改走「固定分支 + PR + 自动合入」：
-      # 1) 已有同主题 PR 时直接复用（force push 更新其内容，synchronize 触发 ci 重跑）
-      # 2) gh pr merge --auto 等 ci 通过后由 GitHub 自动 squash 合入 main
-      # 3) 合入 main 触发 push 事件 → deploy.yml 自动构建部署
+      # 1) 用 REST API 建 PR（GITHUB_TOKEN 走 GraphQL 的 createPullRequest 会被拒，
+      #    报 Resource not accessible by integration；REST POST /pulls 可用，2026-09-04 实测）
+      # 2) 已存在同主题 open PR 时直接复用（force push 更新其内容，synchronize 触发 ci 重跑）
+      # 3) gh pr merge --auto 等 ci 通过后由 GitHub 自动 squash 合入 main
+      # 4) 合入 main 触发 push 事件 → deploy.yml 自动构建部署
       - name: Open PR for status update and enable auto-merge
         if: steps.commit.outputs.changed == 'true'
         run: |
-          PR_URL="$(gh pr create --base main --head monitor/status-update \
-            --title "chore(monitor): 每日资源巡检 $(date -u +%F)" \
-            --body "自动巡检状态更新，CI 通过后自动合入。" 2>/dev/null \
-            || gh pr list --base main --head monitor/status-update --state open --json url --jq '.[0].url')"
+          TITLE="chore(monitor): 每日资源巡检 $(date -u +%F)"
+          PR_JSON="$(gh api -X POST "repos/$GITHUB_REPOSITORY/pulls" \
+            -f base=main -f head=monitor/status-update -f title="$TITLE" \
+            -f body="自动巡检状态更新，CI 通过后自动合入。" 2>&1)"
+          PR_URL="$(printf '%s' "$PR_JSON" | jq -r '.html_url // empty')"
+          if [ -z "$PR_URL" ]; then
+            echo "[monitor] REST 创建 PR 失败：$PR_JSON"
+            PR_URL="$(gh pr list --base main --head monitor/status-update --state open --json url --jq '.[0].url // empty')"
+          fi
           echo "PR: $PR_URL"
-          if [ -n "$PR_URL" ] && [ "$PR_URL" != "null" ]; then
+          if [ -n "$PR_URL" ]; then
             gh pr merge "$PR_URL" --squash --auto
           else
             echo "[monitor] 未找到或无法创建状态 PR，请手动检查 monitor/status-update 分支"
