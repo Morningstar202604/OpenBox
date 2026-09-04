@@ -96,7 +96,9 @@ jobs:
             echo "[monitor] 未找到或无法创建状态 PR，请手动检查分支 $BRANCH"
           fi
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN 受仓库限制无法创建/合并 PR（403: GitHub Actions is not permitted
+          # to create or approve pull requests），改用用户 PAT 身份操作，未配置时回退
+          GH_TOKEN: ${{ secrets.OPENBOX_PR_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Open/update issue for newly dead resources
         if: steps.monitor.outcome == 'failure'
