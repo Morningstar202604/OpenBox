@@ -64,10 +64,10 @@ jobs:
 
       - name: Deploy to Cloudflare Pages
         if: steps.check.outputs.skip != 'true'
-        uses: cloudflare/pages-action@v1
+        # cloudflare/pages-action 已弃用且含 CVE-2026-11325（高危 RCE，无补丁，9/18 日落），
+        # 迁移到官方维护的 wrangler-action（支持 Pages 部署），见 issue #53
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: openbox-nav
-          directory: dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy dist --project-name=openbox-nav
