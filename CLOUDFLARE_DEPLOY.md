@@ -8,7 +8,7 @@
 > 目标：用网站「免费服务器」分类里收录的 **Cloudflare Pages**（免绑卡、全球 CDN）托管 OpenBox，
 > 再用「免费域名」分类里的 **eu.org / us.kg / is-a.dev** 等二级域名挂上自定义根域名。
 > 全程免费。当前以 **Cloudflare Pages 为唯一生产部署**：push `main` 触发 `.github/workflows/deploy.yml`
-> 自动构建并直传根域 `openbox-nav.pages.dev`；旧的 GitHub Pages `/OpenBox/` 子路径方案已弃用。
+> 自动构建并直传根域 `openbox-nav-5ke.pages.dev`；旧的 GitHub Pages `/OpenBox/` 子路径方案已弃用。
 
 ---
 
@@ -60,7 +60,7 @@ git push origin main
    - **Build command**：`VITE_BASE_URL=/ VITE_BUILD_DIR=dist npm run build`
    - **Build output directory**：`dist`
    - **Node.js version**：20（Settings → Environment variables 里设 `NODE_VERSION=20`）
-4. 点 **Save and Deploy** → 等约 1 分钟，拿到 `openbox-nav.pages.dev` 预览域名
+4. 点 **Save and Deploy** → 等约 1 分钟，拿到 `openbox-nav-5ke.pages.dev` 预览域名
 
 > 注意：控制台连 Git 时，Cloudflare 自己跑构建；仓库里的 `deploy.yml`（GitHub Actions）是另一条
 > 自动部署线路。二者都会部署到同一 `openbox-nav` 项目，**不要同时触发以免重复构建**。
@@ -107,18 +107,18 @@ git push origin main
 1. 回到 Pages 项目 `openbox` → **Settings → Custom domains → Set up a domain**
 2. 填入你申请的免费域名（如 `openbox.us.kg`）
 3. Cloudflare 会自动：
-   - 给该域名加 **CNAME** 指向 `openbox-nav.pages.dev`
+   - 给该域名加 **CNAME** 指向 `openbox-nav-5ke.pages.dev`
    - 签发 **免费 SSL 证书**（Universal SSL，自动续期）
 4. 等 DNS 生效（通常几分钟~几小时），访问 `https://openbox.us.kg` 即可看到站点
 
 > 若域名 NS 不在 Cloudflare，需去域名提供商后台手动加 CNAME：
-> `openbox.us.kg` → `openbox-nav.pages.dev`，并开启代理（橙色云）。
+> `openbox.us.kg` → `openbox-nav-5ke.pages.dev`，并开启代理（橙色云）。
 
 ---
 
 ## 5. 验证
 
-- [ ] `https://openbox-nav.pages.dev` 能打开
+- [ ] `https://openbox-nav-5ke.pages.dev` 能打开
 - [ ] `https://openbox.us.kg`（你的免费域名）能打开且带小绿锁
 - [ ] 三语切换、分类浏览、投稿页正常
 - [ ] 控制台 → Analytics 能看到访问数据

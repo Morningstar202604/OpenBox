@@ -13,7 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = process.env.SITE_URL ?? 'https://openbox-nav.pages.dev';
+const SITE = process.env.SITE_URL ?? 'https://openbox-nav-5ke.pages.dev';
 
 const { rolldown } = await import('rolldown');
 const bundle = await rolldown({

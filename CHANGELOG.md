@@ -30,9 +30,9 @@
 - 清理仓库根目录临时脚本 / 审计报告等未跟踪产物
 
 #### 品牌一致性
-- `index.html` 静态 SEO / OG / JSON-LD 统一为「免费 AI 资源导航」与 `openbox-nav.pages.dev`
-- PWA manifest、`package.json` homepage、README 在线链接统一为 `openbox-nav.pages.dev`
-  （清理历史遗留域名 `openbox-nav-5ke`）
+- `index.html` 静态 SEO / OG / JSON-LD 统一为「免费 AI 资源导航」与生产域名 `openbox-nav-5ke.pages.dev`
+- 部署目标明确为 `openbox-nav-5ke` 项目；PWA manifest、`package.json` homepage、README 在线链接一致
+  （旧项目 `openbox-nav` 已停更，不再作为部署目标）
 
 ## [0.0.8] - 2026-08-25
 
