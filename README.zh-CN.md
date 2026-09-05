@@ -41,7 +41,6 @@ npm run build      # tsc + vite 构建 + SPA 路径生成
 |---|---|
 | 学校/校园内网（推荐） | [DEPLOY-SCHOOL.md](./DEPLOY-SCHOOL.md) |
 | 大陆可直连的公网站点 | [EDGEONE_DEPLOY.md](./EDGEONE_DEPLOY.md)（腾讯 EdgeOne Pages 免费版） |
-| 实验性：GitCode Pages | [官方文档](https://gitcode.com/cocoachina/pages/overview) |
 | 海外镜像 | [CLOUDFLARE_DEPLOY.md](./CLOUDFLARE_DEPLOY.md) |
 
 推送 `main` 分支即触发 GitHub Actions 自动构建；未配置 Cloudflare 密钥时部署步骤自动跳过，不会报错。

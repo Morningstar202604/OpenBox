@@ -49,7 +49,6 @@ Every option below costs nothing.
 |---|---|
 | School / campus intranet (recommended) | [DEPLOY-SCHOOL.md](./DEPLOY-SCHOOL.md) |
 | Public site reachable from mainland China | [EDGEONE_DEPLOY.md](./EDGEONE_DEPLOY.md) (Tencent EdgeOne Pages, free tier) |
-| Experimental: GitCode Pages | [official docs](https://gitcode.com/cocoachina/pages/overview) |
 | Overseas mirror | [CLOUDFLARE_DEPLOY.md](./CLOUDFLARE_DEPLOY.md) |
 
 Pushes to `main` build automatically via GitHub Actions; the Cloudflare deploy step skips itself cleanly if no token is configured.

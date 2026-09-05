@@ -41,7 +41,6 @@ npm run build      # tsc + vite ビルド + SPA パス生成
 |---|---|
 | 学校/キャンパス内網（推奨） | [DEPLOY-SCHOOL.md](./DEPLOY-SCHOOL.md) |
 | 中国本土から到達可能な公開サイト | [EDGEONE_DEPLOY.md](./EDGEONE_DEPLOY.md)（Tencent EdgeOne Pages 無料版） |
-| 実験的：GitCode Pages | [公式ドキュメント](https://gitcode.com/cocoachina/pages/overview) |
 | 海外ミラー | [CLOUDFLARE_DEPLOY.md](./CLOUDFLARE_DEPLOY.md) |
 
 `main` ブランチへの push で GitHub Actions が自動ビルド。Cloudflare の秘密鍵未設定時はデプロイ手順が自動スキップされ、エラーにはなりません。

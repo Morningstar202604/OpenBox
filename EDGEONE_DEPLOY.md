@@ -11,8 +11,7 @@
 ## 0. 前置条件
 
 - 一个腾讯云账号（微信/QQ 即可注册）
-- 代码仓库托管在 **GitHub**（EdgeOne Pages 控制台 Git 集成目前对接 GitHub/GitLab；
-  Gitee/GitCode 镜像可先镜像同步到 GitHub，或改用第 4 节的 CLI/直传方式）
+- 代码仓库托管在 **GitHub**（EdgeOne Pages 控制台 Git 集成目前对接 GitHub/GitLab）
 
 ## 1. 控制台 Git 集成部署（推荐）
 
@@ -57,7 +56,7 @@
 ## 4. 备选：不经过 GitHub 的部署方式
 
 - **CLI 直传**：本地构建出 `dist/` 后用 EdgeOne Pages 提供的 CLI/控制台上传功能直接发布
-  （适合仓库只在 Gitee/GitCode 的场景）；
+  （适合不方便走 Git 集成的场景）；
 - 构建命令与本手册第 1 步完全一致。
 
 ## 5. 注意事项（免费计划）
