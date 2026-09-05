@@ -1,3 +1,12 @@
+## Working rules for this repository
+
+* Dependency updates: search the whole repository for every occurrence of a dependency (build files, lockfiles, CI workflows, docs) before bumping. A partial bump — declaration updated but lockfile or a pinned action left behind — is the most common cause of "works locally, CI fails". Keep lockfiles in the same commit as the declaration. Move version-coupled toolchain upgrades together in one commit.
+* Refactoring: pull latest main first, work on a fresh branch, keep commits atomic with messages that state the why, and always run the full check suite before pushing (for this repo: `npm ci && npm run lint && npm run check && npm test && npm run audit:data`). A branch left behind main cannot be merged under the repository's branch protection.
+* Merge conflicts: resolve conflicts in the working tree against the latest main; never force-push shared branches; never resolve a conflict by blindly taking either side — re-read both sides and keep both changes when they are both valid.
+* Versioning: releases follow X.Y.Z starting at 0.0.0. Last digit = fixes, middle digit = feature work, first digit stays 0 until a stable release is declared. Bump the version in code, CHANGELOG.md and the tag in the same change.
+
+---
+
 # OpenBox 贡献指南
 
 > 本文档面向**所有人**——包括人类贡献者和 AI 助手。请严格按规范操作，避免出错。
