@@ -1,4 +1,6 @@
-<p align="center"><img src="docs/logo.svg" alt="OpenBox Logo" width="200" height="60" /></p>`n`n# OpenBox
+<p align="center"><img src="docs/logo.svg" alt="OpenBox Logo" width="200" height="60" /></p>
+
+# OpenBox
 
 [English](./README.md) | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
