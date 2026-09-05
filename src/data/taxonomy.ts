@@ -55,13 +55,13 @@ const ALL_SUBTYPES: SubType[] = [
   },
   {
     slug: 'proxy-nodes',
-    name: { zh: '代理节点', en: 'Proxy Nodes', ja: 'プロキシ' },
+    name: { zh: '节点订阅', en: 'Proxy Subscriptions', ja: 'プロキシ購読' },
     icon: 'Globe',
     color: '#10b981',
     description: {
-      zh: '免费代理 / 节点客户端与聚合项目，附协议与地区说明。',
-      en: 'Free proxy clients & aggregation projects, with protocol and region notes.',
-      ja: '無料プロキシクライアント・集約プロジェクト。プロトコルと地域の説明付き。',
+      zh: '社区贡献的免费订阅链接与节点聚合项目，附协议与地区说明。注意时效性，使用前请验证。',
+      en: 'Community-submitted free subscription links & aggregation projects, with protocol and region notes. Check validity before use.',
+      ja: 'コミュニティ提供の無料サブスクリプションリンクと集約プロジェクト。プロトコルと地域の説明付き。使用前に有効性を確認。',
     },
     sort: 3,
   },

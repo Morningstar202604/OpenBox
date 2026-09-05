@@ -12,6 +12,7 @@ export function CategoryPage() {
   const route = useHashRoute();
   const slug = route.slug ?? '';
   const cat = getSubType(slug);
+  const isFreeApi = slug === 'free-api';
 
   if (!cat) return <EmptyState icon="Search" title={t('common.empty')} />;
 
@@ -34,6 +35,7 @@ export function CategoryPage() {
           {t('category.nonFreeHint')}
         </p>
       }
+      overseasOnly={isFreeApi}
     />
   );
 }

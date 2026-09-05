@@ -1,8 +1,8 @@
 {
   "name": "openbox",
   "private": true,
-  "version": "0.0.8",
-  "description": "Community-curated directory of 280+ genuinely free AI resources: free model APIs, relay gateways, chat mirrors, free hosting, tools and learning material. Daily automated link patrol plus community verification votes. UI in English / 中文 / 日本語.",
+  "version": "0.0.9",
+  "description": "Community-curated directory of 280+ genuinely free AI resources: free model APIs, relay gateways, chat mirrors, proxy subscriptions, free hosting, tools and learning material. Daily automated link patrol plus community verification votes. UI in English / 中文 / 日本語.",
   "license": "Apache-2.0",
   "type": "module",
   "author": "Morningstar202604",

@@ -5,6 +5,7 @@ import { subTypes, scenarios, resolveScenarios, isSlugVisible } from '@/data/tax
 import { seedResources } from '@/data/seed';
 import type { Resource, ResourceStatus, ResourceType, Scenario, SubType } from '../types';
 import { needsOverseas } from '../resourceFlags';
+import { scoreResource } from '../ranking';
 import { withSupabase, SubmissionRow, normalizeSubmissionRow } from './shared';
 
 export interface ResourceQuery {
@@ -17,7 +18,9 @@ export interface ResourceQuery {
   domestic?: boolean;
   /** 只看社区公益资源（排除官方出品） */
   communityOnly?: boolean;
-  sort?: 'default' | 'name' | 'updated';
+  /** 只看需代理/海外的资源 */
+  overseasOnly?: boolean;
+  sort?: 'default' | 'name' | 'updated' | 'popularity' | 'score';
 }
 
 /** 社区投稿在合并进列表时使用的 id 前缀（与本地种子 id 区分，避免冲突） */
@@ -50,12 +53,22 @@ function filterResources(list: Resource[], query: ResourceQuery): Resource[] {
   if (query.domestic) out = out.filter((r) => !needsOverseas(r));
   if (query.communityOnly) out = out.filter((r) => !r.official);
 
+  // 按评分排序时一次性算好分数，避免比较器里 O(n log n) 次全量评分
+  const scoreById: Map<string, number> | null =
+    query.sort === 'score' ? new Map(out.map((r) => [r.id, scoreResource(r).total])) : null;
+
   switch (query.sort) {
     case 'name':
       out.sort((a, b) => a.name.localeCompare(b.name));
       break;
     case 'updated':
       out.sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''));
+      break;
+    case 'popularity':
+      out.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
+      break;
+    case 'score':
+      out.sort((a, b) => (scoreById?.get(b.id) ?? 0) - (scoreById?.get(a.id) ?? 0));
       break;
     default:
       // 国内可直连优先（需海外/代理的下沉），组内精选优先，再按名称稳定排序

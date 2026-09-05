@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useState, useRef, lazy, Suspense } from 'react';
-import { useHashRoute } from '@/hooks/useHashRoute';
+import { useHashRoute, navigate } from '@/hooks/useHashRoute';
 import { setSEO, setJsonLd } from '@/lib/seo';
 import { useT } from '@/i18n/useI18n';
+import { readRaw } from '@/lib/storage';
 import { NavBar } from '@/components/NavBar';
 import { MobileTabBar } from '@/components/MobileTabBar';
 import { PageLoader } from '@/components/PageLoader';
@@ -60,6 +61,13 @@ export default function App() {
   const isLanding = route.name === 'landing';
   const [showOverlay, setShowOverlay] = useState(false);
   const prevKey = useRef('');
+
+  // 已看过引导的直访用户：根路径不再展示封面页，直达主站（合并双重门控）
+  useEffect(() => {
+    if (route.name === 'landing' && readRaw('ob_onboarded')) {
+      navigate('/home');
+    }
+  }, [route.name]);
 
   // SEO：路由变化时同步 title / meta description / OG / canonical（利于收录与分享卡片）
   useEffect(() => {

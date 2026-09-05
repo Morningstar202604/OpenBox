@@ -1,8 +1,8 @@
 # OpenBox 资源自动巡检
 # 每天定时运行 scripts/monitor.mjs（HTTP 探测 + DNS 检查 + 连续失败防抖 + 数据交叉比对）：
-#   1. 巡检结果写入 public/resource-status.json 并自动提交回 main 分支；
-#      注意 GITHUB_TOKEN 的推送不会触发其它工作流（GitHub 防递归），
-#      因此提交后由本工作流显式 dispatch deploy.yml 把最新状态部署上线
+#   1. 巡检结果写入 public/resource-status.json 并提交到 monitor/status-update 分支，
+#      开 PR 并在 CI 通过后自动 squash 合入 main（main 有分支保护，禁止直接 push）；
+#      合入 main 触发 push 事件 → deploy.yml 自动构建部署最新状态
 #   2. 出现「新判死」资源（机器判死且数据未标 dead）时自动开/更新 Issue 通知站长
 # 双档定时：GitHub Actions 的 schedule 是尽力而为（高峰期可能延迟数小时甚至整次丢弃，
 # 2026-08-26 实测丢过一次），第二档作兜底；两档都触发时由 concurrency 串行去重，无副作用。
@@ -18,7 +18,8 @@ on:
 permissions:
   contents: write # 提交巡检产物
   issues: write # 死链告警 Issue
-  actions: write # 显式触发 deploy.yml（GITHUB_TOKEN 推送不触发工作流，见上）
+  actions: write # 触发部署/巡检
+  pull-requests: write # 开/合并巡检状态 PR（main 分支保护仅允许 PR 合并）
 
 concurrency:
   group: resource-monitor
@@ -46,29 +47,58 @@ jobs:
           node scripts/monitor.mjs --fail-on-dead 2>&1 | tee monitor-output.log
         continue-on-error: true # 判死不中断，后续步骤仍需提交状态与开 Issue
 
-      - name: Commit monitor artifacts
+      - name: Commit monitor artifacts to branch
         id: commit
         run: |
           git config user.name "openbox-monitor[bot]"
           git config user.email "openbox-monitor[bot]@users.noreply.github.com"
+          # 显式拉取 main：判断「相对 main 是否有状态差异」而非相对分支 HEAD，
+          # 避免上一次 run 已提交但未合入时误判为「无变化」导致状态永久滞留分支
+          git fetch origin main --quiet
+          # 分支名按日期唯一：REST 无法对同一 head 分支重复建 PR（含已关闭的旧 PR 也 422）
+          BRANCH="monitor/status-update-$(date -u +%Y%m%d)"
+          git checkout -B "$BRANCH"
           git add public/resource-status.json scripts/monitor-state.json
-          if git diff --cached --quiet; then
+          if git diff --cached --quiet origin/main -- public/resource-status.json scripts/monitor-state.json; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "[monitor] 状态无变化，跳过提交"
+            echo "[monitor] 状态相对 main 无变化，跳过提交"
           else
             git commit -m "chore(monitor): 每日资源巡检 $(date -u +%F)"
-            git push
+            git push -u origin "$BRANCH" --force
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # GITHUB_TOKEN 的 push 不会触发 deploy.yml（GitHub 防递归），
-      # 状态有变化时在这里显式 dispatch 部署，保证巡检结果当天上线
-      - name: Trigger site redeploy
+      # main 有分支保护（仅允许 PR 合并），巡检产物改走「按日分支 + PR + 自动合入」：
+      # 1) 用 REST API 建 PR（GITHUB_TOKEN 走 GraphQL 的 createPullRequest 会被拒，
+      #    报 Resource not accessible by integration；REST POST /pulls 可用，2026-09-04 实测）
+      # 2) 同日期同主题 open PR 已存在时直接复用（fallback 查询）
+      # 3) gh pr merge --auto 等 ci 通过后由 GitHub 自动 squash 合入 main
+      # 4) 合入 main 触发 push 事件 → deploy.yml 自动构建部署
+      - name: Open PR for status update and enable auto-merge
         if: steps.commit.outputs.changed == 'true'
         run: |
-          gh api -X POST "repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches" -f ref="${{ github.ref_name }}"
+          BRANCH="$(git branch --show-current)"
+          TITLE="chore(monitor): 每日资源巡检 $(date -u +%F)"
+          # stderr 丢弃：gh 的 HTTP 错误提示走 stderr，错误 body(JSON) 在 stdout，
+          # 2>&1 会把两者混入导致下方 jq 解析失败。|| true 抑制 set -e。
+          PR_JSON="$(gh api -X POST "repos/$GITHUB_REPOSITORY/pulls" \
+            -f base=main -f head="$BRANCH" -f title="$TITLE" \
+            -f body="自动巡检状态更新，CI 通过后自动合入。" 2>/dev/null || true)"
+          PR_URL="$(printf '%s' "$PR_JSON" | jq -r '.html_url // empty' 2>/dev/null || true)"
+          if [ -z "$PR_URL" ]; then
+            echo "[monitor] REST 创建 PR 失败：$PR_JSON"
+            PR_URL="$(gh pr list --base main --head "$BRANCH" --state open --json url --jq '.[0].url // empty' 2>/dev/null || true)"
+          fi
+          echo "PR: $PR_URL"
+          if [ -n "$PR_URL" ]; then
+            gh pr merge "$PR_URL" --squash --auto || echo "[monitor] auto-merge 设置失败，请手动合并 $PR_URL"
+          else
+            echo "[monitor] 未找到或无法创建状态 PR，请手动检查分支 $BRANCH"
+          fi
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN 受仓库限制无法创建/合并 PR（403: GitHub Actions is not permitted
+          # to create or approve pull requests），改用用户 PAT 身份操作，未配置时回退
+          GH_TOKEN: ${{ secrets.OPENBOX_PR_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Open/update issue for newly dead resources
         if: steps.monitor.outcome == 'failure'

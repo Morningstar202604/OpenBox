@@ -7,6 +7,33 @@
 > **版本约定**：项目从 `0.0.1` 起算，每次更新为一个「小版本」（修订号 +1，如 `0.0.1 → 0.0.2 → 0.0.3`），
 > 并在 GitHub / GitCode / Gitee 三端同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
 
+## [0.0.9] - 2026-09-04
+
+### 体验冲刺：首次进入 / 搜索 / 品牌一致性（PR #44、#54，Issue #53）
+
+#### 首次进入与搜索体验（PR #44）
+- 双重门控合并：引导弹窗关闭即进入主站，已看过用户根路径直达 `/home`，移除封面二次点击
+- 搜索页移除与 FilterBar 重复的高级筛选面板；热词改为纯高频标签（仅 tags 频次 ≥2）
+- 首页 hero 加载骨架屏；状态聚合信号灯式展示（可用 / 不稳定 / 已失效 / 未验证）
+- SEO `SITE` 自动检测部署域；description / title 与真实数据（11 分类、280+）对齐
+
+#### 工程与数据（PR #44、#45–#51）
+- i18n：ja 补齐 `status.quick.*` 词条；三语 slogans 分类数同步为 11
+- 按评分排序预计算分数，消除比较器内重复全量评分
+- CI Resource Monitor 修复：main 分支保护下改走「按日唯一分支 + REST 建 PR + auto-merge」，
+  改用用户 PAT 身份（GitHub Actions 创建/审批 PR 受仓库限制，403）
+- README 三语更新（11 分类 / Trilingual / 280+），恢复 `docs/logo.svg`
+
+#### 安全（PR #54，Issue #53）
+- 部署迁移 `cloudflare/pages-action` → `cloudflare/wrangler-action@v3`：
+  规避 CVE-2026-11325（高危 RCE，无补丁，2026-09-18 日落）
+- 清理仓库根目录临时脚本 / 审计报告等未跟踪产物
+
+#### 品牌一致性
+- `index.html` 静态 SEO / OG / JSON-LD 统一为「免费 AI 资源导航」与生产域名 `openbox-nav-5ke.pages.dev`
+- PWA manifest、`package.json` homepage、README 在线链接一致指向生产域名；部署目标保持
+  `--project-name=openbox-nav`（实测 wrangler 部署落在 `openbox-nav-5ke` 项目，旧 `openbox-nav` 域名不参与访问）
+
 ## [0.0.8] - 2026-08-25
 
 ### 收尾：Cloudflare Pages CI 部署 + 构建链路固化

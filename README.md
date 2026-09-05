@@ -1,4 +1,4 @@
-# OpenBox
+<p align="center"><img src="docs/logo.svg" alt="OpenBox Logo" width="200" height="60" /></p>`n`n# OpenBox
 
 [English](./README.md) | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
@@ -8,7 +8,7 @@
 
 **Free AI resources, checked daily, in one place.**
 
-280+ curated listings across 14 categories: free model APIs, relay gateways, chat mirrors, free hosting and domains, AI apps, developer tools, study material. Every listing is kept honest by an automated link patrol plus community votes — when a free tier dies, you see it on the card, not after you signed up.
+280+ curated listings across 11 categories: free model APIs, relay gateways, chat mirrors, free hosting and domains, AI apps, developer tools, study material. Every listing is kept honest by an automated link patrol plus community votes — when a free tier dies, you see it on the card, not after you signed up.
 
 Live site: [openbox-nav-5ke.pages.dev](https://openbox-nav-5ke.pages.dev)
 
@@ -24,7 +24,7 @@ Curated lists of free AI stuff go stale within weeks. Half the links 404, the ot
 
 - **Categories:** free APIs, chat mirrors, relays, proxy nodes, free servers/VPS, free domains, AI apps, agents, open models, tools, learning resources, charity/community gateways, invite & activation codes
 - **Scenario filters:** beginner, developer, researcher, creator, freshman starter kit
-- Bilingual search across names, summaries, tags and supported models
+- Trilingual search (中文 / English / 日本語) across names, summaries, tags and supported models
 - Grid / dense-list views, dark mode, mobile bottom-tab layout
 - Optional Supabase backend for submissions, comments, ratings and cloud favorites; fully usable without any backend
 - PWA: installable, offline-friendly after first visit
@@ -67,3 +67,5 @@ If OpenBox saved you an afternoon of hunting dead links, a star helps other peop
 ## License
 
 [Apache-2.0](./LICENSE) © Morningstar202604
+
+

@@ -15,6 +15,8 @@ import { TagCloud } from '@/components/TagCloud';
 import { WeeklyUpdates } from '@/components/WeeklyUpdates';
 import { FeaturedCard } from '@/components/FeaturedCard';
 import { CategoryNavBar } from '@/components/CategoryNavBar';
+import { HealthCheckStatus } from '@/components/HealthCheckStatus';
+import { Skeleton } from '@/components/Skeleton';
 
 // 精选推荐优先的子类型：中转站 / 免费 API / 免费资源操作类（服务器·域名·公益站）。
 // 官方内容一律不进精选（避免与社区免费资源混淆）。
@@ -84,21 +86,23 @@ export function HomePage() {
           className="hero-glow pointer-events-none absolute inset-x-0 top-0 -z-10 opacity-60"
           style={{ background: 'radial-gradient(40rem 18rem at 50% -30%, var(--color-primary-soft), transparent 70%)' }}
         />
-        <h1 className="font-display text-3xl font-black tracking-tight text-[var(--color-fg)] sm:text-4xl">{t('home.title')}</h1>
-        <p className="mx-auto mt-3 max-w-xl text-[var(--color-muted)]">{t('home.subtitle')}</p>
+        <h1 className="font-display text-3xl font-black tracking-tight text-[var(--color-fg)] sm:text-4xl">{loading ? <Skeleton className="mx-auto h-8 w-3/4" /> : t('home.title')}</h1>
+        <p className="mx-auto mt-3 max-w-xl text-[var(--color-muted)]">{loading ? <Skeleton className="h-4 w-2/3" /> : t('home.subtitle')}</p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 text-sm text-[var(--color-muted)]">
           <span className="term-prompt" />
           <span className="font-mono">{t('home.stats')}：</span>
-          <span className="font-mono font-semibold text-[var(--color-primary)]">{loading ? '—' : resources.length}</span>
+          <span className="font-mono font-semibold text-[var(--color-primary)]">{loading ? <Skeleton className="inline-block h-5 w-12" /> : resources.length}</span>
           <span>·</span>
           <span className="font-mono">
-            {tree.length} {t('nav.categories')}
+            {loading ? <Skeleton className="inline-block h-5 w-10" /> : <>{tree.length} {t('nav.categories')}</>}
           </span>
           {lastUpdated && (
             <>
               <span>·</span>
               <span className="font-mono">
-                {t('status.lastUpdated')} {fmtDate(lastUpdated)}
+                {loading ? <Skeleton className="inline-block h-5 w-20" /> : <>
+                  {t('status.lastUpdated')} {fmtDate(lastUpdated)}
+                </>}
               </span>
             </>
           )}
@@ -107,12 +111,32 @@ export function HomePage() {
         {/* 状态聚合：全站唯一健康度展示（信号灯式「现在还能不能薅」）。
             此前的健康度条形与 StatusMonitor 卡片重复展示同一份计数，已收敛删除。 */}
         <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm">
-          <span className="signal" data-status="ok">{loading ? '—' : statusCounts.ok ?? 0} {t('status.ok')}</span>
-          <span className="signal" data-status="unstable">{loading ? '—' : statusCounts.unstable ?? 0} {t('status.unstable')}</span>
-          <span className="signal" data-status="dead">{loading ? '—' : statusCounts.dead ?? 0} {t('status.dead')}</span>
-          <span className="signal" data-status="unknown">{loading ? '—' : statusCounts.unknown ?? 0} {t('status.unknown')}</span>
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-5 w-24" />)
+            : (
+              <>
+                <span className="signal" data-status="ok">{statusCounts.ok ?? 0} {t('status.ok')}</span>
+                <span className="signal" data-status="unstable">{statusCounts.unstable ?? 0} {t('status.unstable')}</span>
+                <span className="signal" data-status="dead">{statusCounts.dead ?? 0} {t('status.dead')}</span>
+                <span className="signal" data-status="unknown">{statusCounts.unknown ?? 0} {t('status.unknown')}</span>
+              </>
+            )
+          }
         </div>
       </section>
+
+      {/* 健康检查时间戳（显示脚本运行结果中的最后更新时间） */}
+      {lastUpdated && (
+        <section className="px-2">
+          <HealthCheckStatus
+            lastCheckTime={fmtDate(lastUpdated, true)}
+            okCount={statusCounts.ok ?? 0}
+            unstableCount={statusCounts.unstable ?? 0}
+            deadCount={statusCounts.dead ?? 0}
+            total={resources.length}
+          />
+        </section>
+      )}
 
       {/* 多榜单：网易云式横向切换，置于精选推荐之前 */}
       <RankingBoard resources={resources} />
