@@ -123,6 +123,8 @@ export const BLACKLIST_HOSTS: string[] = [
   'fufu.iqach.top',
   'api.whatai.cc',
   'ai.0d0d.top',
+  'aigc2d.com',
+  'api.aigc2d.com',
 
 ];
 
