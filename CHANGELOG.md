@@ -5,7 +5,7 @@
 格式参考 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
 > **版本约定**：项目从 `0.0.1` 起算，每次更新为一个「小版本」（修订号 +1，如 `0.0.1 → 0.0.2 → 0.0.3`），
-> 并在 GitHub / GitCode / Gitee 三端同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
+> 并在 GitHub 同步打 `vX.Y.Z` 轻量标签。大版本（主/次号）仅在架构级变更时前进。
 
 ## [0.0.9] - 2026-09-04
 
@@ -193,6 +193,10 @@
 ### 发布
 - 新增 **WB 国内访问通道**：`https://a50a62f0345c835a5.app.workbuddy.link`（已写入 README 访问入口，作为国内访问通道，暂代尚未更新的协作者镜像）。
 
+[0.0.9]: https://github.com/Morningstar202604/OpenBox/releases/tag/v0.0.9
+[0.0.8]: https://github.com/Morningstar202604/OpenBox/releases/tag/v0.0.8
+[0.0.7]: https://github.com/Morningstar202604/OpenBox/releases/tag/v0.0.7
+[0.0.6]: https://github.com/Morningstar202604/OpenBox/releases/tag/v0.0.6
 [0.0.5]: https://github.com/Morningstar202604/OpenBox/releases/tag/v0.0.5
 [0.0.4]: https://github.com/Morningstar202604/OpenBox/releases/tag/v0.0.4
 [0.0.3]: https://github.com/Morningstar202604/OpenBox/releases/tag/v0.0.3
